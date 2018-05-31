@@ -57,17 +57,14 @@ Linux/Mac just copy/symlink `dfu-util` to the same directory
 **Driver Installation, only do once**
 
 Download and run [Zadig](http://zadig.akeo.ie/)
-Plug in the controller/keyboard and set into 're-flash mode'.
-(Just press the button on the back of keyboard, an led should turn on)
+unplug VIA from power supply, hold DFU button while inserting USB cable
+(led should glow a dim aqua)
 
 'Kiibohd DFU Bootloader' should show up.
 In Driver, press the Up/Down arrows until you find 'libusbK'
 Click 'Install Driver'
 
 **Driver installation finished**
-
-
-Then copy `dfu-util.exe` to the same directory as `viaflash.exe`
 
 
 
@@ -96,4 +93,4 @@ udevadm control --reload-rules
 ```
 
 And reconnect the USB device.
-You should no longer require root to flash the keyboard
+You should no longer require root to flash the module.
