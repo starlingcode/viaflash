@@ -23,6 +23,7 @@
 #include <QPixmap>
 #include <QString>
 #include <QProgressBar>
+#include <QFile>
 // Local
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -143,15 +144,17 @@ void MainWindow::dfuFlashBinary()
 		{
 			QString output = tr("No file selected...");
 			ui->dfuResultsTextEdit->append( output );
-		}
+            return;
+        }
 		// Error if it doesn't exist
 		else
 		{
 			QString output = tr("'%1' does not exist...").arg( flashFile.fileName() );
 			ui->dfuResultsTextEdit->append( output );
+            ui->dfuResultsTextEdit->append("trying anyway...");
 		}
 
-		return;
+
 	}
 
 #ifdef WIN32
@@ -213,6 +216,7 @@ void MainWindow::dfuCommandStatus()
 		ui->dfuResultsTextEdit->append(serString);
 		ui->flashButton->setDisabled( false );
 	}
+    ui->dfuResultsTextEdit->append( outtxt );
 	// Scroll to bottom
 	ui->dfuResultsTextEdit->verticalScrollBar()->setValue( ui->dfuResultsTextEdit->verticalScrollBar()->maximum() );
 }

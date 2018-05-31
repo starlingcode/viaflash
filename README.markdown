@@ -1,10 +1,9 @@
-viaflash - dfu-util GUI Frontend for flashing VIA firmwares
+kii-dfu - Kiibohd dfu-util GUI Frontend
 =======================================
 
-Qt utility for detecting and flashing VIA capable microcontrollers
-adapted from [kii-dfu](http://github.com/kiibohd/kii-dfu)
+Simple GUI frontend to dfu-util
 
-Requires that the dfu-util binary/symlink be in the same directory as `./viaflash`
+Requires that the dfu-util binary/symlink be in the same directory as `./kii-dfu`
 
 dfu-util can be found here: [dfu-util](http://dfu-util.gnumonks.org/)
 Please use 0.8 or higher if possible.
@@ -57,8 +56,8 @@ Linux/Mac just copy/symlink `dfu-util` to the same directory
 **Driver Installation, only do once**
 
 Download and run [Zadig](http://zadig.akeo.ie/)
-unplug VIA from power supply, hold DFU button while inserting USB cable
-(led should glow a dim aqua)
+Plug in the controller/keyboard and set into 're-flash mode'.
+(Just press the button on the back of keyboard, an led should turn on)
 
 'Kiibohd DFU Bootloader' should show up.
 In Driver, press the Up/Down arrows until you find 'libusbK'
@@ -67,11 +66,14 @@ Click 'Install Driver'
 **Driver installation finished**
 
 
+Then copy `dfu-util.exe` to the same directory as `kii-dfu.exe`
+
+
 
 Usage
 -----
 
-Run `./viaflash` or `viaflash.exe`
+Run `./kii-dfu` or `kii-dfu.exe`
 
 Browse to the *.dfu.bin* file to flash.
 Click Flash
@@ -93,4 +95,19 @@ udevadm control --reload-rules
 ```
 
 And reconnect the USB device.
-You should no longer require root to flash the module.
+You should no longer require root to flash the keyboard
+
+
+
+New Patches/Features/Backends
+-----------------------------
+
+Completely welcome :D
+
+
+Spec Additions/Fixes
+--------------------
+
+Contact HaaTa via IRC (#geekhack@irc.freenode.net or #deskthority).
+Or by email -> haata@kiibohd.com
+
