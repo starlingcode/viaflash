@@ -1,6 +1,7 @@
-###| kii-dfu CMake Build System |###
+###| viaflash CMake Build System |###
 #
 # Jacob Alexander 2014
+# Jason Nanna 2018
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
