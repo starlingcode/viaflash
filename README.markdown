@@ -2,6 +2,7 @@ viaflash - dfu-util GUI Frontend for flashing VIA firmwares
 =======================================
 
 Qt utility for detecting and flashing VIA capable microcontrollers
+adapted from ://github.com/kiibohd/kii-dfu
 
 Requires that the dfu-util binary/symlink be in the same directory as `./kii-dfu`
 
@@ -73,7 +74,7 @@ Then copy `dfu-util.exe` to the same directory as `kii-dfu.exe`
 Usage
 -----
 
-Run `./kii-dfu` or `kii-dfu.exe`
+Run `./viaflash` or `viaflash.exe`
 
 Browse to the *.dfu.bin* file to flash.
 Click Flash
@@ -96,18 +97,3 @@ udevadm control --reload-rules
 
 And reconnect the USB device.
 You should no longer require root to flash the keyboard
-
-
-
-New Patches/Features/Backends
------------------------------
-
-Completely welcome :D
-
-
-Spec Additions/Fixes
---------------------
-
-Contact HaaTa via IRC (#geekhack@irc.freenode.net or #deskthority).
-Or by email -> haata@kiibohd.com
-
