@@ -1,0 +1,1 @@
+/usr/bin/c++      CMakeFiles/viaflash.dir/main.cpp.o CMakeFiles/viaflash.dir/mainwindow.cpp.o CMakeFiles/viaflash.dir/viaflash_automoc.cpp.o  -o viaflash -rdynamic /usr/lib/x86_64-linux-gnu/libQt5Widgets.so.5.5.1 /usr/lib/x86_64-linux-gnu/libQt5Gui.so.5.5.1 /usr/lib/x86_64-linux-gnu/libQt5Core.so.5.5.1 

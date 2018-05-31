@@ -1,0 +1,4 @@
+/home/user/kii-dfu/CMakeFiles/edit_cache.dir
+/home/user/kii-dfu/CMakeFiles/rebuild_cache.dir
+/home/user/kii-dfu/CMakeFiles/viaflash.dir
+/home/user/kii-dfu/CMakeFiles/viaflash_automoc.dir
