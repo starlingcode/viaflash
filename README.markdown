@@ -1,7 +1,7 @@
-kii-dfu - Kiibohd dfu-util GUI Frontend
+viaflash - dfu-util GUI Frontend for flashing VIA firmwares
 =======================================
 
-Simple GUI frontend to dfu-util
+Qt utility for detecting and flashing VIA capable microcontrollers
 
 Requires that the dfu-util binary/symlink be in the same directory as `./kii-dfu`
 
