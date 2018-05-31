@@ -57,12 +57,9 @@ Linux/Mac just copy/symlink `dfu-util` to the same directory
 **Driver Installation, only do once**
 
 Download and run [Zadig](http://zadig.akeo.ie/)
-Plug in the controller/keyboard and set into 're-flash mode'.
-(Just press the button on the back of keyboard, an led should turn on)
+Unplug module power, hold down DFU button while plugging in USB.  The LED on the front should glow a dim aqua.
 
-'Kiibohd DFU Bootloader' should show up.
-In Driver, press the Up/Down arrows until you find 'libusbK'
-Click 'Install Driver'
+Install STM32 DFU Driver or use Zadig (Untested!) 
 
 **Driver installation finished**
 
@@ -76,11 +73,15 @@ Usage
 
 Run `./viaflash` or `viaflash.exe`
 
-Browse to the *.dfu.bin* file to flash.
+For a custom upload, Browse to the *.dfu.bin* file to flash and select "custom firmware".
+
+For a stock firmware, select the firmware you wish to flash.
+
+With VIA removed from power, hold DFU button down and plug in USB cable.  RGB LED should glow a dim aqua.  Click "detect module" and it should display detected serial number, if not, check to ensure that module is plugged in and in DFU mode, and drivers are installed if necessary.
+
 Click Flash
 
 
-List Devices can be used to see if dfu-util can see your device.
 You may need to run the utility as root.
 
 
