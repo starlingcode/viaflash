@@ -2,9 +2,9 @@ viaflash - dfu-util GUI Frontend for flashing VIA firmwares
 =======================================
 
 Qt utility for detecting and flashing VIA capable microcontrollers
-adapted from ://github.com/kiibohd/kii-dfu
+adapted from [kii-dfu](http://github.com/kiibohd/kii-dfu)
 
-Requires that the dfu-util binary/symlink be in the same directory as `./kii-dfu`
+Requires that the dfu-util binary/symlink be in the same directory as `./viaflash`
 
 dfu-util can be found here: [dfu-util](http://dfu-util.gnumonks.org/)
 Please use 0.8 or higher if possible.
@@ -67,7 +67,7 @@ Click 'Install Driver'
 **Driver installation finished**
 
 
-Then copy `dfu-util.exe` to the same directory as `kii-dfu.exe`
+Then copy `dfu-util.exe` to the same directory as `viaflash.exe`
 
 
 
