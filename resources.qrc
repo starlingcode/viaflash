@@ -1,7 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>img/custom.png</file>
-        <file>img/free-running.png</file>
-        <file>img/pll.png</file>
-    </qresource>
-</RCC>
