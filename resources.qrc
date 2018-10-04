@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>pll.png</file>
         <file>img/custom.png</file>
         <file>img/wireframe.png</file>
     </qresource>

@@ -52,6 +52,7 @@ MainWindow::MainWindow(QWidget *parent) :
     dfuFlashProcess.setProcessChannelMode( QProcess::MergedChannels );
     dfuScanProcess.setProcessChannelMode( QProcess::MergedChannels );
 
+    m_haveRepo = 0;
 
 }
 
@@ -100,6 +101,7 @@ void MainWindow::loadImage()
 {
     QPixmap newImage;
     newImage.loadFromData(httpFaceplate->downloadedData());
+    newImage = newImage.scaledToWidth(300);
     ui->faceplate->setPixmap(newImage);
 }
 
