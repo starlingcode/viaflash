@@ -92,7 +92,7 @@ void MainWindow::downloadImage(QString token)
 
 void MainWindow::downloadBinary(QString token)
 {
-    httpBinary = new FileDownloader(QUrl(repositoryUrl + "/binaries/" + token + "_" + m_latestVersion + ".bin"));
+    httpBinary = new FileDownloader(QUrl(repositoryUrl + "/binaries/" + token + ".bin"));
     connect(httpBinary, SIGNAL (downloaded()), this, SLOT (saveBinaryToDisk()));
     connect(httpBinary, SIGNAL (networkError()), this, SLOT (binaryDownloadError()));
 }
@@ -101,7 +101,6 @@ void MainWindow::loadImage()
 {
     QPixmap newImage;
     newImage.loadFromData(httpFaceplate->downloadedData());
-    newImage = newImage.scaledToWidth(300);
     ui->faceplate->setPixmap(newImage);
 }
 

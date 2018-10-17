@@ -8,9 +8,10 @@ QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = QtDownloadExample
+TARGET = ViaFlash
 TEMPLATE = app
 
+QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
 
 SOURCES += main.cpp\
         mainwindow.cpp \
