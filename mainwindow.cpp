@@ -106,7 +106,8 @@ void MainWindow::loadImage()
 
 void MainWindow::saveBinaryToDisk()
 {
-    QFile file(httpBinary->fileName);
+    ui->dfuResultsTextEdit->append( binaryPath + "/" + httpBinary->fileName );
+    QFile file(binaryPath + "/" + httpBinary->fileName);
     file.open(QIODevice::WriteOnly);
     file.write(QByteArray(httpBinary->downloadedData()));
     file.close();
@@ -181,7 +182,7 @@ bool MainWindow::checkDFU( QFile *dfuUtil )
 void MainWindow::dfuFlashBinary()
 {
     // Check if file exists
-    QFile flashFile(selectedFirmware);
+    QFile flashFile(binaryPath + "/" + selectedFirmware);
     if ( !flashFile.exists() )
     {
         // Error if no file selected
