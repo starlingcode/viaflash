@@ -3,15 +3,21 @@
 
 #include <QMainWindow>
 #include <QString>
-#include <QJsonDocument>
-#include "filedownloader.h"
-#include "repo.h"
-#include <QTableWidget>
-#include <QTableWidgetItem>
+#include <QMessageBox>
+#include <QFont>
+#include <QFontDatabase>
+#include <QProgressDialog>
 #include <QDesktopServices>
 #include <QProcess>
 #include <QFile>
-#include <QScrollBar>
+#include <QFileDialog>
+#include <QFileInfo>
+#include <QDateTime>
+#include <QProcess>
+#include "filedownloader.h"
+#include "repo.h"
+#include "process.h"
+//#include "dfuutil.h"
 
 namespace Ui {
 class MainWindow;
@@ -22,50 +28,45 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+private slots:
+    void loadImage();
+    void initRepository();
+    void detectedVia();
+    void binaryDownloadError();
+    void on_flashButton_clicked();
+    void on_firmwareInfoButton_clicked();
+    void on_detectButton_clicked();
+    void on_comboBox_currentIndexChanged(int index);
+    void on_comboBox_activated(int index);
 
 private:
+    Repo *repository;
     Ui::MainWindow *ui;
+    QString selectedFirmware;
+    int m_repoSize;
+    bool m_haveRepo;
+    bool m_enableStorePreset;
+    bool m_local; // true if file is local, false if file is remote
+    QFileInfo m_localFirmwareSelection;
+    int m_localFirmwareIndex;
+    bool m_flashing;
     FileDownloader *httpFaceplate;
     FileDownloader *httpBinary;
     FileDownloader *httpRepo;
     QString repositoryUrl;
     void downloadImage(QString token);
+    void checkRepository();
     void downloadBinary(QString token);
+    void selectLocalFirmware();
     bool checkDFU( QFile *dfuUtil );
-
-
-    QProcess dfuFlashProcess;
-    QProcess dfuScanProcess;
-    QString binaryPath;
-    QString selectedFirmware;
-    QJsonDocument m_json;
-    QJsonArray m_elements;
-    int m_repoSize;
-    bool m_haveRepo;
-    bool m_local; // true if file is local, false if file is remote
-    QString m_token;
-    QString m_latestVersion;
-    bool m_flashing;
-
-private slots:
-    void loadImage();
-    void saveBinaryToDisk();
-    void getRepository();
-    void on_repoComboBox_currentIndexChanged(int index);
-    void on_firmwareInfo_itemClicked(QTableWidgetItem *item);
-    void on_fileBrowseButton_released();
-    void on_listDevicesButton_released();
+    QPixmap blankPanel;
     void dfuFlashBinary();
-    void dfuListDevices();
-    void dfuFlashStatus();
-    void dfuFlashComplete( int exitCode );
     void dfuScanStatus();
-    void dfuScanComplete( int exitCode );
-    void on_flashButton_released();
-    void binaryDownloadError();
+    Process *dfuProcess;
+
 };
 
 #endif // MAINWINDOW_H

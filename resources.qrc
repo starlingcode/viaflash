@@ -1,6 +1,9 @@
 <RCC>
-    <qresource prefix="/">
-        <file>img/custom.png</file>
-        <file>img/wireframe.png</file>
+    <qresource prefix="/fonts">
+        <file>IBMPlexMono-Regular.ttf</file>
+        <file>IBMPlexSans-Regular.ttf</file>
+    </qresource>
+    <qresource prefix="/img">
+        <file>blank.png</file>
     </qresource>
 </RCC>

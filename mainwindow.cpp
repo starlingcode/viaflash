@@ -1,58 +1,41 @@
-/*
- * todo
- *
- *  get rid of m_flashing
- *
- */
-
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "filedownloader.h"
-#include "qdebug.h"
-#include "repo.h"
-#include <QFile>
-#include <QString>
-#include <QPixmap>
-#include <QJsonDocument>
-#include <QComboBox>
-#include <QJsonObject>
-#include <QJsonArray>
-#include <QFileDialog>
-#include <QBrush>
+#include "qfontdatabase.h"
+
+//QFontDatabase::addApplicationFont(":/fonts/IBMPlexMono-Regular");
+//QString plexMono = QFontDatabase::applicationFontFamilies(db).at(0);
+//QFont monospace(plexMono);
 
 MainWindow::MainWindow(QWidget *parent) :
-
     QMainWindow(parent),
     ui(new Ui::MainWindow)
-
 {
     ui->setupUi(this);
-    //connect(httpBinary, SIGNAL (downloaded()), this, SLOT (saveBinaryToDisk()));
+    this->statusBar()->showMessage(tr("No repository loaded; Local Mode"));
+    m_localFirmwareIndex = 0;  // index of local firmware in comboBox
+    this->setFixedSize(QSize(584, 642));
+    ui->flashButton->setDisabled(true);  // disable flash button until selection is made
 
     // load default wireframe via faceplate before hardware is detected
-    QPixmap wireframe("://img/wireframe.png");
-    ui->faceplate->setPixmap(wireframe);
+    blankPanel = QPixmap("://img/blank.png");
+    ui->faceplate->setPixmap(blankPanel);
 
     // disable UI elements until hardware is detected
     ui->flashButton->setDisabled( true );
-    ui->fileBrowseButton->setDisabled( true );
+    ui->firmwareInfoButton->setDisabled( true );
+    ui->loadDefaultButton->setCheckable(false);
+    ui->loadSavedButton->setCheckable(false);
 
-    connect( ui->listDevicesButton, SIGNAL( released() ), this, SLOT( dfuListDevices() ) );
-    connect( &dfuFlashProcess, SIGNAL( readyReadStandardOutput() ), this, SLOT( dfuFlashStatus() ) );
-    connect( &dfuFlashProcess, SIGNAL( finished( int, QProcess::ExitStatus ) ), this, SLOT( dfuFlashComplete( int ) ) );
-    connect( &dfuScanProcess, SIGNAL( readyReadStandardOutput() ), this, SLOT( dfuScanStatus() ) );
-    connect( &dfuScanProcess, SIGNAL( finished( int, QProcess::ExitStatus ) ), this, SLOT( dfuScanComplete( int ) ) );
+    this->statusBar()->showMessage(tr("Local mode only, no repository loaded."));
 
-    // Only use the included dfu-util
-    binaryPath = QFileInfo( QCoreApplication::applicationFilePath() ).dir().absolutePath();
-    dfuFlashProcess.setWorkingDirectory( binaryPath );
-    dfuScanProcess.setWorkingDirectory( binaryPath );
+    // Attempt to download repository
+    repositoryUrl = "https://raw.githubusercontent.com/smrl/viafirmware/master/";
+    httpRepo = new FileDownloader(QUrl("https://raw.githubusercontent.com/smrl/viafirmware/master/manifest.json"), this);
+    connect(httpRepo, SIGNAL (downloaded()), this, SLOT (initRepository()));
+    ui->comboBox->insertItem(0, "Select local firmware:");
 
-    // Merge the output channels
-    dfuFlashProcess.setProcessChannelMode( QProcess::MergedChannels );
-    dfuScanProcess.setProcessChannelMode( QProcess::MergedChannels );
-
-    m_haveRepo = 0;
+    dfuProcess = new Process(this);
+    connect( &dfuProcess->dfuScan, SIGNAL( finished( int, QProcess::ExitStatus ) ), this, SLOT( detectedVia() ) );
 
 }
 
@@ -61,27 +44,109 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::getRepository()
-{ 
-    // download json and convert to UTF-8
-    m_json = QJsonDocument::fromJson(QString(httpRepo->downloadedData()).toUtf8());
-    if (!m_json.isNull()){
-        m_haveRepo = true;
-        ui->dfuResultsTextEdit->append("repository found!");
+// attempts a download of repository JSON file, starts new class with result.
+void MainWindow::initRepository()
+{
+    repository = new Repo(httpRepo->downloadedData(), this);
+    this->statusBar()->showMessage(repository->repoStatus);
+    ui->comboBox->setCurrentIndex(-1);
+    if (repository->exists){
+        for (int i = 0; i < repository->length(); i++){
+            ui->comboBox->insertItem(i, repository->nameAt(i));
+        }
+        m_localFirmwareIndex = repository->length();
     }
-    m_elements = m_json.array();
-    m_repoSize = m_elements.size();
-    ui->repoComboBox->insertItem(0, "Select From Repository...");
-
-    // remember these are indexed starting from 1, not 0! (0 is dialog text)
-    for (int i = 0; i < m_repoSize; i++){
-        QJsonObject obj = m_elements.at(i).toObject();
-        QJsonValue val = obj["name"];
-        ui->repoComboBox->insertItem(i+1, val.toString());
-    }
-
 }
 
+
+void MainWindow::on_flashButton_clicked()
+{
+    QProgressDialog progress;
+    QString output = "<font face = 'IBM Plex Sans' size = 10> Flashing firmware...";
+    progress.setLabelText(output);
+    progress.exec();
+}
+
+void MainWindow::on_firmwareInfoButton_clicked()
+{
+    QMessageBox infoBox;
+    infoBox.setIcon(QMessageBox::NoIcon);
+  /*  QJsonObject obj = m_elements.at(ui->comboBox->currentIndex()).toObject();
+    QString firmwareName = QString("<font face = 'IBM Plex Sans' size = 10> <strong> " + QJsonValue(obj["name"]).toString());
+    QString firmwareVersion = QString("</strong> <br> <font size = 6>version " + QJsonValue(obj["latestVersion"]).toString());
+    QString firmwareManual = QString("<br> <a href = '" + QJsonValue(obj["manualUrl"]).toString() + "'> Manual</a>");
+    QString firmwareDetails = QString("<br> <br> <font size = 5>" + QJsonValue(obj["description"]).toString());
+    QString firmwareAuthor = QString("<br> <br> <font size = 6> Author: " + QJsonValue(obj["author"]).toString());
+    QString firmwareLicense = QString("<br> License: " + QJsonValue(obj["license"]).toString());
+    QString firmwareSource = QString("<br> <a href = '" + QJsonValue(obj["sourceUrl"]).toString() + "'>  Source</a>");
+    QString firmwareInfo = QString(firmwareName + firmwareVersion + firmwareManual + firmwareDetails + firmwareAuthor + firmwareLicense + firmwareSource);
+    */
+    infoBox.setText(repository->firmwareInfo);
+    infoBox.setStandardButtons(QMessageBox::Ok);
+    infoBox.setDefaultButton(QMessageBox::Ok);
+    infoBox.exec();
+}
+
+void MainWindow::binaryDownloadError()
+{
+    ui->statusBar->showMessage("network error: content not found");
+}
+
+void MainWindow::on_detectButton_clicked()
+{
+    ui->statusBar->showMessage("scanning for Via Modules...");
+    dfuProcess->checkForVia();
+}
+
+
+void MainWindow::selectLocalFirmware()
+{
+    //disable firmware info button for local firmware
+    ui->firmwareInfoButton->setDisabled( true );
+    ui->comboBox->setCurrentIndex(m_localFirmwareIndex);
+    ui->faceplate->setPixmap(blankPanel);
+    /*
+    m_localFirmwareSelection = QFileDialog::getOpenFileName(
+            this,
+            tr("Select firmware"),
+            QString(),
+            tr("Via Firmware ( *.bin);;All Files ( * )")
+        );
+    if(m_localFirmwareSelection.isFile()){
+        ui->statusBar->showMessage("loaded " + m_localFirmwareSelection.fileName());
+        ui->comboBox->setItemText(m_localFirmwareIndex, m_localFirmwareSelection.fileName());
+    }
+
+    else
+    {
+        ui->statusBar->showMessage("no file selected.");
+    }
+    */
+}
+
+void MainWindow::on_comboBox_currentIndexChanged(int index)
+{
+}
+
+void MainWindow::on_comboBox_activated(int index)
+{
+    if (index == m_localFirmwareIndex){
+        ui->firmwareInfoButton->setDisabled( true );
+        ui->loadDefaultButton->setCheckable(false);
+        ui->loadSavedButton->setCheckable(false);
+        repository->selectFirmware(0);// firmware 0 = non-repository acknowledged firmware
+        selectLocalFirmware();}
+    else
+    {
+        repository->selectFirmware(index);
+        downloadImage(repository->firmwareToken);
+        ui->firmwareInfoButton->setDisabled( false );
+        ui->loadDefaultButton->setCheckable(true);
+        ui->loadSavedButton->setCheckable(true);
+        ui->statusBar->showMessage("fetched firmware information.");
+
+    }
+}
 
 
 void MainWindow::downloadImage(QString token)
@@ -104,188 +169,22 @@ void MainWindow::loadImage()
     ui->faceplate->setPixmap(newImage);
 }
 
-void MainWindow::saveBinaryToDisk()
+void MainWindow::detectedVia()
 {
-    ui->dfuResultsTextEdit->append( binaryPath + "/" + httpBinary->fileName );
-    QFile file(binaryPath + "/" + httpBinary->fileName);
-    file.open(QIODevice::WriteOnly);
-    file.write(QByteArray(httpBinary->downloadedData()));
-    file.close();
-    if (m_flashing == true)
+    if (dfuProcess->serial != "")
     {
-    ui->dfuResultsTextEdit->append("flashing binary from repository...");
-    dfuFlashBinary();
-    }
-}
-
-
-void MainWindow::on_repoComboBox_currentIndexChanged(int index)
-{
-    if (index != 0){
-        QBrush linkBrush;
-        linkBrush.setColor(Qt::blue);
-        linkBrush.setStyle(Qt::SolidPattern);
-        ui->fileBrowseLineEdit->clear();
-        QJsonObject obj = m_elements.at(index - 1).toObject();
-        QJsonValue val = obj["name"];
-        ui->firmwareInfo->setItem(0, 0, new QTableWidgetItem(QJsonValue(obj["name"]).toString()));
-        m_latestVersion = QJsonValue(obj["latestVersion"]).toString();
-        ui->firmwareInfo->setItem(0, 1, new QTableWidgetItem(m_latestVersion));
-        ui->firmwareInfo->setItem(0, 2, new QTableWidgetItem(QJsonValue(obj["author"]).toString()));
-        ui->firmwareInfo->setItem(0, 3, new QTableWidgetItem(QJsonValue(obj["license"]).toString()));
-        QTableWidgetItem *sourceUrl = new QTableWidgetItem(QJsonValue(obj["sourceUrl"]).toString());
-        sourceUrl->setForeground(linkBrush);
-        ui->firmwareInfo->setItem(0, 4, sourceUrl);
-        QTableWidgetItem *manualUrl = new QTableWidgetItem(QJsonValue(obj["manualUrl"]).toString());
-        manualUrl->setForeground(linkBrush);
-        ui->firmwareInfo->setItem(0, 5, manualUrl);
-        ui->firmwareInfo->setItem(0, 6, new QTableWidgetItem(QJsonValue(obj["description"]).toString()));
-        m_token = QJsonValue(obj["token"]).toString();
-        downloadImage(m_token);
-        ui->flashButton->setDisabled( false );
-        m_local = false;
+        ui->statusBar->showMessage(QString("Via module found with serial # " + dfuProcess->serial));
+        ui->flashButton->setDisabled(false);
     }
     else
     {
-        if (ui->fileBrowseLineEdit->text().isEmpty())
-      {
-        ui->flashButton->setDisabled( true );
-        ui->firmwareInfo->setItem(0, 0, new QTableWidgetItem(""));
-        ui->firmwareInfo->setItem(0, 1, new QTableWidgetItem(""));
-        ui->firmwareInfo->setItem(0, 2, new QTableWidgetItem(""));
-        ui->firmwareInfo->setItem(0, 3, new QTableWidgetItem(""));
-        ui->firmwareInfo->setItem(0, 4, new QTableWidgetItem(""));
-        ui->firmwareInfo->setItem(0, 5, new QTableWidgetItem(""));
-        ui->firmwareInfo->setItem(0, 6, new QTableWidgetItem(""));
-        }
-    }
-
-
-}
-
-// Make sure dfu-util can be found
-bool MainWindow::checkDFU( QFile *dfuUtil )
-{
-    // Make sure dfu-util exists
-    if ( !dfuUtil->exists() )
-    {
-        // Error, dfu-util not installed locally
-        QString output = tr("dfu-util cannot be found. Either build dfu-util and copy the binary to this directory or symlink it.\ne.g. ln -s /usr/bin/dfu-util %1/.").arg( binaryPath );
-        ui->dfuResultsTextEdit->append( output );
-
-        return false;
-    }
-
-    return true;
-}
-
-void MainWindow::dfuFlashBinary()
-{
-    // Check if file exists
-    QFile flashFile(binaryPath + "/" + selectedFirmware);
-    if ( !flashFile.exists() )
-    {
-        // Error if no file selected
-        if ( flashFile.fileName() == QString() )
-        {
-            QString output = tr("No firmware selected...");
-            ui->dfuResultsTextEdit->append( output );
-            return;
-        }
-        // Error if it doesn't exist
-        else
-        {
-            QString output = tr("'%1' does not exist...").arg( flashFile.fileName() );
-            ui->dfuResultsTextEdit->append( output );
-        }
-
-
-    }
-
-#ifdef WIN32
-    QFile dfuUtil( binaryPath + "/" + "dfu-util.exe");
-#else
-    QFile dfuUtil( binaryPath + "/" + "dfu-util" );
-#endif
-
-    // Only run dfu-util if it exists
-    if ( !checkDFU( &dfuUtil ) )
-    {
-        return;
-    }
-
-    // Run dfu-util command
-    QString dfuCmd = QString("%1 --device 0483:df11 -a 0 -s 0x08000000 -D %2").arg( dfuUtil.fileName(), flashFile.fileName() );
-    dfuFlashProcess.start( dfuCmd );
-
-    // Disable the flash button while command is running
-    ui->flashButton->setDisabled( true );
-    //ui->firmwareInfo->setDisabled( true );
-    ui->listDevicesButton->setDisabled( true );
-}
-
-void MainWindow::dfuListDevices()
-{
-#ifdef WIN32
-    QFile dfuUtil( binaryPath + "/" + "dfu-util.exe");
-#else
-    QFile dfuUtil( binaryPath + "/" + "dfu-util" );
-#endif
-
-    // Only run dfu-util if it exists
-    if ( !checkDFU( &dfuUtil ) )
-    {
-        return;
-    }
-
-    // Run dfu-util command
-    QString dfuCmd = QString("%1 -l").arg( dfuUtil.fileName() );
-    dfuScanProcess.start( dfuCmd );
-
-    // Disable the flash button while command is running
-    ui->flashButton->setDisabled( true );
-    ui->listDevicesButton->setDisabled( true );
-
-}
-
-void MainWindow::dfuFlashStatus()
-{
-    // Append text to the viewer
-    QString outtxt(dfuFlashProcess.readAllStandardOutput());
-    int percentageLocation = outtxt.indexOf("%");
-    int percentage = outtxt.mid(percentageLocation-3, 3).toInt();
-    if (percentageLocation){
-        ui->flashProgress->setValue(percentage);
-        //ui->dfuResultsTextEdit->append( outtxt );
+        ui->statusBar->showMessage(QString("No hardware found -- Pushed DFU button?  Removed expander cable?"));
+        ui->flashButton->setDisabled(true);
     }
 }
-
-void MainWindow::dfuFlashComplete( int exitCode )
-{
-    // Re-enable button after command completes
-//	ui->flashButton->setDisabled( false );
-    ui->listDevicesButton->setDisabled( false );
-
-    // Append return code
-    QString output = tr("Error: %1").arg( exitCode );
-    switch (exitCode){
-    case 74:
-        ui->dfuResultsTextEdit->append(QString("File does not exist."));
-        break;
-
-    case 0:
-        ui->dfuResultsTextEdit->append(QString("Success!"));
-        break;
-
-    default:
-        ui->dfuResultsTextEdit->append(QString("Error!" + exitCode));
-        break;
-    }
-}
-
 
 void MainWindow::dfuScanStatus()
-{
+{/*
     // Append text to the viewer
     QString outtxt(dfuScanProcess.readAllStandardOutput());
     int percentageLocation = outtxt.indexOf("%");
@@ -298,7 +197,6 @@ void MainWindow::dfuScanStatus()
         QString serString = ("VIA mcu identified with Serial # ");
         serString.append(outtxt.right(15));
         ui->dfuResultsTextEdit->append(serString.trimmed());
-        ui->fileBrowseButton->setDisabled( false );
         if (!m_haveRepo){
             // get appropriate repo
             ui->dfuResultsTextEdit->append("fetching repository...");
@@ -307,14 +205,16 @@ void MainWindow::dfuScanStatus()
         }
     // Scroll to bottom
     ui->dfuResultsTextEdit->verticalScrollBar()->setValue( ui->dfuResultsTextEdit->verticalScrollBar()->maximum() );
-    }
-}
 
+}
+*/
+}
+/*
 void MainWindow::dfuScanComplete( int exitCode )
 {
     // Re-enable button after command completes
 //	ui->flashButton->setDisabled( false );
-    ui->listDevicesButton->setDisabled( false );
+    ui->detectButton->setDisabled( false );
 
     // Append return code
     QString output = tr("Error: %1").arg( exitCode );
@@ -323,61 +223,9 @@ void MainWindow::dfuScanComplete( int exitCode )
     }
 }
 
+QDateTime now;
+now = QDateTime::currentDateTime();
+QString presetName = QString(ui->statusBar->showMessage(m_firmwareVal + now.toString(".yy-MM-dd.HH.mm.ss")) + ".preset");
 
-void MainWindow::on_firmwareInfo_itemClicked(QTableWidgetItem *item)
-{
-    if (item->text().contains("http")){
-        QDesktopServices::openUrl(QUrl(item->text()));
-    }
-}
+*/
 
-void MainWindow::on_fileBrowseButton_released()
-{
-    ui->fileBrowseLineEdit->setText(
-        QFileDialog::getOpenFileName(
-            this,
-            tr("Select firmware"),
-            QString(),
-            tr("Via Firmware ( *.bin);;All Files ( * )")
-        ));
-    selectedFirmware = ui->fileBrowseLineEdit->text();
-    if (!ui->fileBrowseLineEdit->text().isEmpty()){
-    ui->repoComboBox->setCurrentIndex(0);
-    ui->firmwareInfo->setItem(0, 0, new QTableWidgetItem("Custom Firmware"));
-    ui->firmwareInfo->setItem(0, 1, new QTableWidgetItem("Unknown"));
-    ui->firmwareInfo->setItem(0, 2, new QTableWidgetItem("Unknown"));
-    ui->firmwareInfo->setItem(0, 3, new QTableWidgetItem("Unknown"));
-    ui->firmwareInfo->setItem(0, 4, new QTableWidgetItem("Unknown"));
-    ui->firmwareInfo->setItem(0, 5, new QTableWidgetItem("Unknown"));
-    ui->firmwareInfo->setItem(0, 6, new QTableWidgetItem("Unknown"));
-    QPixmap custom("://img/custom.png");
-    ui->faceplate->setPixmap(custom);
-    ui->flashButton->setDisabled( false );
-    m_local = true;
-}
-}
-
-void MainWindow::on_listDevicesButton_released()
-{
-    ui->dfuResultsTextEdit->append("detecting hardware...");
-}
-
-void MainWindow::on_flashButton_released()
-{
-    if (m_local == false){
-        downloadBinary(m_token);
-        selectedFirmware = (QString (m_token + ".bin"));
-        ui->dfuResultsTextEdit->append("downloading firmware from repository...");
-        m_flashing = true;
-    }
-    else
-    {
-        dfuFlashBinary();
-    }
-
-}
-
-void MainWindow::binaryDownloadError()
-{
-    ui->dfuResultsTextEdit->append("network error: content not found");
-}
