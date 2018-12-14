@@ -11,8 +11,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    this->statusBar()->showMessage(tr("No repository loaded; Local Mode"));
+    this->statusBar()->showMessage("No repository loaded; Local Mode");
     m_localFirmwareIndex = 0;  // index of local firmware in comboBox
+
     this->setFixedSize(QSize(584, 642));
     ui->flashButton->setDisabled(true);  // disable flash button until selection is made
 
@@ -26,7 +27,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->loadDefaultButton->setCheckable(false);
     ui->loadSavedButton->setCheckable(false);
 
-    this->statusBar()->showMessage(tr("Local mode only, no repository loaded."));
+    this->statusBar()->showMessage("Local mode only, no repository loaded.");
 
     // Attempt to download repository
     repositoryUrl = "https://raw.githubusercontent.com/smrl/viafirmware/master/";
@@ -36,7 +37,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     dfuProcess = new Process(this);
     connect( &dfuProcess->dfuScan, SIGNAL( finished( int, QProcess::ExitStatus ) ), this, SLOT( detectedVia() ) );
-
+    connect( dfuProcess, SIGNAL( message( QString ) ), this, SLOT( updateStatusBar(QString) ) );
 }
 
 MainWindow::~MainWindow()
@@ -48,16 +49,22 @@ MainWindow::~MainWindow()
 void MainWindow::initRepository()
 {
     repository = new Repo(httpRepo->downloadedData(), this);
-    this->statusBar()->showMessage(repository->repoStatus);
     ui->comboBox->setCurrentIndex(-1);
     if (repository->exists){
+        ui->statusBar->showMessage(repository->repoStatus);
+        //populate firmware names in comboBox
         for (int i = 0; i < repository->length(); i++){
             ui->comboBox->insertItem(i, repository->nameAt(i));
         }
+        // local firmware is located at the end of the list
         m_localFirmwareIndex = repository->length();
     }
 }
 
+void MainWindow::updateStatusBar(QString message)
+{
+    ui->statusBar->showMessage(message);
+}
 
 void MainWindow::on_flashButton_clicked()
 {
@@ -71,16 +78,6 @@ void MainWindow::on_firmwareInfoButton_clicked()
 {
     QMessageBox infoBox;
     infoBox.setIcon(QMessageBox::NoIcon);
-  /*  QJsonObject obj = m_elements.at(ui->comboBox->currentIndex()).toObject();
-    QString firmwareName = QString("<font face = 'IBM Plex Sans' size = 10> <strong> " + QJsonValue(obj["name"]).toString());
-    QString firmwareVersion = QString("</strong> <br> <font size = 6>version " + QJsonValue(obj["latestVersion"]).toString());
-    QString firmwareManual = QString("<br> <a href = '" + QJsonValue(obj["manualUrl"]).toString() + "'> Manual</a>");
-    QString firmwareDetails = QString("<br> <br> <font size = 5>" + QJsonValue(obj["description"]).toString());
-    QString firmwareAuthor = QString("<br> <br> <font size = 6> Author: " + QJsonValue(obj["author"]).toString());
-    QString firmwareLicense = QString("<br> License: " + QJsonValue(obj["license"]).toString());
-    QString firmwareSource = QString("<br> <a href = '" + QJsonValue(obj["sourceUrl"]).toString() + "'>  Source</a>");
-    QString firmwareInfo = QString(firmwareName + firmwareVersion + firmwareManual + firmwareDetails + firmwareAuthor + firmwareLicense + firmwareSource);
-    */
     infoBox.setText(repository->firmwareInfo);
     infoBox.setStandardButtons(QMessageBox::Ok);
     infoBox.setDefaultButton(QMessageBox::Ok);
@@ -105,7 +102,6 @@ void MainWindow::selectLocalFirmware()
     ui->firmwareInfoButton->setDisabled( true );
     ui->comboBox->setCurrentIndex(m_localFirmwareIndex);
     ui->faceplate->setPixmap(blankPanel);
-    /*
     m_localFirmwareSelection = QFileDialog::getOpenFileName(
             this,
             tr("Select firmware"),
@@ -120,8 +116,9 @@ void MainWindow::selectLocalFirmware()
     else
     {
         ui->statusBar->showMessage("no file selected.");
+        ui->comboBox->setCurrentIndex(-1);
+
     }
-    */
 }
 
 void MainWindow::on_comboBox_currentIndexChanged(int index)
@@ -173,12 +170,12 @@ void MainWindow::detectedVia()
 {
     if (dfuProcess->serial != "")
     {
-        ui->statusBar->showMessage(QString("Via module found with serial # " + dfuProcess->serial));
+        //ui->statusBar->showMessage(QString("Via module found with serial # " + dfuProcess->serial));
         ui->flashButton->setDisabled(false);
     }
     else
     {
-        ui->statusBar->showMessage(QString("No hardware found -- Pushed DFU button?  Removed expander cable?"));
+        //ui->statusBar->showMessage(QString("No hardware found -- Pushed DFU button?  Removed expander cable?"));
         ui->flashButton->setDisabled(true);
     }
 }

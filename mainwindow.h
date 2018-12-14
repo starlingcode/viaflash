@@ -31,6 +31,9 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+public slots:
+    void updateStatusBar(QString message);
+
 private slots:
     void loadImage();
     void initRepository();

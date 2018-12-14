@@ -9,6 +9,7 @@
 #include <QFile>
 #include <QDebug>
 #include <QDir>
+#include <QChar>
 
 class Process : public QObject
 {
@@ -24,24 +25,27 @@ public:
     void loadPresetFile(QString);
     void flashFirmware(QString);
     QProcess dfuScan;
+    QProcess dfuDownloadOptionBytes;
     QProcess dfuFlashFirmware;
     QProcess dfuFlashPresets;
 
 private:
     QString m_path;  //QDir::currentPath();
     QString m_executable;
-    int m_firmwareID;
-    int m_firmwareVersion;
+    unsigned char m_firmwareID;
+    unsigned char m_firmwareVersion;
 
 
 
 
 signals:
     void updateStatus(int);
+    void message(QString);
 
 public slots:
 //    void parseFlashProgress();
     void parseScan();
+    void parseOptionBytes();
 };
 
 #endif // PROCESS_H
