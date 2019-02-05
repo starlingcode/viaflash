@@ -12,11 +12,13 @@
 #include <QFile>
 #include <QFileDialog>
 #include <QFileInfo>
-#include <QDateTime>
+#include <QIODevice>
 #include <QProcess>
+#include <QWidget>
 #include "filedownloader.h"
 #include "repo.h"
 #include "process.h"
+#include "updatedialog.h"
 //#include "dfuutil.h"
 
 namespace Ui {
@@ -30,27 +32,37 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    QString firmwareIDToString(int id);
+    bool haveRepo;
+
 
 public slots:
     void updateStatusBar(QString message);
+    void progressUpdater(int percent);
+    void viaFirmwareIDToName(QString serial);
+    void promptForCalibration();
+    void optionBytesCompleted(bool);
+
 
 private slots:
     void loadImage();
     void initRepository();
     void detectedVia();
+    void flashingCompleted();
+    void downloadError();
     void binaryDownloadError();
     void on_flashButton_clicked();
     void on_firmwareInfoButton_clicked();
     void on_detectButton_clicked();
     void on_comboBox_currentIndexChanged(int index);
     void on_comboBox_activated(int index);
+    void binaryDownloadCompleted();
 
 private:
     Repo *repository;
     Ui::MainWindow *ui;
     QString selectedFirmware;
     int m_repoSize;
-    bool m_haveRepo;
     bool m_enableStorePreset;
     bool m_local; // true if file is local, false if file is remote
     QFileInfo m_localFirmwareSelection;
@@ -62,13 +74,20 @@ private:
     QString repositoryUrl;
     void downloadImage(QString token);
     void checkRepository();
+    void startFlash();
     void downloadBinary(QString token);
+    void downloadPreset(QString token);
     void selectLocalFirmware();
     bool checkDFU( QFile *dfuUtil );
     QPixmap blankPanel;
-    void dfuFlashBinary();
-    void dfuScanStatus();
     Process *dfuProcess;
+    bool m_waiting;
+    updateDialog *ud;
+
+
+signals:
+    void message(QString);
+    void viaFoundWithFirmware(QString);
 
 };
 

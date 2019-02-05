@@ -1,6 +1,7 @@
 #include "filedownloader.h"
 #include "qdebug.h"
 
+
 FileDownloader::FileDownloader(QUrl fileUrl, QObject *parent) :
  QObject(parent)
 {
@@ -12,6 +13,7 @@ FileDownloader::FileDownloader(QUrl fileUrl, QObject *parent) :
  QNetworkRequest request(fileUrl);
  m_WebCtrl.get(request);
  this->fileName = fileUrl.fileName();
+ qDebug() << this->fileName;
 }
 
 FileDownloader::~FileDownloader() { }

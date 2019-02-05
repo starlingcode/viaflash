@@ -29,13 +29,15 @@ SOURCES += \
         mainwindow.cpp \
     filedownloader.cpp \
     repo.cpp \
-    process.cpp
+    process.cpp \
+    updatedialog.cpp
 
 HEADERS += \
         mainwindow.h \
     filedownloader.h \
     repo.h \
-    process.h
+    process.h \
+    updatedialog.h
 
 FORMS += \
         mainwindow.ui \
