@@ -268,7 +268,7 @@ void MainWindow::loadImage()
 void MainWindow::detectedVia()
 {
     qDebug() << dfuProcess->serial;
-    if (dfuProcess->serial == "rial=UNKNOWN")
+    if (dfuProcess->serial == "rial=UNKNOWN")  // fix for dfu - util .9
     {
         QMessageBox detectError;
         detectError.setIcon(QMessageBox::Warning);
@@ -285,7 +285,6 @@ void MainWindow::detectedVia()
     else if (dfuProcess->serial != "")
     {
         ui->comboBox->setDisabled(false);
-
     }
     else
     {
@@ -299,6 +298,10 @@ void MainWindow::flashingCompleted()
     if (ui->comboBox->currentIndex() == m_localFirmwareIndex) // if local firmware
     {
         dfuProcess->writeOptionBytes(0, 0);
+    }
+    else if (repository->firmwareOptionByte == 254)  // if calibration
+    {
+        dfuProcess->writeOptionBytes(254, 0);
     }
     else
     {
