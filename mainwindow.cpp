@@ -45,7 +45,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect( &dfuProcess->dfuFlashFirmware, SIGNAL( finished(int,QProcess::ExitStatus)), this, SLOT( flashingCompleted() ) );
     connect( dfuProcess, SIGNAL( viaFoundWithFirmware(QString)) , this, SLOT( viaFirmwareIDToName(QString)) );
     connect( dfuProcess, SIGNAL( viaHasNoCal()) , this, SLOT( promptForCalibration()) );
-    connect( dfuProcess, SIGNAL( completed(bool)) , this, SLOT( optionBytesCompleted(bool)) );
+    connect( dfuProcess, SIGNAL( success(bool)) , this, SLOT( optionBytesCompleted(bool)) );
 
     // messages globally get pushed onto the status bar
     connect(this, SIGNAL( message( QString ) ), this, SLOT( updateStatusBar(QString) ) );
@@ -125,18 +125,22 @@ void MainWindow::on_flashButton_clicked()
 
 void MainWindow::startFlash()
 {
+
     QFileInfo binary = selectedFirmware;
     if (!binary.exists())
     {
         ud->setText("Firmware not found.");
+        ud->showButton("Cancel");
     }
     else if (binary.size() > 252000)
     {
         ud->setText("Firmware too large to flash!");
+        ud->showButton("Cancel");
 
     }
     else
     {
+        ui->detectButton->setDisabled(true);
         ui->comboBox->setDisabled(true);
         ui->firmwareInfoButton->setDisabled(true);
         ui->flashButton->setDisabled(true);

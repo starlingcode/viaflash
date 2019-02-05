@@ -285,6 +285,7 @@ void Process::checkOptionBytesSuccess(int exitCode)
     else
     {
         emit message(QString("dfu util exited with some other value: " + QString(exitCode)));
+        emit success(false);
     }
 }
 
