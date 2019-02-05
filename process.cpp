@@ -225,7 +225,7 @@ bool Process::checkPresetCondition(int firmwareID, int firmwareVersion)
             else
             {
                 QString lastStored = lastCalibration.toString("ddd MMMM d yyyy");
-                emit message(QString("Calibration data from " + lastStored +  "is newer than saved presets.  Defaults will be loaded."));
+                emit message(QString("Calibration data from " + lastStored +  " is newer than saved presets.  Defaults will be loaded."));
                 return true;
             }
         }
