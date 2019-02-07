@@ -175,6 +175,10 @@ void Process::parseFlashProgress()
     int percentage = outtxt.mid(percentageLocation-3, 3).toInt();
     if (percentageLocation){
         emit updateProgress(percentage);
+        if (outtxt.contains("Download") && !outtxt.contains("Downloading"))
+        {
+            emit dfuBeganFlashing();
+        }
     }
 }
 
@@ -225,7 +229,7 @@ bool Process::checkPresetCondition(int firmwareID, int firmwareVersion)
             else
             {
                 QString lastStored = lastCalibration.toString("ddd MMMM d yyyy");
-                emit message(QString("Calibration data from " + lastStored +  " is newer than saved presets.  Defaults will be loaded."));
+                emit message(QString("Calibration data from " + lastStored +  " is newer than saved presets.  Loading Defaults."));
                 return true;
             }
         }
@@ -279,7 +283,7 @@ void Process::checkOptionBytesSuccess(int exitCode)
     //optionbytes.remove();
     if (exitCode == 0)
     {
-        emit message("Successfully Flashed!");
+        emit message("Remove module now.  To flash again, reconnect to USB and restart Viaflash.");
         emit success(true);
     }
     else

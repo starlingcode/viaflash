@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_localFirmwareIndex = 0;  // index of local firmware in comboBox
 
-    this->setFixedSize(QSize(584, 642));    //force size so no resizing possible
+    this->setFixedSize(QSize(565, 640));    //force size so no resizing possible
 
     ui->flashButton->setDisabled(true);  // disable flash button until selection is made
 
@@ -50,6 +50,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // messages globally get pushed onto the status bar
     connect(this, SIGNAL( message( QString ) ), this, SLOT( updateStatusBar(QString) ) );
     connect( dfuProcess, SIGNAL( message( QString ) ), this, SLOT( updateStatusBar(QString) ) );
+    connect( dfuProcess, SIGNAL( dfuBeganFlashing() ), this, SLOT( updateDfuFlashing() ) );
 
 
 
@@ -145,10 +146,20 @@ void MainWindow::startFlash()
         ui->firmwareInfoButton->setDisabled(true);
         ui->flashButton->setDisabled(true);
         ui->loadDefaultButton->setDisabled(true);
-        ud->setText(QString("Flashing " + QString::number(binary.size()) + " bytes..."));
+        ud->setText(QString("Erasing Flash Memory..."));
+
+
         dfuProcess->flashFirmware(selectedFirmware);
     }
 }
+
+
+void MainWindow::updateDfuFlashing()
+{
+    QFileInfo binary = selectedFirmware;
+    ud->setText(QString("Flashing " + QString::number(binary.size()) + " bytes..."));
+}
+
 
 // firmware infobox display
 void MainWindow::on_firmwareInfoButton_clicked()
@@ -369,7 +380,7 @@ void MainWindow::optionBytesCompleted(bool success)
 {
     if (success)
     {
-        ud->setText("Firmware successfully loaded.");
+        ud->setText("Update succeeded!");
         ud->showButton("Ok");
     }
     else

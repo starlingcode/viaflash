@@ -48,6 +48,7 @@ private slots:
     void loadImage();
     void initRepository();
     void detectedVia();
+    void updateDfuFlashing();
     void flashingCompleted();
     void downloadError();
     void binaryDownloadError();

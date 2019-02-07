@@ -56,6 +56,7 @@ signals:
     void viaFoundWithFirmware(QString);
     void viaHasNoCal();
     void success(bool);
+    void dfuBeganFlashing();
 
 
 
