@@ -41,7 +41,7 @@ public slots:
     void progressUpdater(int percent);
     void viaFirmwareIDToName(QString serial);
     void promptForCalibration();
-    void optionBytesCompleted(bool);
+    void optionBytesCompleted(int);
 
 
 private slots:
@@ -49,7 +49,8 @@ private slots:
     void initRepository();
     void detectedVia();
     void updateDfuFlashing();
-    void flashingCompleted();
+    void flashingFirmwareCompleted(int);
+    void flashingPresetsCompleted(int);
     void downloadError();
     void binaryDownloadError();
     void on_flashButton_clicked();

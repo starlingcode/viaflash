@@ -11,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->statusBar->setStyleSheet("background-color:rgb(0, 0, 0); color:rgb(255, 255, 255);");
 
 
     m_localFirmwareIndex = 0;  // index of local firmware in comboBox
@@ -23,14 +24,17 @@ MainWindow::MainWindow(QWidget *parent) :
     blankPanel = QPixmap("://img/blank.png");
     ui->faceplate->setPixmap(blankPanel);
 
+    connect(this, SIGNAL( message( QString ) ), this, SLOT( updateStatusBar(QString) ) );
+
     // disable UI elements until hardware is detected
     ui->comboBox->setDisabled(true);
     ui->flashButton->setDisabled( true );
     ui->firmwareInfoButton->setDisabled( true );
     ui->loadDefaultButton->setCheckable(false);
-    emit message("Local mode only, no repository loaded.");
 
     // Attempt to download repository
+    emit message("Attempting to load repository...");
+    ui->detectButton->setEnabled(false);
     repositoryUrl = "https://raw.githubusercontent.com/smrl/viafirmware/master/";
     httpRepo = new FileDownloader(QUrl("https://raw.githubusercontent.com/smrl/viafirmware/master/manifest.json"), this);
     connect(httpRepo, SIGNAL (downloaded()), this, SLOT (initRepository()));
@@ -42,13 +46,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect( &dfuProcess->dfuScan, SIGNAL( finished( int, QProcess::ExitStatus ) ), this, SLOT( detectedVia() ) );
     connect( dfuProcess, SIGNAL( updateProgress( int ) ), this, SLOT( progressUpdater(int) ) );
-    connect( &dfuProcess->dfuFlashFirmware, SIGNAL( finished(int,QProcess::ExitStatus)), this, SLOT( flashingCompleted() ) );
+    connect( &dfuProcess->dfuFlashFirmware, SIGNAL( finished(int,QProcess::ExitStatus)), this, SLOT( flashingFirmwareCompleted(int) ) );
+    connect( &dfuProcess->dfuFlashPresets, SIGNAL( finished(int,QProcess::ExitStatus)), this, SLOT( flashingPresetsCompleted(int) ) );
     connect( dfuProcess, SIGNAL( viaFoundWithFirmware(QString)) , this, SLOT( viaFirmwareIDToName(QString)) );
     connect( dfuProcess, SIGNAL( viaHasNoCal()) , this, SLOT( promptForCalibration()) );
-    connect( dfuProcess, SIGNAL( success(bool)) , this, SLOT( optionBytesCompleted(bool)) );
+    connect( &dfuProcess->dfuUploadOptionBytes, SIGNAL( finished(int,QProcess::ExitStatus)), this, SLOT( optionBytesCompleted(int) ) );
+
 
     // messages globally get pushed onto the status bar
-    connect(this, SIGNAL( message( QString ) ), this, SLOT( updateStatusBar(QString) ) );
     connect( dfuProcess, SIGNAL( message( QString ) ), this, SLOT( updateStatusBar(QString) ) );
     connect( dfuProcess, SIGNAL( dfuBeganFlashing() ), this, SLOT( updateDfuFlashing() ) );
 
@@ -66,6 +71,7 @@ void MainWindow::initRepository()
 {
     repository = new Repo(httpRepo->downloadedData(), this);
     connect( repository, SIGNAL( message( QString ) ), this, SLOT( updateStatusBar(QString) ) );
+    ui->detectButton->setEnabled(true); // not in indeterminate state, can detect.
     if (repository->exists)
     {
         emit message("Firmware repository loaded.");
@@ -79,7 +85,7 @@ void MainWindow::initRepository()
 
     // index of -1 is blank/unselected combobox entry
     ui->comboBox->setCurrentIndex(-1);
-    if (repository->exists){
+    if (haveRepo){
         //populate firmware names in comboBox
         for (int i = 0; i < repository->length(); i++){
             ui->comboBox->insertItem(i, repository->nameAt(i));
@@ -98,8 +104,9 @@ void MainWindow::updateStatusBar(QString message)
 // helper to link firmware name with firmware ID when displaying currently installed firmware in status bar
 void MainWindow::viaFirmwareIDToName(QString serial)
 {
-    if(repository->exists)
+    if(haveRepo)
     {
+
         emit message(QString("Via found with Serial # " + serial + "     " + repository->returnFirmwareName(dfuProcess->getFirmwareID()) + " Firmware Version " + QString::number(dfuProcess->getFirmwareVersion()) + ". Saving Presets."));
     }
     else
@@ -147,7 +154,6 @@ void MainWindow::startFlash()
         ui->flashButton->setDisabled(true);
         ui->loadDefaultButton->setDisabled(true);
         ud->setText(QString("Erasing Flash Memory..."));
-
 
         dfuProcess->flashFirmware(selectedFirmware);
     }
@@ -304,8 +310,50 @@ void MainWindow::detectedVia()
     }
 }
 
-void MainWindow::flashingCompleted()
+void MainWindow::flashingFirmwareCompleted(int exitCode)
 {
+    if (exitCode == 0)
+    {
+    if (ui->loadDefaultButton->isChecked())
+    {
+        QDateTime lastCalibration = dfuProcess->getLastCalibrationTime();
+        if(lastCalibration.isValid())
+        {
+            dfuProcess->flashCalibration();
+            ud->setText("Loading Calibration Data...");
+        }
+        else
+        {
+            qDebug() << "no calibration data to load.";
+            flashingPresetsCompleted(0);
+
+        }
+    }
+    else if (ui->comboBox->currentIndex() == m_localFirmwareIndex)
+    {
+        flashingPresetsCompleted(0);
+    }
+    else
+    {
+        dfuProcess->flashPresets();
+        ud->setText("Restoring presets...");
+    }
+    }
+    else
+    {
+        ud->setText("Flashing Firmware Failed.");
+        ud->showButton("Ok");
+    }
+}
+
+void MainWindow::flashingPresetsCompleted(int exitCode)
+{
+    if (exitCode != 0)
+    {
+        qDebug() << "Flashing Presets Failed!";
+        ud->setText("Flashing presets failed!");
+        ud->showButton("Ok");
+    }
     if (ui->comboBox->currentIndex() == m_localFirmwareIndex) // if local firmware
     {
         dfuProcess->writeOptionBytes(0, 0);
@@ -328,6 +376,7 @@ void MainWindow::flashingCompleted()
     ud->setText("Writing option bytes...");
     ud->updateValue(100);
 }
+
 
 void MainWindow::binaryDownloadCompleted()
 {
@@ -376,15 +425,18 @@ void MainWindow::promptForCalibration()
    }
 }
 
-void MainWindow::optionBytesCompleted(bool success)
+
+void MainWindow::optionBytesCompleted(int exitCode)
 {
-    if (success)
+    if (exitCode == 0)
     {
+        emit message("Remove module now.  To flash again, reconnect to USB and restart Viaflash.");
         ud->setText("Update succeeded!");
         ud->showButton("Ok");
     }
     else
     {
+        emit message(QString("dfu util exited with some other value: " + QString(exitCode)));
         ud->setText("Option byte error.");
         ud->showButton("Ok");
     }

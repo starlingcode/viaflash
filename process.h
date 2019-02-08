@@ -22,14 +22,17 @@ public:
     void checkForVia();
     int getFirmwareID();
     int getFirmwareVersion();
-    void savePresets();
-    void loadPresetFile(QString);
+    void flashPresets();
+    void flashCalibration();
     void flashFirmware(QString);
     void savePresetAsCal();
     QString generatePresetName();
     QString generateCalibrationName();
-    QDateTime getLastPreset(int, int);
-    QDateTime getLastCalibration();
+    QString getLastPreset(int);
+    QDateTime getLastPresetTime(int);
+    QString getLastPresetVersion(int);
+    QDateTime getLastCalibrationTime();
+    QString getLastCalibration();
     QString serial;
     QProcess dfuScan;
     QProcess dfuDownloadOptionBytes;
@@ -41,6 +44,7 @@ public:
     bool viaCanProvideCalibrationData();
     bool checkPresetCondition(int, int);
     void writeOptionBytes(unsigned char, unsigned char);
+    void flashPresets(int);
 
 
 private:
@@ -55,7 +59,6 @@ signals:
     void updateProgress(int);
     void viaFoundWithFirmware(QString);
     void viaHasNoCal();
-    void success(bool);
     void dfuBeganFlashing();
 
 
@@ -64,8 +67,10 @@ public slots:
     void parseFlashProgress();
     void parseScan();
     void parseOptionBytes();
-    void checkOptionBytesSuccess(int);
     void showOB();
+    void savePresets(int);
+
+
 };
 
 #endif // PROCESS_H

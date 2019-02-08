@@ -36,7 +36,7 @@ QString Repo::nameAt(int index)
 void Repo::selectFirmware(int index)
 {
     QJsonObject obj = m_elements.at(index).toObject();
-    firmwareName = QString("<font face = 'IBM Plex Sans' size = 10> <span style = 'color:#ffdc64'> <strong> " + QJsonValue(obj["name"]).toString() + "</span>");
+    firmwareName = QString("<font face = 'IBM Plex Sans' size = 10> <strong> " + QJsonValue(obj["name"]).toString());
     firmwareVersion = QString("</strong> <br> <font size = 6>version " + QString::number(QJsonValue(obj["latestVersion"]).toInt()));
     firmwareManual = QString("<br> <a href = '" + QJsonValue(obj["manualUrl"]).toString() + "'> Manual</a>");
     firmwareDetails = QString("<br> <br> <font size = 5>" + QJsonValue(obj["description"]).toString());
