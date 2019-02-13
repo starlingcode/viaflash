@@ -15,6 +15,7 @@
 #include <QIODevice>
 #include <QProcess>
 #include <QWidget>
+#include <QDebug>
 #include "filedownloader.h"
 #include "repo.h"
 #include "process.h"
@@ -56,7 +57,7 @@ private slots:
     void on_flashButton_clicked();
     void on_firmwareInfoButton_clicked();
     void on_detectButton_clicked();
-    void on_comboBox_currentIndexChanged(int index);
+//    void on_comboBox_currentIndexChanged(int index);
     void on_comboBox_activated(int index);
     void binaryDownloadCompleted();
 
@@ -80,7 +81,7 @@ private:
     void downloadBinary(QString token);
     void downloadPreset(QString token);
     void selectLocalFirmware();
-    bool checkDFU( QFile *dfuUtil );
+    bool checkDFU(QFile *dfuUtil);
     QPixmap blankPanel;
     Process *dfuProcess;
     bool m_waiting;

@@ -1,16 +1,26 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "qfontdatabase.h"
 
-//QFontDatabase::addApplicationFont(":/fonts/IBMPlexMono-Regular");
-//QString plexMono = QFontDatabase::applicationFontFamilies(db).at(0);
-//QFont monospace(plexMono);
+
+
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    int plexMonoID = QFontDatabase::addApplicationFont(":/fonts/IBMPlexMono-Regular.ttf");
+    int plexSansID = QFontDatabase::addApplicationFont(":/fonts/IBMPlexSans-Regular.ttf");
+
+    qDebug() << plexMonoID;
+    qDebug() << plexSansID;
+
+    QFont plexSans = QFont("IBM Plex Sans", 10, 1);
+    QFont plexMono = QFont("IBM Plex Mono", 10, 1);
+
+
     ui->setupUi(this);
+    //ui->MainWindow->setFont(plexSans);
     ui->statusBar->setStyleSheet("background-color:rgb(0, 0, 0); color:rgb(255, 255, 255);");
 
 
@@ -222,9 +232,9 @@ void MainWindow::selectLocalFirmware()
     }
 }
 
-void MainWindow::on_comboBox_currentIndexChanged(int index)
-{
-}
+//void MainWindow::on_comboBox_currentIndexChanged(int index)
+//{
+//}
 
 void MainWindow::on_comboBox_activated(int index)
 {
