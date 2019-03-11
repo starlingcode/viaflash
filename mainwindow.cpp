@@ -45,8 +45,8 @@ MainWindow::MainWindow(QWidget *parent) :
     // Attempt to download repository
     emit message("Attempting to load repository...");
     ui->detectButton->setEnabled(false);
-    repositoryUrl = "https://raw.githubusercontent.com/smrl/viafirmware/master/";
-    httpRepo = new FileDownloader(QUrl("https://raw.githubusercontent.com/smrl/viafirmware/master/manifest.json"), this);
+    repositoryUrl = "https://raw.githubusercontent.com/starlingcode/viafirmware/master/";
+    httpRepo = new FileDownloader(QUrl("https://raw.githubusercontent.com/starlingcode/viafirmware/master/manifest.json"), this);
     connect(httpRepo, SIGNAL (downloaded()), this, SLOT (initRepository()));
 
     ui->comboBox->insertItem(0, "Select local firmware:");
