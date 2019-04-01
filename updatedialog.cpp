@@ -23,9 +23,9 @@ void updateDialog::updateValue(int value)
 
 void updateDialog::showButton(QString text)
 {
-    QPushButton *pb = new QPushButton();
-    ud->setCancelButton(pb);
-    ud->setCancelButtonText(text);
+//    QPushButton *pb = new QPushButton();
+//    ud->setCancelButton(pb);
+//    ud->setCancelButtonText(text);
 }
 
 void updateDialog::setText(QString text)

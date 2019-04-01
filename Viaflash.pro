@@ -45,6 +45,8 @@ FORMS += \
 
 ICON = viaflash.icns
 
+RC_FILE = viaflash.rc
+
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin

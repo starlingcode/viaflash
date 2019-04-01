@@ -975,9 +975,9 @@ color:rgb(255,255,255);</string>
    <widget class="QLabel" name="faceplate">
     <property name="geometry">
      <rect>
-      <x>200</x>
+      <x>233</x>
       <y>0</y>
-      <width>384</width>
+      <width>351</width>
       <height>618</height>
      </rect>
     </property>

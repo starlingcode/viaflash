@@ -27,7 +27,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_localFirmwareIndex = 0;  // index of local firmware in comboBox
 
-    this->setFixedSize(QSize(565, 640));    //force size so no resizing possible
+    this->setFixedSize(QSize(585, 640));    //force size so no resizing possible
 
     ui->flashButton->setDisabled(true);  // disable flash button until selection is made
 
@@ -149,12 +149,12 @@ void MainWindow::startFlash()
     if (!binary.exists())
     {
         ud->setText("Firmware not found.");
-        ud->showButton("Cancel");
+//        ud->showButton("Cancel");
     }
     else if (binary.size() > 252000)
     {
         ud->setText("Firmware too large to flash!");
-        ud->showButton("Cancel");
+//        ud->showButton("Cancel");
 
     }
     else
@@ -352,7 +352,7 @@ void MainWindow::flashingFirmwareCompleted(int exitCode)
     else
     {
         ud->setText("Flashing Firmware Failed.");
-        ud->showButton("Ok");
+//        ud->showButton("Ok");
     }
 }
 
@@ -362,7 +362,7 @@ void MainWindow::flashingPresetsCompleted(int exitCode)
     {
         qDebug() << "Flashing Presets Failed!";
         ud->setText("Flashing presets failed!");
-        ud->showButton("Ok");
+//        ud->showButton("Ok");
     }
     if (ui->comboBox->currentIndex() == m_localFirmwareIndex) // if local firmware
     {
@@ -401,7 +401,7 @@ void MainWindow::binaryDownloadCompleted()
 void MainWindow::binaryDownloadError()
 {
     ud->setText("Flashing failed - file download error!");
-    ud->showButton("OK");
+//    ud->showButton("OK");
 }
 
 void MainWindow::progressUpdater(int percent)
@@ -442,13 +442,14 @@ void MainWindow::optionBytesCompleted(int exitCode)
     {
         emit message("Remove module now.  To flash again, reconnect to USB and restart Viaflash.");
         ud->setText("Update succeeded!");
-        ud->showButton("Ok");
+//        ud->showButton("Ok");
+
     }
     else
     {
         emit message(QString("dfu util exited with some other value: " + QString(exitCode)));
         ud->setText("Option byte error.");
-        ud->showButton("Ok");
+//        ud->showButton("Ok");
     }
 }
 
