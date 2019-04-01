@@ -8,7 +8,7 @@ QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = viaflash
+TARGET = Viaflash
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
@@ -36,12 +36,14 @@ HEADERS += \
         mainwindow.h \
     filedownloader.h \
     repo.h \
-    process.h \
+    viaflash_process.h \
     updatedialog.h
 
 FORMS += \
         mainwindow.ui \
     dialog.ui
+
+ICON = viaflash.icns
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

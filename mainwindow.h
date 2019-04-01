@@ -18,7 +18,7 @@
 #include <QDebug>
 #include "filedownloader.h"
 #include "repo.h"
-#include "process.h"
+#include "viaflash_process.h"
 #include "updatedialog.h"
 //#include "dfuutil.h"
 
@@ -71,6 +71,7 @@ private:
     QFileInfo m_localFirmwareSelection;
     int m_localFirmwareIndex;
     bool m_flashing;
+    QString m_app_path;
     FileDownloader *httpFaceplate;
     FileDownloader *httpBinary;
     FileDownloader *httpRepo;

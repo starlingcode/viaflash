@@ -23,6 +23,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //ui->MainWindow->setFont(plexSans);
     ui->statusBar->setStyleSheet("background-color:rgb(0, 0, 0); color:rgb(255, 255, 255);");
 
+    m_app_path = QCoreApplication::applicationDirPath();
 
     m_localFirmwareIndex = 0;  // index of local firmware in comboBox
 
@@ -144,7 +145,7 @@ void MainWindow::on_flashButton_clicked()
 void MainWindow::startFlash()
 {
 
-    QFileInfo binary = selectedFirmware;
+    QFileInfo binary = m_app_path + "/" + selectedFirmware;
     if (!binary.exists())
     {
         ud->setText("Firmware not found.");
@@ -165,14 +166,14 @@ void MainWindow::startFlash()
         ui->loadDefaultButton->setDisabled(true);
         ud->setText(QString("Erasing Flash Memory..."));
 
-        dfuProcess->flashFirmware(selectedFirmware);
+        dfuProcess->flashFirmware(m_app_path + "/" + selectedFirmware);
     }
 }
 
 
 void MainWindow::updateDfuFlashing()
 {
-    QFileInfo binary = selectedFirmware;
+    QFileInfo binary = m_app_path + "/" + selectedFirmware;
     ud->setText(QString("Flashing " + QString::number(binary.size()) + " bytes..."));
 }
 
@@ -324,30 +325,29 @@ void MainWindow::flashingFirmwareCompleted(int exitCode)
 {
     if (exitCode == 0)
     {
-    if (ui->loadDefaultButton->isChecked())
-    {
-        QDateTime lastCalibration = dfuProcess->getLastCalibrationTime();
-        if(lastCalibration.isValid())
+        if (ui->loadDefaultButton->isChecked())
         {
-            dfuProcess->flashCalibration();
-            ud->setText("Loading Calibration Data...");
+            QDateTime lastCalibration = dfuProcess->getLastCalibrationTime();
+            if(lastCalibration.isValid())
+            {
+                dfuProcess->flashCalibration();
+                ud->setText("Loading Calibration Data...");
+            }
+            else
+            {
+                qDebug() << "no calibration data to load.";
+                flashingPresetsCompleted(0);
+            }
+        }
+        else if (ui->comboBox->currentIndex() == m_localFirmwareIndex)
+        {
+            flashingPresetsCompleted(0);
         }
         else
         {
-            qDebug() << "no calibration data to load.";
-            flashingPresetsCompleted(0);
-
+            dfuProcess->flashPresets();
+            ud->setText("Restoring presets...");
         }
-    }
-    else if (ui->comboBox->currentIndex() == m_localFirmwareIndex)
-    {
-        flashingPresetsCompleted(0);
-    }
-    else
-    {
-        dfuProcess->flashPresets();
-        ud->setText("Restoring presets...");
-    }
     }
     else
     {
@@ -390,7 +390,7 @@ void MainWindow::flashingPresetsCompleted(int exitCode)
 
 void MainWindow::binaryDownloadCompleted()
 {
-    QFile downloadedBinary(selectedFirmware);
+    QFile downloadedBinary(m_app_path + "/" + selectedFirmware);
     downloadedBinary.remove(); // delete any existing firmware
     downloadedBinary.open(QIODevice::WriteOnly);
     downloadedBinary.write(httpBinary->downloadedData());

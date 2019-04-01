@@ -1,14 +1,16 @@
-#include "process.h"
+#include "viaflash_process.h"
 
 Process::Process(QObject *parent) : QObject(parent)
 {
-    m_path = QDir::currentPath();
+    m_path = QCoreApplication::applicationDirPath();
 
 #ifdef WIN32
     m_executable = QString( m_path + "/" + "dfu-util.exe");
 #else
     m_executable =  QString( m_path + "/" + "dfu-util" );
 #endif
+
+    m_obpath = m_path + "/" + "optionbytes.temp";
 
     // link dfu-util stdout to parseScan function
     connect( &dfuScan, SIGNAL( readyReadStandardOutput() ), this, SLOT( parseScan() ) );
@@ -61,8 +63,8 @@ void Process::parseScan()
         serial = serString.trimmed();
         serial.remove('"');
         // download option bytes
-        QFile("optionbytes.temp").remove();
-        QString dfuCmd = QString("%1 --device 0483:df11 -a 1 -s 0x1FFFF804:4 -U optionbytes.temp").arg( m_executable);
+        QFile(m_obpath).remove();
+        QString dfuCmd = QString("%1 --device 0483:df11 -a 1 -s 0x1FFFF804:4 -U " + m_obpath).arg( m_executable);
         emit message(QString("Via found with Serial # " + serial + "     Detecting Installed Firmware..."));
         dfuDownloadOptionBytes.start( dfuCmd );
     }
@@ -74,7 +76,7 @@ void Process::parseScan()
 
 void Process::parseOptionBytes()
 {
-    QFile optionbytes("optionbytes.temp");
+    QFile optionbytes(m_obpath);
     char tmp;
     optionbytes.open(QIODevice::ReadOnly);
     optionbytes.read(&tmp,sizeof(char));
@@ -110,7 +112,7 @@ void Process::parseOptionBytes()
     else
     {
         emit viaFoundWithFirmware(serial);
-        QString dfuCmd = QString("%1 --device 0483:df11 -a 0 -s 0x0803F000:4096 -U " + generatePresetName()).arg( m_executable);
+        QString dfuCmd = QString("%1 --device 0483:df11 -a 0 -s 0x0803F000:4096 -U " + m_path + "/" + generatePresetName()).arg( m_executable);
         dfuDownloadPresets.start( dfuCmd );
         if (getLastCalibrationTime().isValid() == false)
         {
@@ -137,7 +139,7 @@ QString Process::generateCalibrationName()
 
 QString Process::getLastPreset(int firmwareID)
 {
-    QDir directory(""); // no argument should yield same path as presets are stored.
+    QDir directory(m_path); // no argument should yield same path as presets are stored.
     QDateTime lastPresetTime;
     QString lastPreset;
     QStringList presets = directory.entryList(QStringList() << "*.preset",QDir::Files);
@@ -158,6 +160,9 @@ QString Process::getLastPreset(int firmwareID)
             }
         }
     }
+
+    qDebug() << lastPreset;
+
     return lastPreset;
 }
 
@@ -224,11 +229,14 @@ QString Process::getLastCalibration()
     QDateTime lastCalTime = getLastCalibrationTime();
     QString string = lastCalTime.toString("yyyyMMddHHmmss");
     qDebug() << QString(string + ".calibration");
+
+    qDebug() << QString(serial + "-" + string + ".calibration");
+
     return QString(serial + "-" + string + ".calibration");
 }
 QDateTime Process::getLastCalibrationTime()
 {
-    QDir directory(""); // no argument should yield same path as calibration files are stored.
+    QDir directory(m_path); // no argument should yield same path as calibration files are stored.
     QDateTime lastCalTime;
     QStringList cals = directory.entryList(QStringList() << "*.calibration",QDir::Files);
     QStringList calsForThisVia = cals.filter(QRegularExpression(serial));
@@ -284,7 +292,7 @@ int Process::getFirmwareVersion()
 
 void Process::savePresetAsCal()
 {
-    QString dfuCmd = QString("%1 --device 0483:df11 -a 0 -s 0x0803F000:4096 -U " + generateCalibrationName()).arg( m_executable);
+    QString dfuCmd = QString("%1 --device 0483:df11 -a 0 -s 0x0803F000:4096 -U " + m_path + "/" + generateCalibrationName()).arg( m_executable);
     dfuDownloadPresets.start( dfuCmd );
 }
 
@@ -333,7 +341,7 @@ bool Process::checkPresetCondition(int firmwareID, int firmwareVersion)
 
 void Process::writeOptionBytes(unsigned char firmwareID, unsigned char firmwareVersion)
 {
-    QFile optionbytes("optionbytes.temp");
+    QFile optionbytes(m_obpath);
     char tmp[16];
     tmp[0] = 0xAA; // The value of this byte defines the Flash memory protection level
     tmp[1] = 0x55; // complement
@@ -355,7 +363,7 @@ void Process::writeOptionBytes(unsigned char firmwareID, unsigned char firmwareV
     optionbytes.open(QIODevice::WriteOnly);
     optionbytes.write(tmp,sizeof(tmp));
     optionbytes.close();
-    QString dfuCmd = QString("%1 --device 0483:df11 -a 1 -s 0x1FFFF800:will-reset -D optionbytes.temp").arg( m_executable);
+    QString dfuCmd = QString("%1 --device 0483:df11 -a 1 -s 0x1FFFF800:will-reset -D " + m_obpath).arg( m_executable);
     dfuUploadOptionBytes.start( dfuCmd );
 
 }

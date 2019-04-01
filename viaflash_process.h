@@ -13,6 +13,7 @@
 #include <QRegularExpression>
 #include <QChar>
 #include <QMainWindow>
+#include <QCoreApplication>
 
 class Process : public QObject
 {
@@ -48,8 +49,9 @@ public:
 
 
 private:
-    QString m_path;  //QDir::currentPath();
+    QString m_path;  //QCoreApplication::applicationDirPath();
     QString m_executable;
+    QString m_obpath;
     unsigned char m_firmwareID;
     unsigned char m_firmwareVersion;
 
