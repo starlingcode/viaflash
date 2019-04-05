@@ -44,6 +44,7 @@ void Process::flashFirmware(QString filename)
 void Process::flashPresets()
 {
     QString dfuCmd = QString("\"%1\" --device 0483:df11 -a 0 -s 0x0803F000:4096 -D \"%2\" -R").arg( m_executable, getLastPreset(m_firmwareID));
+    qDebug() << dfuCmd;
     dfuFlashPresets.start( dfuCmd );
 }
 
@@ -198,42 +199,14 @@ QString Process::getLastPresetVersion(int firmwareID)
     }
 }
 
-/*
-QDateTime Process::getLastPresetTime(int firmwareID)
-{
-    QDir directory(""); // no argument should yield same path as presets are stored.
-    QDateTime lastPresetTime;
-    QStringList presets = directory.entryList(QStringList() << "*.preset",QDir::Files);
-    QStringList presetsForThisVia = presets.filter(QRegularExpression(serial));
-    foreach(QString filename, presetsForThisVia) {
-        QStringList presetVars = filename.split("-");
-        if (((presetVars.at(0) == QString::number(firmwareID))))
-        {
-
-            QString dateTimeString = presetVars.at(3);
-
-            dateTimeString = dateTimeString.remove(".preset");
-            QDateTime dateTimeFromString = QDateTime::fromString(dateTimeString, "yyyyMMddHHmmss");
-            if (dateTimeFromString > lastPresetTime)
-            {
-                lastPresetTime = dateTimeFromString;
-            }
-        }
-    }
-    return lastPresetTime;
-}
-*/
 
 QString Process::getLastCalibration()
 {
     QDateTime lastCalTime = getLastCalibrationTime();
     QString string = lastCalTime.toString("yyyyMMddHHmmss");
-    qDebug() << QString(string + ".calibration");
-
-    qDebug() << QString(serial + "-" + string + ".calibration");
-
     return QString(serial + "-" + string + ".calibration");
 }
+
 QDateTime Process::getLastCalibrationTime()
 {
     QDir directory(m_path); // no argument should yield same path as calibration files are stored.
@@ -294,6 +267,14 @@ void Process::savePresetAsCal()
 {
     QString dfuCmd = QString("\"%1\" --device 0483:df11 -a 0 -s 0x0803F000:4096 -U \"" + m_path + "/" + generateCalibrationName() + "\"").arg( m_executable);
     dfuDownloadPresets.start( dfuCmd );
+    // we rename our just-stored preset so it is newer than calibration and no force-load defaults (calibration and presets are identical in this case)
+    QDateTime presetFastForward = QDateTime::currentDateTime();
+    presetFastForward = presetFastForward.addSecs(10);
+    QFile lastPreset(getLastPreset(m_firmwareID));
+    QString dateTime = presetFastForward.toString("yyyyMMddHHmmss");
+    QString outtxt = QString(QString::number(m_firmwareID) + "-" + QString::number(m_firmwareVersion) + "-" + serial + "-" + dateTime + ".preset");
+    lastPreset.rename(outtxt);
+    qDebug() << outtxt;
 }
 
 // returns false if no presets are available
@@ -359,13 +340,11 @@ void Process::writeOptionBytes(unsigned char firmwareID, unsigned char firmwareV
     tmp[13] = 0x00; // complement
     tmp[14] = 0xFF; // write protect flash memory region off
     tmp[15] = 0x00; // complement
-    qDebug() << tmp;
     optionbytes.open(QIODevice::WriteOnly);
     optionbytes.write(tmp,sizeof(tmp));
     optionbytes.close();
     QString dfuCmd = QString("\"%1\" --device 0483:df11 -a 1 -s 0x1FFFF800:will-reset -D \"" + m_obpath + "\"").arg( m_executable);
     dfuUploadOptionBytes.start( dfuCmd );
-
 }
 
 void Process::showOB()
