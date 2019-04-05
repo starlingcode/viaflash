@@ -270,10 +270,10 @@ void Process::savePresetAsCal()
     // we rename our just-stored preset so it is newer than calibration and no force-load defaults (calibration and presets are identical in this case)
     QDateTime presetFastForward = QDateTime::currentDateTime();
     presetFastForward = presetFastForward.addSecs(10);
-    QFile lastPreset(getLastPreset(m_firmwareID));
+    QFile lastPreset(m_path + "/" + getLastPreset(m_firmwareID));
     QString dateTime = presetFastForward.toString("yyyyMMddHHmmss");
     QString outtxt = QString(QString::number(m_firmwareID) + "-" + QString::number(m_firmwareVersion) + "-" + serial + "-" + dateTime + ".preset");
-    lastPreset.rename(outtxt);
+    lastPreset.rename(m_path + "/" + outtxt);
     qDebug() << outtxt;
 }
 
