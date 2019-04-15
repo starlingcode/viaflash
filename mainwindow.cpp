@@ -144,8 +144,17 @@ void MainWindow::on_flashButton_clicked()
 
 void MainWindow::startFlash()
 {
+    QFileInfo binary;
 
-    QFileInfo binary = m_app_path + "/" + selectedFirmware;
+    if (m_local)  // if the firmware is local
+    {
+        binary = m_localFirmwareSelection.path() + "/" + selectedFirmware;
+    }
+    else
+    {
+        binary = m_app_path + "/" + selectedFirmware;
+    }
+
     if (!binary.exists())
     {
         ud->setText("Firmware not found.");
@@ -166,7 +175,7 @@ void MainWindow::startFlash()
         ui->loadDefaultButton->setDisabled(true);
         ud->setText(QString("Erasing Flash Memory..."));
 
-        dfuProcess->flashFirmware(m_app_path + "/" + selectedFirmware);
+        dfuProcess->flashFirmware(binary.absoluteFilePath());
     }
 }
 
@@ -219,7 +228,8 @@ void MainWindow::selectLocalFirmware()
             tr("Via Firmware ( *.bin);;All Files ( * )")
         );
     if(m_localFirmwareSelection.isFile()){
-        selectedFirmware = m_localFirmwareSelection.fileName();
+        selectedFirmware = QString(m_localFirmwareSelection.fileName());
+
         ui->statusBar->showMessage("loaded " + selectedFirmware);
         ui->comboBox->setItemText(m_localFirmwareIndex, selectedFirmware);
     }
