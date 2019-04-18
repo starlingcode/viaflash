@@ -67,7 +67,7 @@ signals:
 
 public slots:
     void parseFlashProgress();
-    void parseScan();
+    void parseScan(int);
     void parseOptionBytes();
     void showOB();
     void savePresets(int);

@@ -148,7 +148,7 @@ void MainWindow::startFlash()
 
     if (m_local)  // if the firmware is local
     {
-        binary = m_localFirmwareSelection.path() + "/" + selectedFirmware;
+        binary = m_localFirmwareSelection.filePath();
     }
     else
     {

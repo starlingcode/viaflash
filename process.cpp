@@ -13,7 +13,7 @@ Process::Process(QObject *parent) : QObject(parent)
     m_obpath = m_path + "/" + "optionbytes.temp";
 
     // link dfu-util stdout to parseScan function
-    connect( &dfuScan, SIGNAL( readyReadStandardOutput() ), this, SLOT( parseScan() ) );
+    connect( &dfuScan, SIGNAL( finished(int) ), this, SLOT( parseScan(int) ));
     connect( &dfuFlashFirmware, SIGNAL( readyReadStandardOutput() ), this, SLOT( parseFlashProgress() ) );
     connect( &dfuDownloadOptionBytes, SIGNAL( finished(int,QProcess::ExitStatus)), this, SLOT( parseOptionBytes() ) );
     connect( &dfuDownloadPresets, SIGNAL( finished(int,QProcess::ExitStatus)), this, SLOT( savePresets(int) ) );
@@ -55,7 +55,7 @@ void Process::flashCalibration()
     dfuFlashPresets.start( dfuCmd );
 }
 
-void Process::parseScan()
+void Process::parseScan(int exitcode)
 {
     QString outtxt = dfuScan.readAllStandardOutput();
     if (outtxt.contains("Found DFU: [0483:df11]"))
@@ -234,7 +234,7 @@ void Process::parseFlashProgress()
     qDebug() << outtxt;
     int percentageLocation = outtxt.indexOf("%");
     int percentage = outtxt.mid(percentageLocation-3, 3).toInt();
-    if (percentageLocation){
+    if (percentageLocation && percentage != 0){
         emit updateProgress(percentage);
         if (outtxt.contains("Download") && !outtxt.contains("Downloading"))
         {
