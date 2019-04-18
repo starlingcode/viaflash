@@ -149,6 +149,7 @@ void MainWindow::startFlash()
     if (m_local)  // if the firmware is local
     {
         binary = m_localFirmwareSelection.filePath();
+        qDebug() << m_localFirmwareSelection.filePath();
     }
     else
     {
@@ -229,9 +230,10 @@ void MainWindow::selectLocalFirmware()
         );
     if(m_localFirmwareSelection.isFile()){
         selectedFirmware = QString(m_localFirmwareSelection.fileName());
-
+        m_local = true;
         ui->statusBar->showMessage("loaded " + selectedFirmware);
         ui->comboBox->setItemText(m_localFirmwareIndex, selectedFirmware);
+        ui->flashButton->setEnabled(true);
     }
 
     else
@@ -239,7 +241,9 @@ void MainWindow::selectLocalFirmware()
         ui->statusBar->showMessage("no file selected.");
         ui->comboBox->setCurrentIndex(-1);
         selectedFirmware = "";
-
+        ui->flashButton->setEnabled(false);
+        ui->comboBox->setItemText(m_localFirmwareIndex, "Select local firmware:");
+        m_local = false;
     }
 }
 
@@ -255,10 +259,10 @@ void MainWindow::on_comboBox_activated(int index)
         ui->loadDefaultButton->setCheckable(false);
         repository->selectFirmware(0);// firmware 0 = non-repository acknowledged firmware
         selectLocalFirmware();
-        ui->flashButton->setEnabled(true);
     }
     else
     {
+        m_local = false;
         repository->selectFirmware(index);
         downloadImage(repository->firmwareToken);
         ui->firmwareInfoButton->setDisabled( false );
