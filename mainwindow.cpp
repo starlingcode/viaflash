@@ -183,8 +183,16 @@ void MainWindow::startFlash()
 
 void MainWindow::updateDfuFlashing()
 {
-    QFileInfo binary = m_app_path + "/" + selectedFirmware;
-    ud->setText(QString("Flashing " + QString::number(binary.size()) + " bytes..."));
+    if (m_local) // if it's a local firmware
+    {
+        QFileInfo binary = m_localFirmwareSelection;
+        ud->setText(QString("Flashing " + QString::number(binary.size()) + " bytes..."));
+    }
+    else
+    {
+        QFileInfo binary = m_app_path + "/" + selectedFirmware;
+        ud->setText(QString("Flashing " + QString::number(binary.size()) + " bytes..."));
+    }
 }
 
 
