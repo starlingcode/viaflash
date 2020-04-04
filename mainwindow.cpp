@@ -277,6 +277,7 @@ void MainWindow::on_comboBox_activated(int index)
         ui->loadDefaultButton->setCheckable(true);
         ui->statusBar->showMessage("fetched firmware information.");
         selectedFirmware = QString(repository->firmwareToken + ".bin");
+        qDebug() << selectedFirmware;
         ui->flashButton->setEnabled(true);
         bool presetsExist = dfuProcess->checkPresetCondition(repository->firmwareOptionByte, repository->firmwareOptionByte2);
         if (presetsExist)
@@ -295,13 +296,13 @@ void MainWindow::on_comboBox_activated(int index)
 
 void MainWindow::downloadImage(QString token)
 {
-    httpFaceplate = new FileDownloader(QUrl(repositoryUrl + "/img/" + token + ".png"));
+    httpFaceplate = new FileDownloader(QUrl(repositoryUrl + "img/" + token + ".png"));
     connect(httpFaceplate, SIGNAL (downloaded()), this, SLOT (loadImage()));
 }
 
 void MainWindow::downloadBinary(QString token)
 {
-    httpBinary = new FileDownloader(QUrl(repositoryUrl + "/binaries/" + selectedFirmware));
+    httpBinary = new FileDownloader(QUrl(repositoryUrl + "binaries/" + selectedFirmware));
     connect(httpBinary, SIGNAL (networkError()), this, SLOT (binaryDownloadError()));
     connect(httpBinary, SIGNAL (downloaded()), this, SLOT (binaryDownloadCompleted()));
 

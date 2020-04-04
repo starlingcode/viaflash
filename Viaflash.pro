@@ -47,6 +47,8 @@ ICON = viaflash.icns
 
 RC_FILE = viaflash.rc
 
+QMAKE_MAC_SDK = macosx10.14
+
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
