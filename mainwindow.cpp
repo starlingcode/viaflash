@@ -56,6 +56,7 @@ MainWindow::MainWindow(QWidget *parent) :
     dfuProcess = new Process(this);
 
     connect( &dfuProcess->dfuScan, SIGNAL( finished( int, QProcess::ExitStatus ) ), this, SLOT( detectedVia() ) );
+    connect( dfuProcess, SIGNAL( readProtectedFound()), this, SLOT( detectedVia() ) );
     connect( dfuProcess, SIGNAL( updateProgress( int ) ), this, SLOT( progressUpdater(int) ) );
     connect( &dfuProcess->dfuFlashFirmware, SIGNAL( finished(int,QProcess::ExitStatus)), this, SLOT( flashingFirmwareCompleted(int) ) );
     connect( &dfuProcess->dfuFlashPresets, SIGNAL( finished(int,QProcess::ExitStatus)), this, SLOT( flashingPresetsCompleted(int) ) );
@@ -131,8 +132,9 @@ void MainWindow::on_flashButton_clicked()
 {
     ui->flashButton->setEnabled(false);
     ud = new updateDialog(this);
-    if (ui->comboBox->currentIndex() == m_localFirmwareIndex) // local firmware
+    if ((!m_readProtected) && (ui->comboBox->currentIndex() == m_localFirmwareIndex)) // local firmware
     {
+        qDebug() << "flashing local..";
         startFlash();
     }
     else
@@ -318,9 +320,13 @@ void MainWindow::loadImage()
 
 void MainWindow::detectedVia()
 {
-    qDebug() << dfuProcess->serial;
+    qDebug() << "detected " + dfuProcess->serial;
+    qDebug() << "read protected :";
+    qDebug() << dfuProcess->readProtected;
     if (dfuProcess->serial == "rial=UNKNOWN")  // fix for dfu - util .9
     {
+        emit message(QString("Module found in wrong state.  Disconnect, reconnect, and try detecting again."));
+
         QMessageBox detectError;
         detectError.setIcon(QMessageBox::Warning);
         detectError.setWindowTitle(" ");
@@ -329,12 +335,17 @@ void MainWindow::detectedVia()
         detectError.setStandardButtons(QMessageBox::Ok);
         detectError.setDefaultButton(QMessageBox::Ok);
         detectError.exec();
-
-        ui->statusBar->showMessage("Module found in wrong state.  Disconnect, reconnect, and try detecting again.");
-
     }
     else if (dfuProcess->serial != "")
     {
+        if (dfuProcess->readProtected) {
+            m_readProtected = true;
+            m_local = false;
+            emit message(QString("Read protected! Press Flash! then restart the app."));
+            ui->flashButton->setDisabled(false);
+            selectedFirmware = "calibration.bin";
+            qDebug() << "i woudl loke to say happy challoween to ramblin gamblin man today";
+        }
         ui->comboBox->setDisabled(false);
     }
     else
@@ -467,6 +478,11 @@ void MainWindow::optionBytesCompleted(int exitCode)
         ud->setText("Update succeeded!");
 //        ud->showButton("Ok");
 
+    }
+    else if (m_readProtected) {
+        emit message(QString("Read protect disabled, please restart the app, https://starling.space/via/rdp for more"));
+        ud->setText("Read Protect Disabled");
+//        ud->showButton("Ok");
     }
     else
     {

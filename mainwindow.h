@@ -86,6 +86,7 @@ private:
     QPixmap blankPanel;
     Process *dfuProcess;
     bool m_waiting;
+    bool m_readProtected;
     updateDialog *ud;
 
 

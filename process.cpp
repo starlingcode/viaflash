@@ -37,7 +37,13 @@ void Process::checkForVia()
 
 void Process::flashFirmware(QString filename)
 {
-    QString dfuCmd = QString("\"%1\" --device 0483:df11 -a 0 -s 0x08000000 -D \"%2\" -R").arg( m_executable, filename);
+    QString dfuCmd;
+    if (readProtected) {
+        qDebug() << "unprotecting......";
+        dfuCmd = QString("\"%1\" --device 0483:df11 -a 0 -s 0x08000000:force:unprotect:will-reset -D \"%2\" -R").arg( m_executable, filename);
+    } else {
+        dfuCmd = QString("\"%1\" --device 0483:df11 -a 0 -s 0x08000000 -D \"%2\" -R").arg( m_executable, filename);
+    }
     dfuFlashFirmware.start( dfuCmd );
 }
 
@@ -57,6 +63,7 @@ void Process::flashCalibration()
 
 void Process::parseScan(int exitcode)
 {
+    readProtected = false;
     QString outtxt = dfuScan.readAllStandardOutput();
     if (outtxt.contains("Found DFU: [0483:df11]"))
     {
@@ -77,49 +84,59 @@ void Process::parseScan(int exitcode)
 
 void Process::parseOptionBytes()
 {
-    QFile optionbytes(m_obpath);
-    char tmp;
-    optionbytes.open(QIODevice::ReadOnly);
-    optionbytes.read(&tmp,sizeof(char));
-    m_firmwareID = tmp;
-    optionbytes.read(&tmp,sizeof(char)); // complement, not needed.
-    optionbytes.read(&tmp,sizeof(char));
-    m_firmwareVersion = tmp;
-    optionbytes.close();
-    optionbytes.remove();
-    if (m_firmwareID == 255 && m_firmwareVersion == 255)
-    {
-        emit message(QString("Via found with Serial # " + serial + "     Option bytes failure.  Presets won't be saved."));
-        generatePresetName();
-    }
-    else if (m_firmwareID == 255 && m_firmwareVersion == 0)
-    {
-        emit message(QString("Via found with Serial # " + serial + "     Flash memory is blank.  A perfect time to calibrate."));
-        generatePresetName();
-    }
-    else if (m_firmwareID == 0 && m_firmwareVersion == 0)
-    {
-        emit message(QString("Via found with Serial # " + serial + "     Firmware unknown, presets won't be saved."));
-    }
-    else if (m_firmwareID == 254 && m_firmwareVersion == 0)
-    {
-        emit message(QString("Via found with Serial # " + serial + "     Calibration Firmware loaded but no calibration data."));
-    }
-    else if (m_firmwareID == 254 && m_firmwareVersion == 255)
-    {
-        emit message(QString("Via found with Serial # " + serial + "     Calibration Data exists and is being stored."));
-        savePresetAsCal();
-    }
-    else
-    {
-        emit viaFoundWithFirmware(serial);
-        QString dfuCmd = QString("\"%1\" --device 0483:df11 -a 0 -s 0x0803F000:4096 -U \"" + m_path + "/" + generatePresetName() +"\"").arg( m_executable);
-        dfuDownloadPresets.start( dfuCmd );
-        if (getLastCalibrationTime().isValid() == false)
+    QString outtxt = dfuDownloadOptionBytes.readAllStandardOutput();
+    if (!outtxt.contains("100%")) {
+        qDebug() << outtxt;
+        readProtected = true;
+        qDebug() << "setting read protect";
+        emit readProtectedFound();
+    } else {
+        QFile optionbytes(m_obpath);
+        char tmp;
+        optionbytes.open(QIODevice::ReadOnly);
+        optionbytes.read(&tmp,sizeof(char));
+        m_firmwareID = tmp;
+        optionbytes.read(&tmp,sizeof(char)); // complement, not needed.
+        optionbytes.read(&tmp,sizeof(char));
+        m_firmwareVersion = tmp;
+        optionbytes.close();
+        optionbytes.remove();
+        if (m_firmwareID == 255 && m_firmwareVersion == 255)
         {
-            emit viaHasNoCal();
+            emit message(QString("Via found with Serial # " + serial + "     Option bytes failure.  Presets won't be saved."));
+            generatePresetName();
         }
+        else if (m_firmwareID == 255 && m_firmwareVersion == 0)
+        {
+            emit message(QString("Via found with Serial # " + serial + "     Flash memory is blank.  A perfect time to calibrate."));
+            generatePresetName();
+        }
+        else if (m_firmwareID == 0 && m_firmwareVersion == 0)
+        {
+            emit message(QString("Via found with Serial # " + serial + "     Firmware unknown, presets won't be saved."));
+        }
+        else if (m_firmwareID == 254 && m_firmwareVersion == 0)
+        {
+            emit message(QString("Via found with Serial # " + serial + "     Calibration Firmware loaded but no calibration data."));
+        }
+        else if (m_firmwareID == 254 && m_firmwareVersion == 255)
+        {
+            emit message(QString("Via found with Serial # " + serial + "     Calibration Data exists and is being stored."));
+            savePresetAsCal();
+        }
+        else
+        {
+            emit viaFoundWithFirmware(serial);
+            QString dfuCmd = QString("\"%1\" --device 0483:df11 -a 0 -s 0x0803F000:4096 -U \"" + m_path + "/" + generatePresetName() +"\"").arg( m_executable);
+            dfuDownloadPresets.start( dfuCmd );
+            if (getLastCalibrationTime().isValid() == false)
+            {
+                emit viaHasNoCal();
+            }
+        }
+        readProtected = false;
     }
+
 }
 
 

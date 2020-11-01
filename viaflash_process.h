@@ -46,6 +46,7 @@ public:
     bool checkPresetCondition(int, int);
     void writeOptionBytes(unsigned char, unsigned char);
     void flashPresets(int);
+    bool readProtected;
 
 
 private:
@@ -62,6 +63,7 @@ signals:
     void viaFoundWithFirmware(QString);
     void viaHasNoCal();
     void dfuBeganFlashing();
+    void readProtectedFound();
 
 
 
