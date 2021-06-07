@@ -26,8 +26,8 @@ void Process::checkForVia()
 {
     if (QFile(m_executable).exists())
     {
-        QString dfuCmd = QString("\"%1\" -l").arg( m_executable );
-        dfuScan.start( dfuCmd );
+//        QString dfuCmd = QString("\"%1\" -l").arg( m_executable );
+        dfuScan.start( m_executable,  {"-l"});
     }
     else
     {
@@ -40,25 +40,25 @@ void Process::flashFirmware(QString filename)
     QString dfuCmd;
     if (readProtected) {
         qDebug() << "unprotecting......";
-        dfuCmd = QString("\"%1\" --device 0483:df11 -a 0 -s 0x08000000:force:unprotect:will-reset -D \"%2\" -R").arg( m_executable, filename);
+        dfuCmd = QString("--device 0483:df11 -a 0 -s 0x08000000:force:unprotect:will-reset -D \"%1\" -R").arg( filename);
     } else {
-        dfuCmd = QString("\"%1\" --device 0483:df11 -a 0 -s 0x08000000 -D \"%2\" -R").arg( m_executable, filename);
+        dfuCmd = QString("--device 0483:df11 -a 0 -s 0x08000000 -D \"%1\" -R").arg( filename);
     }
-    dfuFlashFirmware.start( dfuCmd );
+    dfuFlashFirmware.start( m_executable, {dfuCmd} );
 }
 
 void Process::flashPresets()
 {
-    QString dfuCmd = QString("\"%1\" --device 0483:df11 -a 0 -s 0x0803F000:4096 -D \"%2\" -R").arg( m_executable, getLastPreset(m_firmwareID));
+    QString dfuCmd = QString(" --device 0483:df11 -a 0 -s 0x0803F000:4096 -D \"%1\" -R").arg( m_executable, getLastPreset(m_firmwareID));
     qDebug() << dfuCmd;
-    dfuFlashPresets.start( dfuCmd );
+    dfuFlashPresets.start( m_executable, {dfuCmd} );
 }
 
 void Process::flashCalibration()
 {
-    QString dfuCmd = QString("\"%1\" --device 0483:df11 -a 0 -s 0x0803F000:4096 -D \"%2\" -R").arg( m_executable, getLastCalibration());
+    QString dfuCmd = QString(" --device 0483:df11 -a 0 -s 0x0803F000:4096 -D \"%1\" -R").arg( m_executable, getLastCalibration());
     qDebug() << dfuCmd;
-    dfuFlashPresets.start( dfuCmd );
+    dfuFlashPresets.start( m_executable, {dfuCmd} );
 }
 
 void Process::parseScan(int exitcode)
@@ -72,9 +72,9 @@ void Process::parseScan(int exitcode)
         serial.remove('"');
         // download option bytes
         QFile(m_obpath).remove();
-        QString dfuCmd = QString("\"%1\" --device 0483:df11 -a 1 -s 0x1FFFF804:4 -U \"" + m_obpath + "\"").arg( m_executable);
+        QString dfuCmd = QString(" --device 0483:df11 -a 1 -s 0x1FFFF804:4 -U \"" + m_obpath + "\"");
         emit message(QString("Via found with Serial # " + serial + "     Detecting Installed Firmware..."));
-        dfuDownloadOptionBytes.start( dfuCmd );
+        dfuDownloadOptionBytes.start( m_executable, {dfuCmd} );
     }
     else
     {
@@ -127,8 +127,8 @@ void Process::parseOptionBytes()
         else
         {
             emit viaFoundWithFirmware(serial);
-            QString dfuCmd = QString("\"%1\" --device 0483:df11 -a 0 -s 0x0803F000:4096 -U \"" + m_path + "/" + generatePresetName() +"\"").arg( m_executable);
-            dfuDownloadPresets.start( dfuCmd );
+            QString dfuCmd = QString(" --device 0483:df11 -a 0 -s 0x0803F000:4096 -U \"" + m_path + "/" + generatePresetName() +"\"");
+            dfuDownloadPresets.start( m_executable, {dfuCmd} );
             if (getLastCalibrationTime().isValid() == false)
             {
                 emit viaHasNoCal();
@@ -250,7 +250,7 @@ void Process::parseFlashProgress()
     QString outtxt = dfuFlashFirmware.readAllStandardOutput();
     qDebug() << outtxt;
     int percentageLocation = outtxt.indexOf("%");
-    int percentage = outtxt.mid(percentageLocation-3, 3).toInt();
+    int percentage = outtxt.midRef(percentageLocation-3, 3).toInt();
     if (percentageLocation && percentage != 0){
         emit updateProgress(percentage);
         if (outtxt.contains("Download") && !outtxt.contains("Downloading"))
@@ -282,8 +282,8 @@ int Process::getFirmwareVersion()
 
 void Process::savePresetAsCal()
 {
-    QString dfuCmd = QString("\"%1\" --device 0483:df11 -a 0 -s 0x0803F000:4096 -U \"" + m_path + "/" + generateCalibrationName() + "\"").arg( m_executable);
-    dfuDownloadPresets.start( dfuCmd );
+    QString dfuCmd = QString(" --device 0483:df11 -a 0 -s 0x0803F000:4096 -U \"" + m_path + "/" + generateCalibrationName() + "\"");
+    dfuDownloadPresets.start( m_executable, {dfuCmd} );
     // we rename our just-stored preset so it is newer than calibration and no force-load defaults (calibration and presets are identical in this case)
     QDateTime presetFastForward = QDateTime::currentDateTime();
     presetFastForward = presetFastForward.addSecs(10);
@@ -360,8 +360,8 @@ void Process::writeOptionBytes(unsigned char firmwareID, unsigned char firmwareV
     optionbytes.open(QIODevice::WriteOnly);
     optionbytes.write(tmp,sizeof(tmp));
     optionbytes.close();
-    QString dfuCmd = QString("\"%1\" --device 0483:df11 -a 1 -s 0x1FFFF800:will-reset -D \"" + m_obpath + "\"").arg( m_executable);
-    dfuUploadOptionBytes.start( dfuCmd );
+    QString dfuCmd = QString(" --device 0483:df11 -a 1 -s 0x1FFFF800:will-reset -D \"" + m_obpath + "\"");
+    dfuUploadOptionBytes.start( m_executable, {dfuCmd} );
 }
 
 void Process::showOB()
