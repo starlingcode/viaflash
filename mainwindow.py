@@ -1,13 +1,15 @@
 import os
 import requests
+import pathlib
 
 from PySide6.QtWidgets import QMainWindow
 from PySide6.QtCore import Slot, QFileInfo, QFile, QIODevice, QSize
 from PySide6.QtGui import QPixmap
 from PySide6.QtUiTools import QUiLoader
+
 from ui_mainwindow import Ui_MainWindow
-# from repo.py import Repo
-# from dfu_util.py import DFUUtil
+from dfu_util import DfuUtil
+from via_module import ViaModule
 # from update_dialog.py import UpdateDialog
 
 
@@ -33,6 +35,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.firmware_manifest = {}
         self.local_only = True
 
+        self.dfu = DfuUtil(str(pathlib.Path(__file__).parent.absolute()))
+        self.via = None
+
         self.get_remote()        
         
     def __del__(self):
@@ -41,15 +46,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 # User input slots
 
     @Slot()    
-    def on_flashButton_clicked(self):
-        return
-    
+    def on_detectButton_clicked(self):
+        self.detect_module()    
+        
     @Slot()    
     def on_firmwareInfoButton_clicked(self):
         return
     
     @Slot()    
-    def on_detectButton_clicked(self):
+    def on_flashButton_clicked(self):
         return
     
     @Slot()    
@@ -71,110 +76,40 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.detectButton.setEnabled(True)
 
     def detect_module(self):
-        return
-    def read_unprotect(self):
-        return
-    def prompt_for_calibration(self):
-        return
-    def flash_remote_firmware(self, slug):
-        return
-    def flash_local_firmware(self):
-        return
+        dfu_process = self.dfu.run_process_blocking(['-l'])
+        result = dfu_process.stdout.decode('utf-8')
+        if 'Found DFU: [0483:df11]' in result:
+            self.detectButton.setDisabled(True)
+            serial = result[-14:-2]
+            self.statusBar.showMessage('Via found with serial %s, looking for firmware..' % serial)
+            self.via = ViaModule(serial, self.firmware_manifest)
+            self.read_option_bytes()
+        else:
+            self.statusBar.showMessage('No hardware detected -- Pushed DFU button?  Removed expander cable?')
 
-
-
-    def firmware_id_to_string(self, id):
-        return
-
-    def download_image(self, token=''):
-        return
-
-    def check_repository(self):
-        return
-
-    def start_flash(self):
-        return
-
-    def download_binary(self, token=''):
-        return
-
-    def download_preset(self, token=''):
-        return
-
-    def select_local_firmware(self):
-        return
-
-    def check_dfu(self, dfu_util_binary=None):
-        return
-
-    # 'Public' slots
-
-    @Slot()
-    def update_status_bar(message):
-        return
+    def read_option_bytes(self):
+        if os.path.exists(self.dfu.ob_path):
+            os.remove(self.dfu.ob_path)
+        arguments = '--device 0483:df11 -a 1 -s 0x1FFFF804:4 -U %s' % self.dfu.ob_path
+        dfu_process = self.dfu.run_process_blocking(arguments.split())
+        result = dfu_process.stdout.decode('utf-8')        
+        if '100%' in result:
+            with open(self.dfu.ob_path, 'rb') as ob_file:
+                self.via.parse_option_bytes(ob_file.read())
+                if self.via.firmware == 'calibration':
+                    if self.via.version == 0:
+                        # self.dfu.backup_eeprom(self.via.firmware)
+                        self.statusBar.showMessage('Via found with serial %s, calibration data found' % self.via.serial)
+                        # Store calibration
+                    else:
+                        self.statusBar.showMessage('Via found with serial %s, calibration process not completed' % self.via.serial)
+                elif self.via.firmware == 'unknown':
+                    self.statusBar.showMessage('Via found in unknown state')
+                else:
+                    self.dfu.backup_eeprom(self.via.firmware)
+                    self.statusBar.showMessage('Via found with serial %s, %s, version %d, data saved' 
+                                                % (self.via.serial, self.via.firmware.upper(), self.via.version))
+        else:
+            self.via.read_protected = True
     
-    @Slot()
-    def progress_updater(percent):
-        return
-    
-    @Slot()
-    def via_firmware_id_to_name(serial):
-        return
-    
-    @Slot()
-    def prompt_for_calibration():
-        return
-    
-    @Slot()    
-    def option_bytes_completed(int):
-        return
-    
-    # 'Private' slots
-
-    @Slot()    
-    def load_image():
-        return
-    
-    @Slot()    
-    def init_repository():
-        return
-    
-    @Slot()    
-    def detected_via():
-        return
-    
-    @Slot()    
-    def update_dfu_flashing():
-        return
-    
-    @Slot()    
-    def flashing_firmware_completed(int):
-        return
-    
-    @Slot()    
-    def flashing_presets_completed(int):
-        return
-    
-    @Slot()    
-    def download_error(self):
-        return
-    
-    @Slot()    
-    def binary_download_error(self):
-        return
-    
-   
-    @Slot()    
-    def binary_download_completed(self):
-        return
-
-    # 'Private' signals
-
-    def message(self, text=''):
-        return
-        
-    def via_found_with_firmware(self, text=''):
-        return
-    
-
-
+     
