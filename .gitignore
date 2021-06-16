@@ -2,3 +2,7 @@ venv
 venv/
 vendor
 vendor/
+module_data
+module_data/
+binaries/
+img/
