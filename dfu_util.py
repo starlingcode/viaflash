@@ -60,8 +60,30 @@ class DfuUtil:
         dfu_process = self.run_process_blocking(arguments.split())
         result = dfu_process.stdout.decode('utf-8')
         if '100%' in result:
+            print('Finalizing option bytes')
             # finalize option bytes
         else:
             success = False
 
-       return
+    def construct_optionbytes(self, firmware_key):
+        ob = bytearray(16)
+        ob[0] = 0xAA # The value of this byte defines the Flash memory protection level
+        ob[1] = 0x55 # complement
+        ob[2] = 0xFF # hardware watchdog/reset event configuration
+        ob[3] = 0x00 # complement
+        ob[4] = firmwareID
+        ob[5] = ~firmwareID & 255 # complement
+        ob[6] = firmwareVersion
+        ob[7] = ~firmwareVersion & 255 # complement
+        ob[8] = 0xFF # write protect flash memory region off
+        ob[9] = 0x00 # complement
+        ob[10] = 0xFF # write protect flash memory region off
+        ob[11] = 0x00 # complement
+        ob[12] = 0xFF # write protect flash memory region off
+        ob[13] = 0x00 # complement
+        ob[14] = 0xFF # write protect flash memory region off
+        ob[15] = 0x00 # complement
+        with open('optionbytes.temp', 'wb') as obfile:
+            obfile.write(ob)
+        
+
