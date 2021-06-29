@@ -15,6 +15,10 @@ class DfuUtil:
         arguments = [self.bin_path] + arguments
         return subprocess.run(arguments, capture_output=True)
 
+    def initiate_process(self, arguments):
+        arguments = [self.bin_path] + arguments
+        return subprocess.Popen(arguments, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
     def detect_module(self):
         dfu_process = self.run_process_blocking(['-l'])
         result = dfu_process.stdout.decode('utf-8')
@@ -51,30 +55,46 @@ class DfuUtil:
         dfu_process = self.run_process_blocking(arguments.split())
         result = dfu_process.stdout.decode('utf-8')
         if '100%' in result:
-            success = True
+            return True
         else:
-            success = False
+            return False
 
-    def flash_firmware(self, path, firmware_key):
+    def flash_firmware(self, path, firmware_key, firmware_version, is_local):
         arguments = '--device 0483:df11 -a 0 -s 0x08000000 -D %s -R' % path
-        dfu_process = self.run_process_blocking(arguments.split())
+        dfu_process = self.initiate_process(arguments.split())
+        progress = []
+        while True:
+            output = dfu_process.stdout.read(1).decode('utf-8')
+            if dfu_process.poll() is not None:
+                break
+            if output:
+                progress.append(output)
+                if output == '%':
+                    print(progress[-4:-1])
         result = dfu_process.stdout.decode('utf-8')
         if '100%' in result:
+            if is_local:
+                ob_key = 0
+            else:
+                ob_key = firmware_key
+            print(firmware_key)
+            self.construct_optionbytes(ob_key, firmware_version)
+            self.flash_optionbytes()
             print('Finalizing option bytes')
-            # finalize option bytes
+            return(True)
         else:
-            success = False
+            return False
 
-    def construct_optionbytes(self, firmware_key):
+    def construct_optionbytes(self, firmware_key, firmware_version):
         ob = bytearray(16)
         ob[0] = 0xAA # The value of this byte defines the Flash memory protection level
         ob[1] = 0x55 # complement
         ob[2] = 0xFF # hardware watchdog/reset event configuration
         ob[3] = 0x00 # complement
-        ob[4] = firmwareID
-        ob[5] = ~firmwareID & 255 # complement
-        ob[6] = firmwareVersion
-        ob[7] = ~firmwareVersion & 255 # complement
+        ob[4] = firmware_key
+        ob[5] = ~firmware_key & 255 # complement
+        ob[6] = firmware_version
+        ob[7] = ~firmware_version & 255 # complement
         ob[8] = 0xFF # write protect flash memory region off
         ob[9] = 0x00 # complement
         ob[10] = 0xFF # write protect flash memory region off
@@ -83,7 +103,12 @@ class DfuUtil:
         ob[13] = 0x00 # complement
         ob[14] = 0xFF # write protect flash memory region off
         ob[15] = 0x00 # complement
-        with open('optionbytes.temp', 'wb') as obfile:
+        print(ob)
+        with open(self.ob_path, 'wb') as obfile:
             obfile.write(ob)
         
-
+    def flash_optionbytes(self):
+        arguments = '--device 0483:df11 -a 1 -s 0x1FFFF800:will-reset -D %s' % self.ob_path
+        dfu_process = self.run_process_blocking(arguments.split())
+        result = dfu_process.stdout.decode('utf-8') 
+        print(result)

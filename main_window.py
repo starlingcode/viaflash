@@ -3,7 +3,7 @@ import requests
 import pathlib
 import shutil
 
-from PySide6.QtWidgets import QMainWindow
+from PySide6.QtWidgets import QMainWindow, QMessageBox, QProgressDialog
 from PySide6.QtCore import Slot, QFileInfo, QFile, QIODevice, QSize
 from PySide6.QtGui import QPixmap
 from PySide6.QtUiTools import QUiLoader
@@ -35,6 +35,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.stored_module_data = {}
         self.repo_url = 'https://raw.githubusercontent.com/starlingcode/viafirmware/master'
         self.comboBox.insertItem(0, 'Flash local firmware:')
+        self.comboBox.setCurrentIndex(-1)
         self.firmware_manifest = []
         self.remote_firmware_selection = {}
 
@@ -54,7 +55,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
     @Slot()    
     def on_firmwareInfoButton_clicked(self):
-        return
+        infoBox = QMessageBox();
+        infoBox.setText(self.remote_firmware_selection['description']);
+        infoBox.exec();
     
     @Slot()    
     def on_flashButton_clicked(self):
@@ -98,7 +101,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.via.parse_option_bytes(ob_file.read())
                 #TODO: Mimic save as calibration logic
                 if self.via.firmware == 'calibration':
-                    if self.via.version == 0:
+                    if self.via.version == 255:
                         self.dfu.store_eeprom_data(self.via.firmware_key, self.via.version, self.via.serial)
                         self.statusBar.showMessage('Via found with serial %s, calibration data updated' % self.via.serial)
                     else:
@@ -139,6 +142,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     f.write(r.content)
             self.firmwareInfoButton.setEnabled(True)
             self.loadDefaultButton.setEnabled(True)
+            preset = self.get_latest_module_data(self.remote_firmware_selection['optionByte'])
+            if 'path' in preset:
+                print(preset['path'])
+                if preset['path'].split('-')[0] == '254':
+                    self.statusBar.showMessage('No saved data found, loading factory deaults')
+                else:
+                    self.statusBar.showMessage('Loading lastest saved data')
+            else:
+                self.statusBar.showMessage('No calibration info, please select and run CALIBRATION')
         except KeyError: # local firmware selected
             path = self.app_path + '/img/blank.png'
             self.firmwareInfoButton.setDisabled(True)
@@ -146,29 +158,32 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.faceplate_image = QPixmap(path)
         self.faceplate.setPixmap(self.faceplate_image)
 
-    def get_latest_module_data(self):
+    def get_latest_module_data(self, firmware_key):
         if self.via.serial not in self.stored_module_data:
             return {}
-        elif self.via.firmware_key in self.stored_module_data[self.via.serial]:
-            maxkey = max(self.stored_module_data[self.via.serial][self.via.firmware_key], key=int)
-            return self.stored_module_data[self.via.serial][self.via.firmware_key][maxkey]
+        elif firmware_key in self.stored_module_data[self.via.serial]:
+            maxkey = max(self.stored_module_data[self.via.serial][firmware_key], key=int)
+            return self.stored_module_data[self.via.serial][firmware_key][maxkey]
         elif 254 in self.stored_module_data[self.via.serial]:
-            maxkey = max(self.stored_module_data[self.via.serial][self.via.firmware_key], key=int)
-            return self.stored_module_data[self.via.serial][self.via.firmware_key][maxkey]   
+            maxkey = max(self.stored_module_data[self.via.serial][254], key=int)
+            return self.stored_module_data[self.via.serial][254][maxkey]   
 
     def initiate_flash(self):
         if 'token' in self.remote_firmware_selection:
             bin_path = '/binaries/' + self.remote_firmware_selection['token'] + '.bin'
             r = requests.get(self.repo_url + bin_path)
             path = self.app_path + bin_path
+            firmware_key = self.remote_firmware_selection['optionByte']
+            firmware_version = self.remote_firmware_selection['latestVersion']
             if r.status_code == 200:
                 with open(path, 'wb') as f:
                     f.write(r.content)
-                preset_file = self.get_latest_module_data()
-                success = dfu_util.flash_data(preset_file['path'])
+                preset_file = self.get_latest_module_data(firmware_key)
+                success = self.dfu.flash_eeprom(self.app_path + '/module_data/' + preset_file['path'])
                 #TODO Handle errors
                 if success:
-                    success = dfu_util.flash_firmware(path, self.via.firmware_key)
+                    print(path)
+                    success = self.dfu.flash_firmware(path, firmware_key, firmware_version, False)
                     if success:
                         self.reset_for_new_via()
             else:
@@ -178,5 +193,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # Flash local
             
     def reset_for_new_via(self):
-        return
-
+        self.detectButton.setEnabled(True)
+        self.comboBox.setDisabled(True)        
+        self.comboBox.setCurrentIndex(-1)
+        self.firmwareInfoButton.setDisabled(True)
+        self.flashButton.setDisabled(True)
+        
