@@ -3,16 +3,15 @@ import requests
 import pathlib
 import shutil
 
-from PySide6.QtWidgets import QMainWindow, QMessageBox, QProgressDialog
-from PySide6.QtCore import Slot, QFileInfo, QFile, QIODevice, QSize
+from PySide6.QtWidgets import QMainWindow, QMessageBox, QProgressDialog, QPushButton
+from PySide6.QtCore import Slot, QFileInfo, QFile, QIODevice, QSize, QRect
 from PySide6.QtGui import QPixmap
 from PySide6.QtUiTools import QUiLoader
 
 from ui_mainwindow import Ui_MainWindow
 from dfu_util import DfuUtil
 from via_module import ViaModule
-# from update_dialog.py import UpdateDialog
-
+from sync3_scales import Sync3ScaleWindow
 
 class MainWindow(QMainWindow, Ui_MainWindow):
 
@@ -71,6 +70,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.remote_firmware_selection = {}
         self.update_firmware_selection()
 
+    @Slot()
+    def launchSync3Editor(self):
+        self.editor = Sync3ScaleWindow()
+        self.editor.setGeometry(QRect(100, 100, 400, 600))
+        self.editor.show()
+
 # Application functions
  
     def get_remote(self):
@@ -112,6 +117,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     self.dfu.store_eeprom_data(self.via.firmware_key, self.via.version, self.via.serial)
                     self.statusBar.showMessage('Via found with serial %s, %s, version %d, data saved' 
                                                 % (self.via.serial, self.via.firmware.upper(), self.via.version))
+                    #ugly hack to store as calibration
+                    if self.via.serial not in self.stored_module_data: 
+                        self.dfu.store_eeprom_data(254, self.via.version, self.via.serial)
+
         else:
             self.via.read_protected = True
         self.get_stored_module_data()
@@ -144,13 +153,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.loadDefaultButton.setEnabled(True)
             preset = self.get_latest_module_data(self.remote_firmware_selection['optionByte'])
             if 'path' in preset:
-                print(preset['path'])
                 if preset['path'].split('-')[0] == '254':
                     self.statusBar.showMessage('No saved data found, loading factory deaults')
                 else:
                     self.statusBar.showMessage('Loading lastest saved data')
             else:
                 self.statusBar.showMessage('No calibration info, please select and run CALIBRATION')
+            self.initialize_editor()
+
         except KeyError: # local firmware selected
             path = self.app_path + '/img/blank.png'
             self.firmwareInfoButton.setDisabled(True)
@@ -160,13 +170,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def get_latest_module_data(self, firmware_key):
         if self.via.serial not in self.stored_module_data:
+            print(len(self.via.serial))
+            for dink in self.stored_module_data:
+                print(len(dink))
             return {}
         elif firmware_key in self.stored_module_data[self.via.serial]:
             maxkey = max(self.stored_module_data[self.via.serial][firmware_key], key=int)
             return self.stored_module_data[self.via.serial][firmware_key][maxkey]
         elif 254 in self.stored_module_data[self.via.serial]:
             maxkey = max(self.stored_module_data[self.via.serial][254], key=int)
-            return self.stored_module_data[self.via.serial][254][maxkey]   
+            return self.stored_module_data[self.via.serial][254][maxkey]
+
+    def initialize_editor(self):
+        if self.remote_firmware_selection['token'] == 'sync3':
+            self.sync3_edit_button = QPushButton('Edit Scales')
+            self.sync3_edit_button.clicked.connect(self.launchSync3Editor)
+            self.verticalLayout.addWidget(self.sync3_edit_button) 
+        else:
+            b = self.verticalLayout.takeAt(6)
+            b.widget().deleteLater()
 
     def initiate_flash(self):
         if 'token' in self.remote_firmware_selection:
@@ -182,8 +204,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 success = self.dfu.flash_eeprom(self.app_path + '/module_data/' + preset_file['path'])
                 #TODO Handle errors
                 if success:
-                    print(path)
-                    success = self.dfu.flash_firmware(path, firmware_key, firmware_version, False)
+                    success = self.dfu.start_firmware_flash(path)
+                    if success:
+                        ob_key = firmware_key
+                        self.dfu.construct_optionbytes(ob_key, firmware_version)
+                        success = self.dfu.flash_optionbytes()
                     if success:
                         self.reset_for_new_via()
             else:

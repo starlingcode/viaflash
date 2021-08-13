@@ -41,7 +41,7 @@ HEADERS += \
 
 FORMS += \
         mainwindow.ui \
-    dialog.ui
+        sync3_scales.ui
 
 ICON = viaflash.icns
 

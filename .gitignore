@@ -6,3 +6,5 @@ module_data
 module_data/
 binaries/
 img/
+__pycache__/
+__pycache__

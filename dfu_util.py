@@ -1,3 +1,5 @@
+from PySide6.QtWidgets import QProgressDialog
+
 import subprocess
 import datetime
 import os
@@ -5,7 +7,6 @@ import os
 class DfuUtil:
     
     def __init__(self, app_path):   
-        print(app_path) 
         self.app_path = app_path
         #TODO figure out for deployment and x platform, check for file existence
         self.bin_path = app_path + '/vendor/dfu-util'
@@ -49,6 +50,37 @@ class DfuUtil:
         arguments += upload_path
         dfu_process = self.run_process_blocking(arguments.split())
         result = dfu_process.stdout.decode('utf-8')
+        if '100%' in result:
+            return True
+        else:
+            return False
+
+    def monitor_flash_progress(self, dfu_process):
+        ud = QProgressDialog('', 'Cancel', 0, 100)
+        ud.setModal(True)
+        ud.setAutoReset(False)
+        ud.setAutoClose(False)
+        ud.setWindowTitle('Flash progress')
+        ud.setLabelText('Erasing...')
+        ud.setValue(0)
+        ud.exec()
+        out_text = ''
+        success = False
+        while True:
+            output = dfu_process.stdout.read(1).decode('utf-8')
+            if dfu_process.poll() is not None:
+                break
+            if output:
+                out_text += output
+                if output == '%':
+                    progress = int(out_text[-4:-1])
+                    ud.setValue(progress)
+                    if progress == 100:
+                        ud.setLabelText('Flashing...')
+        if '100%' in out_text:
+            return True
+        else:
+            return False
 
     def flash_eeprom(self, path):
         arguments = '--device 0483:df11 -a 0 -s 0x0803F000:4096 -D %s -R' % path
@@ -59,31 +91,10 @@ class DfuUtil:
         else:
             return False
 
-    def flash_firmware(self, path, firmware_key, firmware_version, is_local):
+    def start_firmware_flash(self, path):
         arguments = '--device 0483:df11 -a 0 -s 0x08000000 -D %s -R' % path
         dfu_process = self.initiate_process(arguments.split())
-        progress = []
-        while True:
-            output = dfu_process.stdout.read(1).decode('utf-8')
-            if dfu_process.poll() is not None:
-                break
-            if output:
-                progress.append(output)
-                if output == '%':
-                    print(progress[-4:-1])
-        result = dfu_process.stdout.decode('utf-8')
-        if '100%' in result:
-            if is_local:
-                ob_key = 0
-            else:
-                ob_key = firmware_key
-            print(firmware_key)
-            self.construct_optionbytes(ob_key, firmware_version)
-            self.flash_optionbytes()
-            print('Finalizing option bytes')
-            return(True)
-        else:
-            return False
+        return self.monitor_flash_progress(dfu_process)        
 
     def construct_optionbytes(self, firmware_key, firmware_version):
         ob = bytearray(16)
@@ -103,12 +114,14 @@ class DfuUtil:
         ob[13] = 0x00 # complement
         ob[14] = 0xFF # write protect flash memory region off
         ob[15] = 0x00 # complement
-        print(ob)
         with open(self.ob_path, 'wb') as obfile:
             obfile.write(ob)
         
     def flash_optionbytes(self):
         arguments = '--device 0483:df11 -a 1 -s 0x1FFFF800:will-reset -D %s' % self.ob_path
         dfu_process = self.run_process_blocking(arguments.split())
-        result = dfu_process.stdout.decode('utf-8') 
-        print(result)
+        result = dfu_process.stdout.decode('utf-8')
+        if '100%' in result:
+            return True
+        else:
+            return False 
