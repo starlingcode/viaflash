@@ -1,9 +1,0 @@
-<RCC>
-    <qresource prefix="/fonts">
-        <file>IBMPlexMono-Regular.ttf</file>
-        <file>IBMPlexSans-Regular.ttf</file>
-    </qresource>
-    <qresource prefix="/img">
-        <file>blank.png</file>
-    </qresource>
-</RCC>
