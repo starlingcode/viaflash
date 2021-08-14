@@ -100,6 +100,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.statusBar.showMessage('No hardware detected -- Pushed DFU button?  Removed expander cable?')
 
     def read_option_bytes(self):
+        self.get_stored_module_data()
         read_successful, ob_path = self.dfu.read_option_bytes()
         if read_successful:
             with open(ob_path, 'rb') as ob_file:
@@ -119,10 +120,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                 % (self.via.serial, self.via.firmware.upper(), self.via.version))
                     #ugly hack to store as calibration
                     if self.via.serial not in self.stored_module_data: 
+                        print(self.stored_module_data)
                         self.dfu.store_eeprom_data(254, self.via.version, self.via.serial)
 
         else:
-            self.via.read_protected = True
+            self.dfu.read_unprotect()
+            self.statusBar.showMessage('Device under read protection, restoring...')
         self.get_stored_module_data()
         self.flashButton.setEnabled(True)
     
@@ -158,6 +161,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 else:
                     self.statusBar.showMessage('Loading lastest saved data')
             else:
+                # TODO move and formalize
                 self.statusBar.showMessage('No calibration info, please select and run CALIBRATION')
             self.initialize_editor()
 
@@ -169,17 +173,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.faceplate.setPixmap(self.faceplate_image)
 
     def get_latest_module_data(self, firmware_key):
+        last_firmware = {}
+        last_calibration = {}
+        last_firmware_time = 0
+        last_calibration_time = 0
         if self.via.serial not in self.stored_module_data:
-            print(len(self.via.serial))
-            for dink in self.stored_module_data:
-                print(len(dink))
-            return {}
-        elif firmware_key in self.stored_module_data[self.via.serial]:
+            return last_firmware
+        if firmware_key in self.stored_module_data[self.via.serial]:
             maxkey = max(self.stored_module_data[self.via.serial][firmware_key], key=int)
-            return self.stored_module_data[self.via.serial][firmware_key][maxkey]
-        elif 254 in self.stored_module_data[self.via.serial]:
+            last_firmware = self.stored_module_data[self.via.serial][firmware_key][maxkey]
+            last_firmware_time = maxkey
+        if 254 in self.stored_module_data[self.via.serial]:
             maxkey = max(self.stored_module_data[self.via.serial][254], key=int)
-            return self.stored_module_data[self.via.serial][254][maxkey]
+            last_calibration = self.stored_module_data[self.via.serial][254][maxkey]
+            last_calibration_time = maxkey
+        if last_calibration_time > last_firmware_time:
+            return last_calibration
+        else:
+            return last_firmware
 
     def initialize_editor(self):
         if self.remote_firmware_selection['token'] == 'sync3':
@@ -201,7 +212,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 with open(path, 'wb') as f:
                     f.write(r.content)
                 preset_file = self.get_latest_module_data(firmware_key)
-                success = self.dfu.flash_eeprom(self.app_path + '/module_data/' + preset_file['path'])
+                #TODO: fix for calibration
+                try:
+                    success = self.dfu.flash_eeprom(self.app_path + '/module_data/' + preset_file['path'])
+                except:
+                    success = True
                 #TODO Handle errors
                 if success:
                     success = self.dfu.start_firmware_flash(path)

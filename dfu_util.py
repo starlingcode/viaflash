@@ -15,6 +15,10 @@ class DfuUtil:
     def run_process_blocking(self, arguments):
         arguments = [self.bin_path] + arguments
         return subprocess.run(arguments, capture_output=True)
+ 
+    def run_process_blocking_print(self, arguments):
+        arguments = [self.bin_path] + arguments
+        return subprocess.run(arguments, capture_output=False)
 
     def initiate_process(self, arguments):
         arguments = [self.bin_path] + arguments
@@ -42,6 +46,13 @@ class DfuUtil:
         else:
             success = False
         return (success, self.ob_path)
+
+    def read_unprotect(self):
+        # TODO make sure calibration binary is prepacked
+        arguments = '--device 0483:df11 -a 0 -s 0x08000000:force:unprotect:will-reset -D binaries/calibration.bin'
+        dfu_process = self.run_process_blocking_print(arguments.split())
+        result = dfu_process.stdout.decode('utf-8')
+        print(result)
 
     def store_eeprom_data(self, firmware_id, firmware_version, serial):
         arguments = '--device 0483:df11 -a 0 -s 0x0803F000:4096 -U '
@@ -71,6 +82,7 @@ class DfuUtil:
             if dfu_process.poll() is not None:
                 break
             if output:
+                print(output)
                 out_text += output
                 if output == '%':
                     progress = int(out_text[-4:-1])
@@ -83,6 +95,7 @@ class DfuUtil:
             return False
 
     def flash_eeprom(self, path):
+        print(path)
         arguments = '--device 0483:df11 -a 0 -s 0x0803F000:4096 -D %s -R' % path
         dfu_process = self.run_process_blocking(arguments.split())
         result = dfu_process.stdout.decode('utf-8')
@@ -93,8 +106,9 @@ class DfuUtil:
 
     def start_firmware_flash(self, path):
         arguments = '--device 0483:df11 -a 0 -s 0x08000000 -D %s -R' % path
-        dfu_process = self.initiate_process(arguments.split())
-        return self.monitor_flash_progress(dfu_process)        
+        return self.run_process_blocking_print(arguments.split())
+        # dfu_process = self.initiate_process(arguments.split())
+        # return self.monitor_flash_progress(dfu_process)        
 
     def construct_optionbytes(self, firmware_key, firmware_version):
         ob = bytearray(16)
