@@ -2,8 +2,9 @@ import os
 import requests
 import pathlib
 import shutil
+import json
 
-from PySide6.QtWidgets import QMainWindow, QMessageBox, QProgressDialog, QPushButton
+from PySide6.QtWidgets import QMainWindow, QMessageBox, QProgressDialog, QPushButton, QComboBox
 from PySide6.QtCore import Slot, QFileInfo, QFile, QIODevice, QSize, QRect
 from PySide6.QtGui import QPixmap
 from PySide6.QtUiTools import QUiLoader
@@ -11,7 +12,7 @@ from PySide6.QtUiTools import QUiLoader
 from ui_mainwindow import Ui_MainWindow
 from dfu_util import DfuUtil
 from via_module import ViaModule
-from sync3_scales import Sync3ScaleWindow
+from sync3_scale_editor import Sync3ScaleEditor
 
 class MainWindow(QMainWindow, Ui_MainWindow):
 
@@ -20,21 +21,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
 
         self.app_path = os.path.dirname(os.path.abspath(__file__))
+        self.sync3_dir = self.app_path + '/sync3/'
         self.statusBar.setStyleSheet("background-color:rgb(0, 0, 0); color:rgb(255, 255, 255);");
         self.setFixedSize(QSize(585, 640))
-        self.flashButton.setDisabled(True)
-        self.faceplate_image = QPixmap(self.app_path + '/img/blank.png')
-        self.faceplate.setPixmap(self.faceplate_image)
-        self.comboBox.setDisabled(True)
-        self.flashButton.setDisabled(True)
-        self.firmwareInfoButton.setDisabled(True)
-        self.loadDefaultButton.setCheckable(False)
-        self.detectButton.setDisabled(True)        
+
 
         self.stored_module_data = {}
         self.repo_url = 'https://raw.githubusercontent.com/starlingcode/viafirmware/master'
-        self.comboBox.insertItem(0, 'Flash local firmware:')
-        self.comboBox.setCurrentIndex(-1)
+        self.firmwareSelect.insertItem(0, 'Flash local firmware:')
+        self.firmwareSelect.setCurrentIndex(-1)
         self.firmware_manifest = []
         self.remote_firmware_selection = {}
 
@@ -42,7 +37,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.via = None
 
         self.get_remote()        
-        
+
+        self.reset_for_new_via()
+ 
     def __del__(self):
         return
 
@@ -63,20 +60,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.initiate_flash()
     
     @Slot()    
-    def on_comboBox_activated(self):
+    def on_firmwareSelect_activated(self):
         try:
-            self.remote_firmware_selection = self.firmware_manifest[self.comboBox.currentIndex()]
+            self.remote_firmware_selection = self.firmware_manifest[self.firmwareSelect.currentIndex()]
         except IndexError:
             self.remote_firmware_selection = {}
         self.update_firmware_selection()
 
-    @Slot()
-    def launchSync3Editor(self):
-        self.editor = Sync3ScaleWindow()
-        self.editor.setGeometry(QRect(100, 100, 400, 600))
-        self.editor.show()
 
-# Application functions
+# Remote firmware flashing flow
  
     def get_remote(self):
         r = requests.get(self.repo_url + '/manifest.json')
@@ -84,15 +76,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.statusBar.showMessage('Remote firmware loaded')
             self.firmware_manifest = r.json()
             for idx, firmware in enumerate(self.firmware_manifest):
-                self.comboBox.insertItem(idx, firmware['name'])
+                self.firmwareSelect.insertItem(idx, firmware['name'])
         else: 
             self.statusBar.showMessage('Cannot connect to network, local mode only')
-        self.detectButton.setEnabled(True)
 
     def detect_module(self):
         module_found, serial = self.dfu.detect_module()
         if module_found:
-            self.detectButton.setDisabled(True)
+            self.detectButton.hide()
             self.statusBar.showMessage('Via found with serial %s, looking for firmware..' % serial)
             self.via = ViaModule(serial, self.firmware_manifest)
             self.read_option_bytes()
@@ -127,7 +118,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.dfu.read_unprotect()
             self.statusBar.showMessage('Device under read protection, restoring...')
         self.get_stored_module_data()
-        self.flashButton.setEnabled(True)
     
     def get_stored_module_data(self):
         for root, dirs, files in os.walk(self.app_path + '/module_data'):
@@ -142,7 +132,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 if firmware_slug not in self.stored_module_data:
                     self.stored_module_data[serial][firmware_slug] = {}
                 self.stored_module_data[serial][firmware_slug][datecode] = {'version': version, 'path': file}
-        self.comboBox.setEnabled(True)    
+        self.firmwareSelectLabel.show()
+        self.firmwareSelect.show()    
+        #TODO: implement default preset load for relevant firmwares
 
     def update_firmware_selection(self): 
         try:
@@ -152,8 +144,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if r.status_code == 200:
                 with open(path, 'wb') as f:
                     f.write(r.content)
-            self.firmwareInfoButton.setEnabled(True)
-            self.loadDefaultButton.setEnabled(True)
+            self.firmwareInfoButton.show()
+            self.loadDefaultButton.show()
             preset = self.get_latest_module_data(self.remote_firmware_selection['optionByte'])
             if 'path' in preset:
                 if preset['path'].split('-')[0] == '254':
@@ -163,7 +155,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             else:
                 # TODO move and formalize
                 self.statusBar.showMessage('No calibration info, please select and run CALIBRATION')
-            self.initialize_editor()
+            self.init_editor()
 
         except KeyError: # local firmware selected
             path = self.app_path + '/img/blank.png'
@@ -171,6 +163,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.loadDefaultButton.setDisabled(True)
         self.faceplate_image = QPixmap(path)
         self.faceplate.setPixmap(self.faceplate_image)
+        self.firmwareInfoButton.show()
+        self.loadDefaultButton.show()
+        self.flashButton.show()
 
     def get_latest_module_data(self, firmware_key):
         last_firmware = {}
@@ -191,15 +186,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return last_calibration
         else:
             return last_firmware
-
-    def initialize_editor(self):
-        if self.remote_firmware_selection['token'] == 'sync3':
-            self.sync3_edit_button = QPushButton('Edit Scales')
-            self.sync3_edit_button.clicked.connect(self.launchSync3Editor)
-            self.verticalLayout.addWidget(self.sync3_edit_button) 
-        else:
-            b = self.verticalLayout.takeAt(6)
-            b.widget().deleteLater()
 
     def initiate_flash(self):
         if 'token' in self.remote_firmware_selection:
@@ -233,9 +219,77 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # Flash local
             
     def reset_for_new_via(self):
+        self.faceplate_image = QPixmap(self.app_path + '/img/blank.png')
+        self.faceplate.setPixmap(self.faceplate_image)
+
+        self.detectButton.show()
         self.detectButton.setEnabled(True)
-        self.comboBox.setDisabled(True)        
-        self.comboBox.setCurrentIndex(-1)
-        self.firmwareInfoButton.setDisabled(True)
-        self.flashButton.setDisabled(True)
-        
+
+        self.firmwareSelectLabel.hide()
+        self.firmwareSelect.hide()
+        self.flashButton.hide()
+        self.firmwareInfoButton.hide()
+        self.loadDefaultButton.hide()
+        self.edit1Label.hide() 
+        self.edit1Select.hide() 
+        self.openEdit1.hide()
+        self.edit2Label.hide() 
+        self.edit2Select.hide() 
+        self.openEdit2.hide()        
+ 
+# Viatools Editor Launch
+ 
+    def init_editor(self):
+        if self.remote_firmware_selection['token'] == 'sync3':
+            self.init_sync3()
+        else:
+            self.edit1Label.hide()
+            self.edit1Select.hide()
+            self.openEdit1.hide()              
+            self.edit2Label.hide()
+            self.edit2Select.hide()
+            self.openEdit2.hide()              
+    
+    def init_sync3(self):
+        self.edit1Select.clear()
+        self.edit1Select.show()
+        self.edit1Select.activated.connect(self.sync3_scale_set_select)
+        self.edit1Label.show()
+        self.edit1Label.setText("Select scale set:")
+        self.openEdit1.clicked.connect(self.launch_sync3_scale_editor)
+        self.openEdit1.show()
+        self.openEdit1.setText('Edit Scale Set') 
+        r = requests.get(self.repo_url + '/sync3/manifest.json')
+        if r.status_code == 200:
+            self.statusBar.showMessage('Remote scale sets loaded')
+            self.sync3_remote_scale_sets = r.json()
+            with open(self.sync3_dir + 'remote_manifest.json', 'wb') as manifest_file:
+                 manifest_file.write(r.content)
+            for idx, scale_set in enumerate(self.sync3_remote_scale_sets):
+                self.edit1Select.insertItem(idx, scale_set)
+                for scale in self.sync3_remote_scale_sets[scale_set]:
+                    scale_url = (self.repo_url + '/sync3/%s.json' % scale)
+                    r_scale = requests.get(scale_url)
+                    if r_scale.status_code == 200:
+                        with open(self.sync3_dir + 'scales/%s.json' % scale, 'wb') as scale_file:
+                            scale_file.write(r_scale.content)
+                    else:
+                        #TODO error handling
+                        print('filedl error')
+                        return
+        else:
+            #TODO error handling
+            return
+        with open(self.sync3_dir + 'local_manifest.json', 'r') as manifest_file:
+            self.sync3_local_scale_sets = json.load(manifest_file)
+        self.sync3_scale_set_select()
+
+    @Slot()
+    def launch_sync3_scale_editor(self):
+        self.editor = Sync3ScaleEditor(self.sync3_dir, self.sync3_scale_set)
+        self.editor.setGeometry(QRect(200, 200, 400, 606))
+        self.editor.show()
+    
+    @Slot()
+    def sync3_scale_set_select(self):
+        self.sync3_scale_set = self.edit1Select.currentText()
