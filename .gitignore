@@ -8,3 +8,5 @@ binaries/
 img/
 __pycache__/
 __pycache__
+matplotlib/
+matplotlib

@@ -110,6 +110,10 @@ class DfuUtil:
         # dfu_process = self.initiate_process(arguments.split())
         # return self.monitor_flash_progress(dfu_process)        
 
+    def start_resource_flash(self, address, path):
+        arguments = '--device 0483:df11 -a 0 -s %s -D %s -R' % (address, path)
+        return self.run_process_blocking_print(arguments.split())
+
     def construct_optionbytes(self, firmware_key, firmware_version):
         ob = bytearray(16)
         ob[0] = 0xAA # The value of this byte defines the Flash memory protection level

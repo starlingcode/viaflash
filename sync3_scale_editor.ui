@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>600</height>
+    <height>640</height>
    </rect>
   </property>
   <property name="palette">
@@ -269,8 +269,8 @@
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">
     <rect>
-     <x>30</x>
-     <y>560</y>
+     <x>31</x>
+     <y>601</y>
      <width>341</width>
      <height>32</height>
     </rect>
@@ -288,8 +288,8 @@
   <widget class="QWidget" name="horizontalLayoutWidget">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>10</y>
+     <x>11</x>
+     <y>31</y>
      <width>381</width>
      <height>41</height>
     </rect>
@@ -305,13 +305,20 @@
       </property>
      </widget>
     </item>
+    <item>
+     <widget class="QPushButton" name="saveForRack">
+      <property name="text">
+       <string>Save for Rack</string>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QWidget" name="horizontalLayoutWidget_2">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>120</y>
+     <x>12</x>
+     <y>121</y>
      <width>381</width>
      <height>41</height>
     </rect>
@@ -332,10 +339,10 @@
   <widget class="QScrollArea" name="seedRatios">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>240</y>
+     <x>11</x>
+     <y>291</y>
      <width>381</width>
-     <height>111</height>
+     <height>91</height>
     </rect>
    </property>
    <property name="verticalScrollBarPolicy">
@@ -357,7 +364,7 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>0</y>
+      <y>-20</y>
       <width>375</width>
       <height>105</height>
      </rect>
@@ -367,7 +374,7 @@
       <rect>
        <x>10</x>
        <y>0</y>
-       <width>331</width>
+       <width>351</width>
        <height>241</height>
       </rect>
      </property>
@@ -378,8 +385,8 @@
   <widget class="QWidget" name="horizontalLayoutWidget_4">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>360</y>
+     <x>11</x>
+     <y>381</y>
      <width>381</width>
      <height>51</height>
     </rect>
@@ -484,7 +491,7 @@
           <item>
            <widget class="QLabel" name="label_4">
             <property name="text">
-             <string>Expand</string>
+             <string>Fill</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
@@ -502,8 +509,8 @@
   <widget class="QWidget" name="horizontalLayoutWidget_5">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>420</y>
+     <x>11</x>
+     <y>461</y>
      <width>381</width>
      <height>131</height>
     </rect>
@@ -514,7 +521,7 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_14">
         <item>
-         <widget class="QSlider" name="verticalSlider">
+         <widget class="QSlider" name="cvSlider">
           <property name="maximum">
            <number>15</number>
           </property>
@@ -534,7 +541,7 @@
       <item>
        <widget class="QLabel" name="label_6">
         <property name="text">
-         <string>CV</string>
+         <string>CV: 0V</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -546,7 +553,7 @@
     <item>
      <layout class="QVBoxLayout" name="verticalLayout_6">
       <item>
-       <widget class="QDial" name="dial">
+       <widget class="QDial" name="knob">
         <property name="maximum">
          <number>15</number>
         </property>
@@ -558,7 +565,7 @@
       <item>
        <widget class="QLabel" name="label_5">
         <property name="text">
-         <string>Knob</string>
+         <string>Knob Position</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -570,6 +577,9 @@
     <item>
      <layout class="QVBoxLayout" name="previewLayout">
       <item>
+       <layout class="QHBoxLayout" name="previewContainer"/>
+      </item>
+      <item>
        <widget class="QComboBox" name="previewSelect"/>
       </item>
      </layout>
@@ -579,8 +589,8 @@
   <widget class="QWidget" name="horizontalLayoutWidget_6">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>169</y>
+     <x>11</x>
+     <y>191</y>
      <width>381</width>
      <height>62</height>
     </rect>
@@ -599,7 +609,7 @@
        <widget class="QSpinBox" name="numerator">
         <property name="minimumSize">
          <size>
-          <width>50</width>
+          <width>103</width>
           <height>26</height>
          </size>
         </property>
@@ -621,7 +631,7 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>50</width>
+          <width>103</width>
           <height>26</height>
          </size>
         </property>
@@ -635,27 +645,13 @@
       </item>
      </layout>
     </item>
-    <item>
-     <widget class="QPushButton" name="addFromScala">
-      <property name="text">
-       <string>Add From Scala</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="clearSeedRatios">
-      <property name="text">
-       <string>Clear</string>
-      </property>
-     </widget>
-    </item>
    </layout>
   </widget>
   <widget class="QGroupBox" name="groupBox_2">
    <property name="geometry">
     <rect>
-     <x>9</x>
-     <y>60</y>
+     <x>11</x>
+     <y>71</y>
      <width>381</width>
      <height>51</height>
     </rect>
@@ -971,6 +967,92 @@
      </item>
     </layout>
    </widget>
+  </widget>
+  <widget class="QWidget" name="horizontalLayoutWidget_3">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>251</y>
+     <width>381</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_15">
+    <item>
+     <widget class="QPushButton" name="addFromScala">
+      <property name="text">
+       <string>Import From Scala</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="clearSeedRatios">
+      <property name="text">
+       <string>Clear</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="horizontalLayoutWidget_8">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>440</y>
+     <width>381</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_16">
+    <item>
+     <widget class="QLabel" name="label_2">
+      <property name="text">
+       <string>Preview</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="horizontalLayoutWidget_9">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>170</y>
+     <width>381</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_17">
+    <item>
+     <widget class="QLabel" name="label_7">
+      <property name="text">
+       <string>Edit Scale</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QLabel" name="label_8">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>379</width>
+     <height>19</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Edit Scale Set</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
   </widget>
  </widget>
  <resources/>

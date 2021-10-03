@@ -4,8 +4,8 @@ import os
 import numpy as np
 import matplotlib
 
-from PySide6.QtWidgets import QDialog, QPushButton, QSpacerItem, QSizePolicy, QMessageBox
-from PySide6.QtCore import QFile, Slot, QRect
+from PySide6.QtWidgets import QDialog, QPushButton, QSpacerItem, QSizePolicy, QMessageBox, QLabel
+from PySide6.QtCore import QFile, Slot, QRect, Qt
 from ui_sync3_scale_editor import Ui_sync3ScaleEditor
 from ui_sync3_ratio import Ui_sync3Ratio
 from viatools.sync3_scales import Sync3Scales
@@ -24,10 +24,13 @@ class Sync3RatioXY(FigureCanvasQTAgg):
         self.axes.plot(np.sin(domain), np.cos(domain * (numerator/denominator)), color='white')
         super(Sync3RatioXY, self).__init__(fig)
     
-    def update(self, numerator, denominator):
-        self.axes.clear()
+    def update_plot(self, numerator, denominator):
+        self.axes.cla()
+        self.axes.set_facecolor('black')
         domain = np.linspace(0, 2 * np.pi * denominator, 256)
         self.axes.plot(np.sin(domain), np.cos(domain * (numerator/denominator)), color='white')
+        self.draw()
+        print('updating_plot')
 
 class Sync3Ratio(QDialog):
     def __init__(self, numerator, denominator):
@@ -39,7 +42,7 @@ class Sync3Ratio(QDialog):
         self.ui.xyLayout.addWidget(Sync3RatioXY(numerator,denominator))
 
 class Sync3ScaleEditor(QDialog):
-    def __init__(self, scale_path='./', scale_set='original'):
+    def __init__(self, scale_path='./', binary_path='./', scale_set='original'):
         super(Sync3ScaleEditor, self).__init__()
         
         self.ui = Ui_sync3ScaleEditor()
@@ -48,6 +51,7 @@ class Sync3ScaleEditor(QDialog):
         self.engine = Sync3Scales()
         self.scale_dir = scale_path
         self.engine.scale_dir = scale_path
+        self.engine.output_dir = binary_path
         
         self.scale_set_edit = []
         self.scale_edit = {}
@@ -59,6 +63,9 @@ class Sync3ScaleEditor(QDialog):
         self.seed_ratio_buttons = []
         self.seed_ratio_spacers = []
         
+        self.preview_idx = 0
+        self.init_preview_display()
+
         self.create_seed_grid()
         self.get_scale_sets()
         self.get_scales()
@@ -67,8 +74,6 @@ class Sync3ScaleEditor(QDialog):
         self.active_slot = 0
         self.ative_scale_id = ''
         self.active_ratio_idx = 0
-
-        self.preview_idx = 0
 
 # Save/load helpers
 
@@ -197,10 +202,11 @@ class Sync3ScaleEditor(QDialog):
 
     def update_grid(self):
         seed_ratios = self.engine.scales[self.active_scale_id]['seed_ratios']
+        idx = -1
         for idx, ratio in enumerate(seed_ratios):
             self.seed_ratio_buttons[idx].show()
             self.seed_ratio_buttons[idx].setText('%s/%s' % (ratio[0], ratio[1]))
-        for i in range(idx, 31):
+        for i in range(idx+1, 31):
             self.seed_ratio_buttons[i].hide()
         self.engine.render()
         self.update_preview()
@@ -225,26 +231,58 @@ class Sync3ScaleEditor(QDialog):
 # Preview helpers
 
     def init_preview_display(self):
-        # Add widgets
-        # Init selection combobox
-        # Call change preview display
+        self.decimalPreview = QLabel()
+        self.decimalPreview.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+        self.decimalPreview.setText('Value')
+        self.semitonePreview = QLabel()
+        self.semitonePreview.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+        self.semitonePreview.setText('Value')
+        self.ratioPreview = QLabel()
+        self.ratioPreview.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+        self.ratioPreview.setText('Value')
+        self.xyPreview = Sync3RatioXY(1, 1)
+        self.ui.previewContainer.addWidget(self.ratioPreview)
+        self.ui.previewContainer.addWidget(self.decimalPreview)
+        self.ui.previewContainer.addWidget(self.semitonePreview)
+        self.ui.previewContainer.addWidget(self.xyPreview) 
+        self.decimalPreview.hide()
+        self.semitonePreview.hide()
+        self.xyPreview.hide()
+        self.ui.previewSelect.addItem('Ratio')
+        self.ui.previewSelect.addItem('Decimal')
+        self.ui.previewSelect.addItem('Semitone')
+        self.ui.previewSelect.addItem('XY')
+        self.ui.previewSelect.setCurrentIndex(0)
 
     def change_preview_display(self, display_type):
-        if display_type == 'decimal':
-            self.ui.decimalDisplay.show() 
-            self.ui.semitoneDisplay.hide() 
-            self.ui.xyDisplay.hide()      
-        if display_type == 'semitone':
-            self.ui.decimalDisplay.hide() 
-            self.ui.semitoneDisplay.show() 
-            self.ui.xyDisplay.hide()      
-        if display_type == 'xy':
-            self.ui.decimalDisplay.hide() 
-            self.ui.semitoneDisplay.hide() 
-            self.ui.xyDisplay.show()      
+        if display_type == 'Decimal':
+            self.ratioPreview.hide()
+            self.decimalPreview.show() 
+            self.semitonePreview.hide() 
+            self.xyPreview.hide()      
+        if display_type == 'Semitone':
+            self.ratioPreview.hide()
+            self.decimalPreview.hide() 
+            self.semitonePreview.show() 
+            self.xyPreview.hide()      
+        if display_type == 'XY':
+            self.ratioPreview.hide()
+            self.decimalPreview.hide() 
+            self.semitonePreview.hide() 
+            self.xyPreview.show()      
+        if display_type == 'Ratio':
+            self.ratioPreview.show()
+            self.decimalPreview.hide() 
+            self.semitonePreview.hide() 
+            self.xyPreview.hide()      
 
-    def update_preview(self)
-        return
+    def update_preview(self):
+        numerator = self.engine.scales[self.active_scale_id]['numerators'][self.preview_idx]
+        denominator = self.engine.scales[self.active_scale_id]['denominators'][self.preview_idx]
+        self.decimalPreview.setText('%.4f' % (numerator/denominator))
+        self.semitonePreview.setText('%.4f' % (np.log2(numerator/denominator) * 12))
+        self.ratioPreview.setText('%d/%d' % (numerator, denominator)) 
+        self.xyPreview.update_plot(numerator, denominator)       
 
 # Load/save scale set
 
@@ -325,7 +363,7 @@ class Sync3ScaleEditor(QDialog):
     @Slot()
     def on_clearSeedRatios_clicked(self):
         if QMessageBox.question(self, 'Clear Ratios', 'Clear all ratios?') == QMessageBox.Yes: 
-            self.engine.scales[scale_id]['seed_ratios'] = []
+            self.engine.scales[self.active_scale_id]['seed_ratios'] = []
             self.update_grid()
 
 # Tiling method selection
@@ -356,5 +394,5 @@ class Sync3ScaleEditor(QDialog):
 
     @Slot()
     def on_previewSelect_activated(self):
-        self.change_preview_display(self.ui.previewSelect.getText())
+        self.change_preview_display(self.ui.previewSelect.currentText())
         self.update_preview()

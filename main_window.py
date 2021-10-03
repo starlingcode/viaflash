@@ -13,6 +13,7 @@ from ui_mainwindow import Ui_MainWindow
 from dfu_util import DfuUtil
 from via_module import ViaModule
 from sync3_scale_editor import Sync3ScaleEditor
+from gateseq_pattern_editor import GateseqPatternEditor
 
 class MainWindow(QMainWindow, Ui_MainWindow):
 
@@ -22,6 +23,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.app_path = os.path.dirname(os.path.abspath(__file__))
         self.sync3_dir = self.app_path + '/sync3/'
+        self.gateseq_dir = self.app_path + '/gateseq/'
         self.statusBar.setStyleSheet("background-color:rgb(0, 0, 0); color:rgb(255, 255, 255);");
         self.setFixedSize(QSize(585, 640))
 
@@ -202,16 +204,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 try:
                     success = self.dfu.flash_eeprom(self.app_path + '/module_data/' + preset_file['path'])
                 except:
-                    success = True
+                    success = False
                 #TODO Handle errors
                 if success:
                     success = self.dfu.start_firmware_flash(path)
-                    if success:
-                        ob_key = firmware_key
-                        self.dfu.construct_optionbytes(ob_key, firmware_version)
-                        success = self.dfu.flash_optionbytes()
-                    if success:
-                        self.reset_for_new_via()
+                if success:
+                    self.flash_resources()
+                if success:
+                    ob_key = firmware_key
+                    self.dfu.construct_optionbytes(ob_key, firmware_version)
+                    success = self.dfu.flash_optionbytes()
+                if success:
+                    self.reset_for_new_via()
             else:
                 self.statusBar.showMessage('Firmware file not downloaded, check network')
         else:
@@ -242,6 +246,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def init_editor(self):
         if self.remote_firmware_selection['token'] == 'sync3':
             self.init_sync3()
+        elif self.remote_firmware_selection['token'] == 'gateseq':
+            self.init_gateseq()
         else:
             self.edit1Label.hide()
             self.edit1Select.hide()
@@ -250,6 +256,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.edit2Select.hide()
             self.openEdit2.hide()              
     
+# Viatools compatible binary packing
+
+    def flash_resources(self):
+        if self.remote_firmware_selection['token'] == 'sync3':
+            self.prepare_sync3_binary()
+            return self.dfu.start_resource_flash('0x8020000', self.app_path + '/binaries/sync3scales.bin') 
+        else:
+            return True
+
+# Sync3 editor setup
+
     def init_sync3(self):
         self.edit1Select.clear()
         self.edit1Select.show()
@@ -283,13 +300,71 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         with open(self.sync3_dir + 'local_manifest.json', 'r') as manifest_file:
             self.sync3_local_scale_sets = json.load(manifest_file)
         self.sync3_scale_set_select()
+        self.sync3_editor = Sync3ScaleEditor(self.sync3_dir, self.app_path + '/binaries/', self.sync3_scale_set)
+
+    def prepare_sync3_binary(self):
+        self.sync3_editor.engine.load_scale_set(self.sync3_scale_set)
+        self.sync3_editor.engine.render()
+        self.sync3_editor.engine.pack_binary()
 
     @Slot()
     def launch_sync3_scale_editor(self):
-        self.editor = Sync3ScaleEditor(self.sync3_dir, self.sync3_scale_set)
-        self.editor.setGeometry(QRect(200, 200, 400, 606))
-        self.editor.show()
+        self.sync3_editor.setGeometry(QRect(200, 200, 400, 606))
+        self.sync3_editor.show()
     
     @Slot()
     def sync3_scale_set_select(self):
         self.sync3_scale_set = self.edit1Select.currentText()
+
+# Gateseq editor setup
+
+    def init_gateseq(self):
+        self.edit1Select.clear()
+        self.edit1Select.show()
+        self.edit1Select.activated.connect(self.gateseq_pattern_set_select)
+        self.edit1Label.show()
+        self.edit1Label.setText("Select pattern set:")
+        self.openEdit1.clicked.connect(self.launch_gateseq_pattern_editor)
+        self.openEdit1.show()
+        self.openEdit1.setText('Edit Pattern Set') 
+        r = requests.get(self.repo_url + '/gateseq/manifest.json')
+        if r.status_code == 200:
+            self.statusBar.showMessage('Remote pattern sets loaded')
+            self.gateseq_remote_pattern_sets = r.json()
+            with open(self.gateseq_dir + 'remote_manifest.json', 'wb') as manifest_file:
+                 manifest_file.write(r.content)
+            for idx, pattern_set in enumerate(self.gateseq_remote_pattern_sets):
+                self.edit1Select.insertItem(idx, pattern_set)
+                for pattern in self.gateseq_remote_pattern_sets[pattern_set]:
+                    pattern_url = (self.repo_url + '/gateseq/patterns/%s.json' % pattern)
+                    r_pattern = requests.get(pattern_url) 
+                    if r_pattern.status_code == 200:
+                        with open(self.gateseq_dir + 'patterns/%s.json' % pattern, 'wb') as pattern_file:
+                            pattern_file.write(r_pattern.content)
+                    else:
+                        #TODO error handling
+                        print('filedl error on ')
+                        return
+        else:
+            #TODO error handling
+            print('manifest error')
+            return
+        with open(self.gateseq_dir + 'local_manifest.json', 'r') as manifest_file:
+            self.gateseq_local_pattern_sets = json.load(manifest_file)
+        self.gateseq_pattern_set_select()
+        self.gateseq_editor = GateseqPatternEditor(self.gateseq_dir, self.app_path + '/binaries/', self.gateseq_pattern_set)
+
+    def prepare_gateseq_binary(self):
+        self.gateseq_editor.engine.load_scale_set(self.gateseq_pattern_set)
+        self.gateseq_editor.engine.render()
+        self.gateseq_editor.engine.pack_binary()
+
+    @Slot()
+    def launch_gateseq_pattern_editor(self):
+        self.gateseq_editor.setGeometry(QRect(200, 200, 400, 590))
+        self.gateseq_editor.show()
+    
+    @Slot()
+    def gateseq_pattern_set_select(self):
+        self.gateseq_pattern_set = self.edit1Select.currentText()
+
