@@ -294,12 +294,12 @@
      <height>41</height>
     </rect>
    </property>
-   <layout class="QHBoxLayout" name="scalesSetButtons">
+   <layout class="QHBoxLayout" name="resourceSetSaveLoad">
     <item>
-     <widget class="QComboBox" name="selectPatternSet"/>
+     <widget class="QComboBox" name="selectResourceSet"/>
     </item>
     <item>
-     <widget class="QPushButton" name="savePatternSet">
+     <widget class="QPushButton" name="saveResourceSet">
       <property name="text">
        <string>Save Pattern Set</string>
       </property>
@@ -323,12 +323,12 @@
      <height>41</height>
     </rect>
    </property>
-   <layout class="QHBoxLayout" name="saveLoadPattern">
+   <layout class="QHBoxLayout" name="resourceSaveLoad">
     <item>
-     <widget class="QComboBox" name="selectPattern"/>
+     <widget class="QComboBox" name="selectResource"/>
     </item>
     <item>
-     <widget class="QPushButton" name="savePattern">
+     <widget class="QPushButton" name="saveResource">
       <property name="text">
        <string>Save Pattern</string>
       </property>
@@ -345,7 +345,7 @@
      <height>62</height>
     </rect>
    </property>
-   <layout class="QHBoxLayout" name="seedRatioEditor">
+   <layout class="QHBoxLayout" name="addEuclideanControls">
     <item>
      <widget class="QPushButton" name="addEuclidean">
       <property name="text">
@@ -364,10 +364,10 @@
          </size>
         </property>
         <property name="minimum">
-         <number>1</number>
+         <number>0</number>
         </property>
         <property name="maximum">
-         <number>65535</number>
+         <number>0</number>
         </property>
        </widget>
       </item>
@@ -389,7 +389,7 @@
          <number>1</number>
         </property>
         <property name="maximum">
-         <number>65535</number>
+         <number>64</number>
         </property>
        </widget>
       </item>
@@ -421,7 +421,7 @@
     </item>
    </layout>
   </widget>
-  <widget class="QGroupBox" name="groupBox_2">
+  <widget class="QGroupBox" name="resourceSetSlots">
    <property name="geometry">
     <rect>
      <x>9</x>
@@ -751,7 +751,7 @@
      <height>41</height>
     </rect>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout_6">
+   <layout class="QHBoxLayout" name="addSequenceButtons">
     <item>
      <widget class="QPushButton" name="addX0x">
       <property name="text">
@@ -784,7 +784,7 @@
      <height>244</height>
     </rect>
    </property>
-   <layout class="QGridLayout" name="gridLayout">
+   <layout class="QGridLayout" name="sequenceGrid">
     <item row="0" column="0">
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
@@ -1123,7 +1123,7 @@
     </item>
    </layout>
   </widget>
-  <widget class="QLabel" name="label_20">
+  <widget class="QLabel" name="editPatternLabel">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -1139,7 +1139,7 @@
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
-  <widget class="QLabel" name="label_21">
+  <widget class="QLabel" name="editPatternSetLabel">
    <property name="geometry">
     <rect>
      <x>8</x>

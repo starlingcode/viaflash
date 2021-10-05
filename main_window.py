@@ -311,17 +311,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def launch_sync3_scale_editor(self):
         self.sync3_editor.setGeometry(QRect(200, 200, 400, 606))
         self.sync3_editor.show()
-    
-    @Slot()
-    def sync3_scale_set_select(self):
-        self.sync3_scale_set = self.edit1Select.currentText()
 
 # Gateseq editor setup
 
     def init_gateseq(self):
         self.edit1Select.clear()
         self.edit1Select.show()
-        self.edit1Select.activated.connect(self.gateseq_pattern_set_select)
         self.edit1Label.show()
         self.edit1Label.setText("Select pattern set:")
         self.openEdit1.clicked.connect(self.launch_gateseq_pattern_editor)
@@ -330,29 +325,36 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         r = requests.get(self.repo_url + '/gateseq/manifest.json')
         if r.status_code == 200:
             self.statusBar.showMessage('Remote pattern sets loaded')
-            self.gateseq_remote_pattern_sets = r.json()
-            with open(self.gateseq_dir + 'remote_manifest.json', 'wb') as manifest_file:
-                 manifest_file.write(r.content)
-            for idx, pattern_set in enumerate(self.gateseq_remote_pattern_sets):
-                self.edit1Select.insertItem(idx, pattern_set)
-                for pattern in self.gateseq_remote_pattern_sets[pattern_set]:
-                    pattern_url = (self.repo_url + '/gateseq/patterns/%s.json' % pattern)
-                    r_pattern = requests.get(pattern_url) 
-                    if r_pattern.status_code == 200:
-                        with open(self.gateseq_dir + 'patterns/%s.json' % pattern, 'wb') as pattern_file:
-                            pattern_file.write(r_pattern.content)
-                    else:
-                        #TODO error handling
-                        print('filedl error on ')
-                        return
+            self.remote_resources = {}
+            self.remote_resources['sets'] = r.json()
+            self.remote_resources['resources'] = []
+            for idx, set_slug in enumerate(self.remote_resources['sets']): 
+                set_url = self.repo_url + '/gateseq/%s.json' % (set_slug)
+                r_set = requests.get(set_url)
+                if r_set.status_code == 200:
+                    with open(self.gateseq_dir + '%s.json' % set_slug, 'wb') as set_file:
+                        set_file.write(r_set.content)
+                    for pattern in r_set.json():
+                        pattern_url = (self.repo_url + '/gateseq/patterns/%s.json' % pattern)
+                        r_pattern = requests.get(pattern_url)
+                        if r_pattern.status_code == 200:
+                            self.remote_resources['resources'].append(pattern)
+                            with open(self.gateseq_dir + 'patterns/%s.json' % pattern, 'wb') as pattern_file:
+                                pattern_file.write(r_pattern.content)
+                else:
+                    #TODO error handling
+                    print('filedl error on ' + set_url)
+                    print(r_set)
+                    return
         else:
             #TODO error handling
             print('manifest error')
             return
-        with open(self.gateseq_dir + 'local_manifest.json', 'r') as manifest_file:
-            self.gateseq_local_pattern_sets = json.load(manifest_file)
-        self.gateseq_pattern_set_select()
-        self.gateseq_editor = GateseqPatternEditor(self.gateseq_dir, self.app_path + '/binaries/', self.gateseq_pattern_set)
+        for root, dirs, files in os.walk(self.gateseq_dir):
+            for file in files:
+                self.edit1Select.insertItem(-1, file.replace('.json', ''))
+            break
+        self.gateseq_editor = GateseqPatternEditor(self.gateseq_dir, self.remote_resources, self.app_path + '/binaries/', self.edit1Select.currentText())
 
     def prepare_gateseq_binary(self):
         self.gateseq_editor.engine.load_scale_set(self.gateseq_pattern_set)
@@ -364,7 +366,3 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.gateseq_editor.setGeometry(QRect(200, 200, 400, 590))
         self.gateseq_editor.show()
     
-    @Slot()
-    def gateseq_pattern_set_select(self):
-        self.gateseq_pattern_set = self.edit1Select.currentText()
-
