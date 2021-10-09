@@ -22,8 +22,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
 
         self.app_path = os.path.dirname(os.path.abspath(__file__))
-        self.sync3_dir = self.app_path + '/sync3/'
-        self.gateseq_dir = self.app_path + '/gateseq/'
         self.statusBar.setStyleSheet("background-color:rgb(0, 0, 0); color:rgb(255, 255, 255);");
         self.setFixedSize(QSize(585, 640))
 
@@ -42,6 +40,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.reset_for_new_via()
  
+        self.init_set_editor_data()
+
     def __del__(self):
         return
 
@@ -139,8 +139,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #TODO: implement default preset load for relevant firmwares
 
     def update_firmware_selection(self): 
-        try:
-            faceplate_path = '/img/' + self.remote_firmware_selection['token'] + '.png'
+        if 'token' in self.remote_firmware_selection:
+            token = self.remote_firmware_selection['token']
+            faceplate_path = '/img/' + token + '.png'
             r = requests.get(self.repo_url + faceplate_path)
             path = self.app_path + faceplate_path
             if r.status_code == 200:
@@ -157,17 +158,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             else:
                 # TODO move and formalize
                 self.statusBar.showMessage('No calibration info, please select and run CALIBRATION')
-            self.init_editor()
-
-        except KeyError: # local firmware selected
+            self.faceplate_image = QPixmap(path)
+            self.faceplate.setPixmap(self.faceplate_image)
+            self.firmwareInfoButton.show()
+            self.loadDefaultButton.show()
+            self.flashButton.show()
+            self.init_set_editor(token)
+        else:
             path = self.app_path + '/img/blank.png'
-            self.firmwareInfoButton.setDisabled(True)
-            self.loadDefaultButton.setDisabled(True)
-        self.faceplate_image = QPixmap(path)
-        self.faceplate.setPixmap(self.faceplate_image)
-        self.firmwareInfoButton.show()
-        self.loadDefaultButton.show()
-        self.flashButton.show()
+            self.firmwareInfoButton.hide(True)
+            self.loadDefaultButton.hide(True)
+            self.reset_editor()
 
     def get_latest_module_data(self, firmware_key):
         last_firmware = {}
@@ -234,135 +235,106 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.flashButton.hide()
         self.firmwareInfoButton.hide()
         self.loadDefaultButton.hide()
-        self.edit1Label.hide() 
-        self.edit1Select.hide() 
-        self.openEdit1.hide()
-        self.edit2Label.hide() 
-        self.edit2Select.hide() 
-        self.openEdit2.hide()        
- 
-# Viatools Editor Launch
- 
-    def init_editor(self):
-        if self.remote_firmware_selection['token'] == 'sync3':
-            self.init_sync3()
-        elif self.remote_firmware_selection['token'] == 'gateseq':
-            self.init_gateseq()
-        else:
-            self.edit1Label.hide()
-            self.edit1Select.hide()
-            self.openEdit1.hide()              
-            self.edit2Label.hide()
-            self.edit2Select.hide()
-            self.openEdit2.hide()              
-    
+
+        self.reset_editor()
+
 # Viatools compatible binary packing
 
     def flash_resources(self):
-        if self.remote_firmware_selection['token'] == 'sync3':
-            self.prepare_sync3_binary()
-            return self.dfu.start_resource_flash('0x8020000', self.app_path + '/binaries/sync3scales.bin') 
+        token = self.remote_firmware_selection['token']
+        if token in self.editor_data:
+            self.editor1.set.pack_binary()
+            return self.dfu.start_resource_flash(self.editor_data[token]['resource1_address'], self.app_path + '%s/binaries/%s.bin' % (token, self.editor1.set.slug)) 
         else:
             return True
 
-# Sync3 editor setup
+# Resource editor setup
 
-    def init_sync3(self):
+    def init_set_editor_data(self):
+        self.editor_data = {}
+        self.editor_data['gateseq'] = {
+            'object1_name': 'pattern',
+            'editor1_object': GateseqPatternEditor,
+            'resource1_address': '0x8020000'
+        }        
+        self.editor_data['sync3'] = {
+            'object1_name': 'scale',
+            'editor1_object': Sync3ScaleEditor,
+            'resource1_address': '0x8020000'
+        }       
+
+
+    def reset_editor(self):
+        self.edit1Label.hide()
         self.edit1Select.clear()
-        self.edit1Select.show()
-        self.edit1Select.activated.connect(self.sync3_scale_set_select)
-        self.edit1Label.show()
-        self.edit1Label.setText("Select scale set:")
-        self.openEdit1.clicked.connect(self.launch_sync3_scale_editor)
-        self.openEdit1.show()
-        self.openEdit1.setText('Edit Scale Set') 
-        r = requests.get(self.repo_url + '/sync3/manifest.json')
-        if r.status_code == 200:
-            self.statusBar.showMessage('Remote scale sets loaded')
-            self.sync3_remote_scale_sets = r.json()
-            with open(self.sync3_dir + 'remote_manifest.json', 'wb') as manifest_file:
-                 manifest_file.write(r.content)
-            for idx, scale_set in enumerate(self.sync3_remote_scale_sets):
-                self.edit1Select.insertItem(idx, scale_set)
-                for scale in self.sync3_remote_scale_sets[scale_set]:
-                    scale_url = (self.repo_url + '/sync3/%s.json' % scale)
-                    r_scale = requests.get(scale_url)
-                    if r_scale.status_code == 200:
-                        with open(self.sync3_dir + 'scales/%s.json' % scale, 'wb') as scale_file:
-                            scale_file.write(r_scale.content)
-                    else:
-                        #TODO error handling
-                        print('filedl error')
-                        return
-        else:
-            #TODO error handling
-            return
-        with open(self.sync3_dir + 'local_manifest.json', 'r') as manifest_file:
-            self.sync3_local_scale_sets = json.load(manifest_file)
-        self.sync3_scale_set_select()
-        self.sync3_editor = Sync3ScaleEditor(self.sync3_dir, self.app_path + '/binaries/', self.sync3_scale_set)
+        self.edit1Select.hide()
+        self.openEdit1.hide()              
+        self.edit2Label.hide()
+        self.edit2Select.hide()
+        self.edit2Select.clear()
+        self.openEdit2.hide()              
 
-    def prepare_sync3_binary(self):
-        self.sync3_editor.engine.load_scale_set(self.sync3_scale_set)
-        self.sync3_editor.engine.render()
-        self.sync3_editor.engine.pack_binary()
-
-    @Slot()
-    def launch_sync3_scale_editor(self):
-        self.sync3_editor.setGeometry(QRect(200, 200, 400, 606))
-        self.sync3_editor.show()
-
-# Gateseq editor setup
-
-    def init_gateseq(self):
-        self.edit1Select.clear()
+    def init_set_editor(self, token):
+        print('Initializing set editor')
+        self.reset_editor()
         self.edit1Select.show()
         self.edit1Label.show()
-        self.edit1Label.setText("Select pattern set:")
-        self.openEdit1.clicked.connect(self.launch_gateseq_pattern_editor)
+        object_name = self.editor_data[token]['object1_name']
+        object_name_plural = object_name + 's'
+        self.edit1Label.setText("Select %s set:" % object_name)
+        self.openEdit1.clicked.connect(self.launch_editor1)
         self.openEdit1.show()
-        self.openEdit1.setText('Edit Pattern Set') 
-        r = requests.get(self.repo_url + '/gateseq/manifest.json')
+        self.openEdit1.setText('Edit ' + object_name.title() + ' Set') 
+        firmware_dir = self.app_path + '/%s/' % token
+        print(firmware_dir)
+        r = requests.get(self.repo_url + '/%s/manifest.json' % token)
         if r.status_code == 200:
-            self.statusBar.showMessage('Remote pattern sets loaded')
+            self.statusBar.showMessage('Remote %s sets loaded' % object_name)
             self.remote_resources = {}
             self.remote_resources['sets'] = r.json()
             self.remote_resources['resources'] = []
             for idx, set_slug in enumerate(self.remote_resources['sets']): 
-                set_url = self.repo_url + '/gateseq/%s.json' % (set_slug)
+                set_url = self.repo_url + '/%s/%s.json' % (token, set_slug)
                 r_set = requests.get(set_url)
                 if r_set.status_code == 200:
-                    with open(self.gateseq_dir + '%s.json' % set_slug, 'wb') as set_file:
+                    with open(firmware_dir + '%s.json' % set_slug, 'wb') as set_file:
                         set_file.write(r_set.content)
-                    for pattern in r_set.json():
-                        pattern_url = (self.repo_url + '/gateseq/patterns/%s.json' % pattern)
-                        r_pattern = requests.get(pattern_url)
-                        if r_pattern.status_code == 200:
-                            self.remote_resources['resources'].append(pattern)
-                            with open(self.gateseq_dir + 'patterns/%s.json' % pattern, 'wb') as pattern_file:
-                                pattern_file.write(r_pattern.content)
+                    for resource in r_set.json():
+                        resource_url = (self.repo_url + '/%s/%s/%s.json' % (token, object_name_plural, resource)) # hacky pluralization of resource name
+                        r_resource = requests.get(resource_url)
+                        if r_resource.status_code == 200:
+                            self.remote_resources['resources'].append(resource)
+                            with open(firmware_dir + '%s/%s.json' % (object_name_plural, resource), 'wb') as resource_file:
+                                resource_file.write(r_resource.content)
+                        else:
+                            print('Resource dl error on ' + resource_url)
                 else:
                     #TODO error handling
-                    print('filedl error on ' + set_url)
+                    print('Set dl error on ' + set_url)
                     print(r_set)
                     return
         else:
             #TODO error handling
-            print('manifest error')
+            print('Manifest dl error')
             return
-        for root, dirs, files in os.walk(self.gateseq_dir):
+        self.populate_edit1Select(firmware_dir)
+        self.editor1 = self.editor_data[token]['editor1_object'](firmware_dir, self.remote_resources, self.edit1Select.currentText())
+        self.editor1.finished.connect(self.get_slug_from_editor1)
+
+    def populate_edit1Select(self, firmware_dir, selected_slug='original'):
+        self.edit1Select.clear()
+        for root, dirs, files in os.walk(firmware_dir):
             for file in files:
                 self.edit1Select.insertItem(-1, file.replace('.json', ''))
             break
-        self.gateseq_editor = GateseqPatternEditor(self.gateseq_dir, self.remote_resources, self.app_path + '/binaries/', self.edit1Select.currentText())
-
-    def prepare_gateseq_binary(self):
-        self.gateseq_editor.engine.load_scale_set(self.gateseq_pattern_set)
-        self.gateseq_editor.engine.render()
-        self.gateseq_editor.engine.pack_binary()
+        self.edit1Select.setCurrentIndex(self.edit1Select.findText(selected_slug))        
 
     @Slot()
-    def launch_gateseq_pattern_editor(self):
-        self.gateseq_editor.setGeometry(QRect(200, 200, 400, 590))
-        self.gateseq_editor.show()
-    
+    def launch_editor1(self):
+        # set editor size?
+        self.editor1.show()
+
+    @Slot()
+    def get_slug_from_editor1(self):
+        selected_slug = self.editor1.set.slug
+        self.populate_edit1Select(self.remote_firmware_selection['token'], selected_slug)

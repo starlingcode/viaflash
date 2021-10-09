@@ -6,19 +6,30 @@ class ViaResourceEditor(QDialog):
         super().__init__()        
         self.unsaved_changes = False
         self.active_idx = 0
+
+        self.resource_slugs = []
+        self.resource_set_slugs = []
         
         # Base class must initialize self.set as ViaResourceSet derived class
 
     @Slot()
     def on_saveResourceSet_clicked(self):
         name = self.get_resource_set_name()
-        self.set.save(name)
+        self.set.save_set(name)
         self.update_resource_sets()
+        self.selectResourceSet.setCurrentIndex(self.selectResourceSet.findText(name))
 
     @Slot()
-    def on_selectResourceSet_currentTextChanged(self):
+    def on_selectResourceSet_activated(self):
         #TODO check for unsaved changes
-        self.set.load(self.selectPatternSet.currentText())
+        slug = self.selectResourceSet.currentText()
+        if slug in self.resource_set_slugs:
+            self.set.load_set(slug)
+            self.slot1.setChecked(True)
+
+    @Slot() 
+    def on_saveForRack_clicked(self):
+        self.set.pack_binary()
 
 # Select slot
 
@@ -121,14 +132,15 @@ class ViaResourceEditor(QDialog):
 # Load/save pattern
 
     @Slot()
-    def on_selectResource_currentTextChanged(self):
+    def on_selectResource_activated(self):
         #TODO check for unsaved changes
-        self.set.replace_resource(self.selectResource.currentText(), self.active_idx)
+        if self.selectResource.currentText() in self.resource_slugs:
+            self.set.replace_resource(self.selectResource.currentText(), self.active_idx)
 
     @Slot()
     def on_saveResource_clicked(self):
         name = self.get_resource_name()
-        self.set[self.active_idx].save(name)
+        self.set.save_resource(name, self.active_idx)
         self.update_resources()
 
 # Save/load helpers
@@ -137,7 +149,7 @@ class ViaResourceEditor(QDialog):
         self.selectResourceSet.clear()
         self.resource_set_slugs = self.set.get_available_resource_sets()
         for resource_set in self.resource_set_slugs:
-             self.selectResource.insertItem(-1, resource_set)
+             self.selectResourceSet.insertItem(-1, resource_set)
     
     def update_resources(self):
         self.selectResource.clear()
@@ -153,6 +165,8 @@ class ViaResourceEditor(QDialog):
             else:
                 return 
         self.active_idx = slot_num
+        resource_slug = self.set.data[slot_num]
+        self.selectResource.setCurrentIndex(self.selectResource.findText(resource_slug))
         self.update_resource_ui()
 
     def prompt_to_discard(self):
@@ -162,32 +176,20 @@ class ViaResourceEditor(QDialog):
             return False
         # Ask user if they wish to save any unsaved changes
 
-    def load_pattern(self, pattern_id):
-        if self.unsaved_pattern_changes:
-            if self.prompt_to_discard():
-                self.unsaved_pattern_changes = False
-            else:
-                cb_index = self.ui.selectPattern.findText(self.active_pattern_id)
-                self.ui.selectPattern.setCurrentIndex(cb_index) 
-                return 
-        cb_index = self.ui.selectPattern.findText(pattern_id)
-        self.ui.selectPattern.setCurrentIndex(cb_index)
-        self.active_pattern_id = pattern_id
-        self.update_grid()        
-
     def get_resource_name(self, default=''):
-        filename = QInputDialog.getText(self, 'Save Resource', 'Enter resource name:', text=default)
+        filename = QInputDialog.getText(self, 'Save Resource', 'Enter resource name:', text=default)[0]
+        print(filename)
         while filename in self.remote_resources['resources']:
-            filename = QInputDialog.getText(self, 'Save Resource', 'Reserved name, enter new name:', text=default) 
+            filename = QInputDialog.getText(self, 'Save Resource', 'Reserved name, enter new name:', text=default)[0]
         if filename in self.resource_slugs:
             if QMessageBox.question(self, 'Overwrite?', 'Name in use, overwrite?') == QMessageBox.No:
                 return
         return filename
 
     def get_resource_set_name(self, default=''):
-        filename = QInputDialog.getText(self, 'Save Resource Set', 'Enter resource set name:', text=default)
+        filename = QInputDialog.getText(self, 'Save Resource Set', 'Enter resource set name:', text=default)[0]
         while filename in self.remote_resources['sets']:
-            filename = QInputDialog.getText(self, 'Save Resource Set', 'Reserved name, enter new name:', text=default) 
+            filename = QInputDialog.getText(self, 'Save Resource Set', 'Reserved name, enter new name:', text=default)[0]
             if filename in self.resource_set_slugs:
                 if QMessageBox.question(self, 'Overwrite?', 'Name in use, overwrite?') == QMessageBox.No:
                     return

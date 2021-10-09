@@ -6,21 +6,24 @@ from viatools.gateseq_patterns import GateseqPatternSet
 from via_resource_editor import ViaResourceEditor
 
 class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
-    def __init__(self, resource_dir='./', remote_resources = {}, output_dir='./', slug='original'):
+    def __init__(self, resource_dir='./', remote_resources = {}, slug='original'):
         super().__init__() 
         self.setupUi(self)
 
         self.remote_resources = remote_resources
         # TODO check if new remote resource or set collides with existing local slug
 
-        self.set = GateseqPatternSet(resource_dir, output_dir, slug)
+        self.set = GateseqPatternSet(resource_dir, slug)
 
         self.update_resource_sets()
         self.update_resources()
 
         self.create_pattern_grid()
 
-# Edit seed ratios
+        self.slot1.setChecked(True)
+        self.switch_slot(0)
+
+# Edit pattern recipe
 
     @Slot()
     def on_length_valueChanged(self):
@@ -28,7 +31,7 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
 
     @Slot()
     def on_addEuclidean_clicked(self):
-        if (len(self.set[self.active_idx].data) < 16):
+        if (len(self.set.resources[self.active_idx].data) < 16):
             self.set.resources[self.active_idx].add_data([self.steps.value(), self.length.value()])
             self.update_resource_ui()
             self.unsaved_changes = True
