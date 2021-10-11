@@ -6,9 +6,10 @@ from viatools.gateseq_patterns import GateseqPatternSet
 from via_resource_editor import ViaResourceEditor
 
 class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
-    def __init__(self, resource_dir='./', remote_resources = {}, slug='original'):
+    def __init__(self, resource_dir='./', remote_resources = {}, slug='original', style_text=""):
         super().__init__() 
         self.setupUi(self)
+        self.setStyleSheet(style_text)
 
         self.remote_resources = remote_resources
         # TODO check if new remote resource or set collides with existing local slug
@@ -36,12 +37,12 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
             self.update_resource_ui()
             self.unsaved_changes = True
         else:
-            QMessageBox('Pattern full', 'Click a sequence to remove it.')
+            QMessageBox(title='Pattern full', text='Click a sequence to remove it.')
 
     @Slot()
-    def on_addX0x_clicked(self):
-        #TODO launch checkbox widget
-        return
+    def on_padToFill_clicked(self):
+        self.set.resources[self.active_idx].pad_to_length()
+        self.update_resource_ui()
 
     @Slot()
     def on_addText_clicked(self):
@@ -50,13 +51,13 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
             text = QInputDialog.getText(title='Enter Sequence As Text', label='Use ^ for on and _ for off')
             for character in text:
                 if character not in ['^','_']:
-                    QMessageBox('Entry problem', 'Please only use ^ and _ in your entry')
+                    QMessageBox(title='Entry problem', text='Please only use ^ and _ in your entry')
                     return
             self.set.resources[self.active_idx].add_data(text)
             self.update_resource_ui()
             self.unsaved_changes = True
         else:
-            QMessageBox('Pattern full', 'Click a sequence to remove it.')
+            QMessageBox(title='Pattern full', text='Click a sequence to remove it.')
 
     @Slot()
     def on_clearSequences_clicked(self):

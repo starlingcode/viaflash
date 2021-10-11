@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QDialog, QInputDialog, QMessageBox
-from PySide6.QtCore import Slot
+from PySide6.QtCore import Slot, Qt
 
 class ViaResourceEditor(QDialog):
     def __init__(self):
@@ -18,6 +18,7 @@ class ViaResourceEditor(QDialog):
         self.set.save_set(name)
         self.update_resource_sets()
         self.selectResourceSet.setCurrentIndex(self.selectResourceSet.findText(name))
+        self.update_resource_ui()
 
     @Slot()
     def on_selectResourceSet_activated(self):
@@ -25,7 +26,7 @@ class ViaResourceEditor(QDialog):
         slug = self.selectResourceSet.currentText()
         if slug in self.resource_set_slugs:
             self.set.load_set(slug)
-            self.slot1.setChecked(True)
+            self.switch_slot(self.active_idx)
 
     @Slot() 
     def on_saveForRack_clicked(self):
@@ -136,12 +137,15 @@ class ViaResourceEditor(QDialog):
         #TODO check for unsaved changes
         if self.selectResource.currentText() in self.resource_slugs:
             self.set.replace_resource(self.selectResource.currentText(), self.active_idx)
+            self.switch_slot(self.active_idx)
 
     @Slot()
     def on_saveResource_clicked(self):
         name = self.get_resource_name()
         self.set.save_resource(name, self.active_idx)
         self.update_resources()
+        self.selectResource.setCurrentIndex(self.selectResource.findText(name))
+        self.update_resource_ui()
 
 # Save/load helpers
 
@@ -194,3 +198,8 @@ class ViaResourceEditor(QDialog):
                 if QMessageBox.question(self, 'Overwrite?', 'Name in use, overwrite?') == QMessageBox.No:
                     return
         return filename
+
+    def keyPressEvent(self, evt):
+        if evt.key() == Qt.Key_Enter or evt.key() == Qt.Key_Return:
+            return
+        super().keyPressEvent(evt)

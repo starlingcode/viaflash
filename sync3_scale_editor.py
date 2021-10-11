@@ -5,7 +5,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 from matplotlib import pyplot as plt
 
-from PySide6.QtWidgets import QDialog, QPushButton, QSpacerItem, QSizePolicy, QMessageBox, QLabel, QFileDialog
+from PySide6.QtWidgets import QDialog, QPushButton, QSpacerItem, QSizePolicy, QMessageBox, QLabel, QFileDialog, QWidget, QGridLayout
 from PySide6.QtCore import Slot, QRect, Qt
 
 from ui_sync3_scale_editor import Ui_sync3ScaleEditor
@@ -40,9 +40,14 @@ class Sync3Ratio(QDialog, Ui_sync3Ratio):
         self.xyLayout.addWidget(Sync3RatioXY(numerator,denominator))
 
 class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
-    def __init__(self, resource_dir='./', remote_resources = {}, slug='original'):
+    def __init__(self, resource_dir='./', remote_resources = {}, slug='original', style_text=''):
         super().__init__() 
         self.setupUi(self)
+        self.setStyleSheet(style_text)
+        self.style_text = style_text
+
+        #TODO pass through to resources through constructors
+        self.scale_size = 32
 
         self.remote_resources = remote_resources
         # TODO check if new remote resource or set collides with existing local slug
@@ -67,7 +72,8 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
 
     @Slot()
     def on_addSeedRatio_clicked(self):
-        ratio = [self.numerator.value(), self.denominator.value()]
+        ratio = [int(self.numerator.value()), int(self.denominator.value())]
+        print(ratio)
         self.add_seed_ratio(ratio)
 
     @Slot()
@@ -128,31 +134,36 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
 
     def add_seed_ratio(self, ratio): 
         if self.check_data(ratio):
-            self.set.resources[self.active_idx].add_data(ratio)
+            self.set.resources[self.active_idx].add_data(self.reduce_ratio(ratio))
             self.update_resource_ui()
             self.unsaved_scale_changes = True
             print('Added')
         else:
-            print('Rejected as duplicate')
+            reduced = self.reduce_ratio(ratio)
+            print('Ratio %d/%d exists in set as %d/%d' % (ratio[0], ratio[1], reduced[0], reduced[1]))
     
     def check_data(self, ratio):
-        gcd = np.gcd(ratio[0], ratio[1])
-        reduced_ratio = [1, 1]
-        reduced_ratio[0] = ratio[0]/gcd
-        reduced_ratio[1] = ratio[1]/gcd
+        reduced_ratio = self.reduce_ratio(ratio)
         if reduced_ratio in self.set.resources[self.active_idx].data['seed_ratios']:
             #TODO prompt to override
             return False
         else:
             return True
 
+    def reduce_ratio(self, ratio):
+        gcd = np.gcd(ratio[0], ratio[1])
+        reduced_ratio = [1, 1]
+        reduced_ratio[0] = int(ratio[0]/gcd)
+        reduced_ratio[1] = int(ratio[1]/gcd)
+        return reduced_ratio
+
     def seed_button_pushed(self, idx):
         ratio = self.set.resources[self.active_idx].data['seed_ratios'][idx]
         self.ratio_dialog = Sync3Ratio(ratio[0], ratio[1])
-        self.ratio_dialog.setGeometry(QRect(200, 200, 180, 271))
         self.ratio_dialog.removeRatio.clicked.connect(self.remove_ratio)
         self.ratio_dialog.close.clicked.connect(self.close_ratio_dialog)
         self.ratio_dialog.setWindowTitle('%d/%d' % (ratio[0], ratio[1]))
+        self.ratio_dialog.setStyleSheet(self.style_text)
         self.active_ratio_idx = idx
         self.ratio_dialog.exec()
 
@@ -163,8 +174,12 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
         self.set.resources[self.active_idx].remove_data(self.active_ratio_idx)
         self.update_resource_ui()
         self.unsaved_scale_changes = True
+        self.ratio_dialog.accept()
 
     def create_seed_ratio_grid(self):
+        self.scroll_widget = QWidget()
+        self.scroll_widget.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+        self.seedRatioGrid = QGridLayout()
         self.seed_ratio_buttons = []
         self.num_columns = 4
         self.num_rows = 8
@@ -172,13 +187,17 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
             for column in range(0, self.num_columns):
                 idx = row * self.num_columns + column
                 new_button = QPushButton()
-                new_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+                new_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+                new_button.setFixedSize(80, 20)
                 sp = new_button.sizePolicy()
                 sp.setRetainSizeWhenHidden(True)
                 new_button.setSizePolicy(sp)
                 new_button.clicked.connect(lambda state=True, x=idx: self.seed_button_pushed(x))
                 self.seed_ratio_buttons.append(new_button)
                 self.seedRatioGrid.addWidget(new_button, row, column)
+        self.scroll_widget.setLayout(self.seedRatioGrid)
+        self.seedRatios.setWidget(self.scroll_widget)      
+
 
     def update_resource_ui(self):
         seed_ratios = self.set.resources[self.active_idx].data['seed_ratios']
@@ -186,15 +205,34 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
         for idx, ratio in enumerate(seed_ratios):
             self.seed_ratio_buttons[idx].show()
             self.seed_ratio_buttons[idx].setText('%s/%s' % (ratio[0], ratio[1]))
-        for i in range(idx+1, 31):
+        for i in range(idx+1, 32):
             self.seed_ratio_buttons[i].hide()
         self.update_fill_method(self.set.resources[self.active_idx].data['fill_method'])
 
 # Fill method helpers
 
     def update_fill_method(self, fill_method):
+        seed_ratios = self.set.resources[self.active_idx].data['seed_ratios']
+        #TODO make this into a function somewhere
+        lt_1 = []
+        gt_1 = []
+        for ratio in seed_ratios:
+            if ratio[0]/ratio[1] < 1:
+                lt_1.append(ratio)
+            elif ratio[0]/ratio[1] > 1:
+                gt_1.append(ratio)
+        if len(lt_1) > self.scale_size/4 or len(gt_1) > self.scale_size/4:
+            tile_ok = False
+        else:
+            tile_ok = True
+            
         if self.set.resources[self.active_idx].data['fill_method'] != fill_method:
             self.unsaved_scale_changes = True
+
+        if not tile_ok:
+            fill_method = 'expand'
+            print('Forcing expand because too many ratios')
+
         if fill_method == 'octave':
             self.fillOctave.setChecked(True)
             self.set.resources[self.active_idx].data['fill_method'] = fill_method
@@ -257,7 +295,6 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
 
     def update_preview(self):
         self.set.bake()
-        print(self.set.resources[self.active_idx].baked)
         numerator = self.set.resources[self.active_idx].baked['numerators'][self.preview_idx]
         denominator = self.set.resources[self.active_idx].baked['denominators'][self.preview_idx]
         self.decimalPreview.setText('%.4f' % (numerator/denominator))

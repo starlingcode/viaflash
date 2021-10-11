@@ -22,6 +22,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
 
         self.app_path = os.path.dirname(os.path.abspath(__file__))
+        with open(self.app_path + '/viatools.qss') as stylesheet:
+            self.style_text = stylesheet.read()
+            self.setStyleSheet(self.style_text)
         self.statusBar.setStyleSheet("background-color:rgb(0, 0, 0); color:rgb(255, 255, 255);");
         self.setFixedSize(QSize(585, 640))
 
@@ -55,6 +58,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def on_firmwareInfoButton_clicked(self):
         infoBox = QMessageBox();
         infoBox.setText(self.remote_firmware_selection['description']);
+        infoBox.setStyleSheet(self.style_text)
         infoBox.exec();
     
     @Slot()    
@@ -147,8 +151,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if r.status_code == 200:
                 with open(path, 'wb') as f:
                     f.write(r.content)
-            self.firmwareInfoButton.show()
-            self.loadDefaultButton.show()
+            # self.loadDefaultButton.show()
             preset = self.get_latest_module_data(self.remote_firmware_selection['optionByte'])
             if 'path' in preset:
                 if preset['path'].split('-')[0] == '254':
@@ -161,7 +164,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.faceplate_image = QPixmap(path)
             self.faceplate.setPixmap(self.faceplate_image)
             self.firmwareInfoButton.show()
-            self.loadDefaultButton.show()
             self.flashButton.show()
             self.init_set_editor(token)
         else:
@@ -243,8 +245,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def flash_resources(self):
         token = self.remote_firmware_selection['token']
         if token in self.editor_data:
+            self.editor1.set.load_set(self.edit1Select.currentText())
             self.editor1.set.pack_binary()
-            return self.dfu.start_resource_flash(self.editor_data[token]['resource1_address'], self.app_path + '%s/binaries/%s.bin' % (token, self.editor1.set.slug)) 
+            return self.dfu.start_resource_flash(self.editor_data[token]['resource1_address'], self.app_path + '/%s/binaries/%s.bin' % (token, self.editor1.set.slug)) 
         else:
             return True
 
@@ -277,49 +280,50 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def init_set_editor(self, token):
         print('Initializing set editor')
         self.reset_editor()
-        self.edit1Select.show()
-        self.edit1Label.show()
-        object_name = self.editor_data[token]['object1_name']
-        object_name_plural = object_name + 's'
-        self.edit1Label.setText("Select %s set:" % object_name)
-        self.openEdit1.clicked.connect(self.launch_editor1)
-        self.openEdit1.show()
-        self.openEdit1.setText('Edit ' + object_name.title() + ' Set') 
-        firmware_dir = self.app_path + '/%s/' % token
-        print(firmware_dir)
-        r = requests.get(self.repo_url + '/%s/manifest.json' % token)
-        if r.status_code == 200:
-            self.statusBar.showMessage('Remote %s sets loaded' % object_name)
-            self.remote_resources = {}
-            self.remote_resources['sets'] = r.json()
-            self.remote_resources['resources'] = []
-            for idx, set_slug in enumerate(self.remote_resources['sets']): 
-                set_url = self.repo_url + '/%s/%s.json' % (token, set_slug)
-                r_set = requests.get(set_url)
-                if r_set.status_code == 200:
-                    with open(firmware_dir + '%s.json' % set_slug, 'wb') as set_file:
-                        set_file.write(r_set.content)
-                    for resource in r_set.json():
-                        resource_url = (self.repo_url + '/%s/%s/%s.json' % (token, object_name_plural, resource)) # hacky pluralization of resource name
-                        r_resource = requests.get(resource_url)
-                        if r_resource.status_code == 200:
-                            self.remote_resources['resources'].append(resource)
-                            with open(firmware_dir + '%s/%s.json' % (object_name_plural, resource), 'wb') as resource_file:
-                                resource_file.write(r_resource.content)
-                        else:
-                            print('Resource dl error on ' + resource_url)
-                else:
-                    #TODO error handling
-                    print('Set dl error on ' + set_url)
-                    print(r_set)
-                    return
-        else:
-            #TODO error handling
-            print('Manifest dl error')
-            return
-        self.populate_edit1Select(firmware_dir)
-        self.editor1 = self.editor_data[token]['editor1_object'](firmware_dir, self.remote_resources, self.edit1Select.currentText())
-        self.editor1.finished.connect(self.get_slug_from_editor1)
+        if token in self.editor_data:
+            self.edit1Select.show()
+            self.edit1Label.show()
+            object_name = self.editor_data[token]['object1_name']
+            object_name_plural = object_name + 's'
+            self.edit1Label.setText("Select %s set:" % object_name)
+            self.openEdit1.clicked.connect(self.launch_editor1)
+            self.openEdit1.show()
+            self.openEdit1.setText('Edit ' + object_name.title() + ' Set') 
+            firmware_dir = self.app_path + '/%s/' % token
+            print(firmware_dir)
+            r = requests.get(self.repo_url + '/%s/manifest.json' % token)
+            if r.status_code == 200:
+                self.statusBar.showMessage('Remote %s sets loaded' % object_name)
+                self.remote_resources = {}
+                self.remote_resources['sets'] = r.json()
+                self.remote_resources['resources'] = []
+                for idx, set_slug in enumerate(self.remote_resources['sets']): 
+                    set_url = self.repo_url + '/%s/%s.json' % (token, set_slug)
+                    r_set = requests.get(set_url)
+                    if r_set.status_code == 200:
+                        with open(firmware_dir + '%s.json' % set_slug, 'wb') as set_file:
+                            set_file.write(r_set.content)
+                        for resource in r_set.json():
+                            resource_url = (self.repo_url + '/%s/%s/%s.json' % (token, object_name_plural, resource)) # hacky pluralization of resource name
+                            r_resource = requests.get(resource_url)
+                            if r_resource.status_code == 200:
+                                self.remote_resources['resources'].append(resource)
+                                with open(firmware_dir + '%s/%s.json' % (object_name_plural, resource), 'wb') as resource_file:
+                                    resource_file.write(r_resource.content)
+                            else:
+                                print('Resource dl error on ' + resource_url)
+                    else:
+                        #TODO error handling
+                        print('Set dl error on ' + set_url)
+                        print(r_set)
+                        return
+            else:
+                #TODO error handling
+                print('Manifest dl error')
+                return
+            self.populate_edit1Select(firmware_dir)
+            self.editor1 = self.editor_data[token]['editor1_object'](firmware_dir, self.remote_resources, self.edit1Select.currentText(), self.style_text)
+            self.editor1.finished.connect(self.get_slug_from_editor1)
 
     def populate_edit1Select(self, firmware_dir, selected_slug='original'):
         self.edit1Select.clear()
@@ -338,3 +342,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def get_slug_from_editor1(self):
         selected_slug = self.editor1.set.slug
         self.populate_edit1Select(self.remote_firmware_selection['token'], selected_slug)
+
+###
+
+    def handle_network_error(self, error):
+        self.pop_up_message('Network error', 'Unable to load remote resource, please check internet connectivity and try again.')
+
+    def handle_flashing_error(self, error):
+        self.pop_up_message('Flashing error', 'Unable to flash resource, please reconnect module and try again')
+
+    def handle_detect_error(self, error):
+        self.pop_up_message('Module detect error', 'Unable to flash resource, please reconnect module and try again')
