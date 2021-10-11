@@ -10,3 +10,5 @@ __pycache__/
 __pycache__
 matplotlib/
 matplotlib
+*.json
+*.bin
