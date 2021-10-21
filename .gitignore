@@ -2,3 +2,14 @@ venv
 venv/
 vendor
 vendor/
+module_data
+module_data/
+binaries/
+img/*
+!img/blank.png
+__pycache__/
+__pycache__
+matplotlib/
+matplotlib
+*.json
+*.bin

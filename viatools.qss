@@ -1,0 +1,26 @@
+QRadioButton, QComboBox, QPushButton, QSpinBox, QStatusBar {
+    color: white;
+    background-color: #111111;
+}
+
+QDialog, QMessageBox, QLabel, QMainWindow, QScrollArea, QScrollBar {
+    color: white;
+    background-color: black;
+}
+
+QScrollArea QWidget {
+    color: white;
+    background-color: black;
+}
+
+QScrollArea QPushButton {
+    color: white;
+    background-color: #111111;
+}
+
+QComboBox QAbstractItemView {
+    background-color: black;
+}
+
+QRadioButton {
+}
