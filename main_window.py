@@ -1,6 +1,5 @@
 import os
 import requests
-import pathlib
 import shutil
 import json
 
@@ -22,12 +21,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
 
         self.app_path = os.path.dirname(os.path.abspath(__file__))
+
         with open(self.app_path + '/viatools.qss') as stylesheet:
             self.style_text = stylesheet.read()
             self.setStyleSheet(self.style_text)
         self.statusBar.setStyleSheet("background-color:rgb(0, 0, 0); color:rgb(255, 255, 255);");
         self.setFixedSize(QSize(585, 640))
-
 
         self.stored_module_data = {}
         self.repo_url = 'https://raw.githubusercontent.com/starlingcode/viafirmware/master'
@@ -36,7 +35,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.firmware_manifest = []
         self.remote_firmware_selection = {}
 
-        self.dfu = DfuUtil(str(pathlib.Path(__file__).parent.absolute()))
+        self.dfu = DfuUtil(self.app_path)
         self.via = None
 
         self.get_remote()        
@@ -126,7 +125,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.get_stored_module_data()
     
     def get_stored_module_data(self):
-        for root, dirs, files in os.walk(self.app_path + '/module_data'):
+        data_path = self.app_path + '/module_data'
+        if os.path.exists(data_path) is False:
+            os.mkdir(data_path)
+        for root, dirs, files in os.walk(data_path):
             for file in files:
                 info = file.split('-')
                 serial = info[2]
@@ -193,6 +195,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return last_firmware
 
     def initiate_flash(self):
+        data_path = self.app_path + '/binaries'
+        if os.path.exists(data_path) is False:
+            os.mkdir(data_path)
         if 'token' in self.remote_firmware_selection:
             bin_path = '/binaries/' + self.remote_firmware_selection['token'] + '.bin'
             r = requests.get(self.repo_url + bin_path)
@@ -278,6 +283,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.openEdit2.hide()              
 
     def init_set_editor(self, token):
+        data_path = self.app_path + '/' + token
+        if os.path.exists(data_path) is False:
+            os.mkdir(data_path)
         print('Initializing set editor')
         self.reset_editor()
         if token in self.editor_data:
@@ -308,6 +316,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                             r_resource = requests.get(resource_url)
                             if r_resource.status_code == 200:
                                 self.remote_resources['resources'].append(resource)
+                                data_path = firmware_dir + '/' + object_name_plural
+                                if os.path.exists(data_path) is False:
+                                    os.mkdir(data_path)
                                 with open(firmware_dir + '%s/%s.json' % (object_name_plural, resource), 'wb') as resource_file:
                                     resource_file.write(r_resource.content)
                             else:
