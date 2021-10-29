@@ -8,7 +8,7 @@ You will need to make sure Python >= 3.8 is installed and you will need to have 
 
 On Windows, you will need to [register your DFU device with the correct driver using Zadig](https://starling.space/via/platform-info#viaflash).
 
-After cloning the source code and navigating to the top level directory of the project, it is recommended to create [a Python virtual environment](https://docs.python.org/3/library/venv.html).
+After cloning the source code, initializing the submodules,and navigating to the top level directory of the project, it is recommended to create [a Python virtual environment](https://docs.python.org/3/library/venv.html).
 
 From the top level of the source directory, with your vitual environment activated, download python dependencies with:
 
