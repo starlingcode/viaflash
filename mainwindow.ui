@@ -24,7 +24,6 @@
   </property>
   <property name="font">
    <font>
-    <family>IBM Plex Sans</family>
     <pointsize>10</pointsize>
    </font>
   </property>
@@ -191,7 +190,6 @@
       <widget class="QRadioButton" name="loadDefaultButton">
        <property name="font">
         <font>
-         <family>IBM Plex Sans</family>
          <pointsize>10</pointsize>
         </font>
        </property>
@@ -260,6 +258,13 @@
       <widget class="QPushButton" name="flashButton">
        <property name="text">
         <string>Flash!</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="editResources">
+       <property name="text">
+        <string>Edit Resources</string>
        </property>
       </widget>
      </item>

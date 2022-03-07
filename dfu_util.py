@@ -74,7 +74,7 @@ class DfuUtil:
         ud.setWindowTitle('Flash progress')
         ud.setLabelText('Erasing...')
         ud.setValue(0)
-        ud.exec()
+        ud.show()
         out_text = ''
         success = False
         while True:
@@ -82,10 +82,12 @@ class DfuUtil:
             if dfu_process.poll() is not None:
                 break
             if output:
-                print(output)
                 out_text += output
                 if output == '%':
-                    progress = int(out_text[-4:-1])
+                    try:
+                        progress = int(out_text[-4:-1])
+                    except: # stray %
+                        progress = 0
                     ud.setValue(progress)
                     if progress == 100:
                         ud.setLabelText('Flashing...')
@@ -106,13 +108,14 @@ class DfuUtil:
 
     def start_firmware_flash(self, path):
         arguments = '--device 0483:df11 -a 0 -s 0x08000000 -D %s -R' % path
-        return self.run_process_blocking_print(arguments.split())
-        # dfu_process = self.initiate_process(arguments.split())
-        # return self.monitor_flash_progress(dfu_process)        
+#        return self.run_process_blocking_print(arguments.split())
+        dfu_process = self.initiate_process(arguments.split())
+        return self.monitor_flash_progress(dfu_process)        
 
     def start_resource_flash(self, address, path):
         arguments = '--device 0483:df11 -a 0 -s %s -D %s -R' % (address, path)
-        return self.run_process_blocking_print(arguments.split())
+        dfu_process = self.initiate_process(arguments.split())
+        return self.monitor_flash_progress(dfu_process)        
 
     def construct_optionbytes(self, firmware_key, firmware_version):
         ob = bytearray(16)

@@ -1,0 +1,3 @@
+Allow arbitrary sync3 ratio ordering
+Make provisions for displaying non-euclidean gateseq patterns
+Check scala file import for sync3

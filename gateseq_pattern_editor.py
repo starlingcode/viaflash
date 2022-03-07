@@ -61,7 +61,7 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
 
     @Slot()
     def on_clearSequences_clicked(self):
-        if QMessageBox.question(self, 'Clear Ratios', 'Clear all ratios?') == QMessageBox.Yes: 
+        if QMessageBox.question(self, 'Clear Sequences', 'Clear all sequences?') == QMessageBox.Yes: 
             self.set.resources[self.active_idx].data = []
             self.update_resource_ui()
 

@@ -3,7 +3,7 @@ import requests
 import shutil
 import json
 
-from PySide6.QtWidgets import QMainWindow, QMessageBox, QProgressDialog, QPushButton, QComboBox
+from PySide6.QtWidgets import QMainWindow, QMessageBox, QProgressDialog, QPushButton, QComboBox, QStyleFactory
 from PySide6.QtCore import Slot, QFileInfo, QFile, QIODevice, QSize, QRect
 from PySide6.QtGui import QPixmap
 from PySide6.QtUiTools import QUiLoader
@@ -13,6 +13,7 @@ from dfu_util import DfuUtil
 from via_module import ViaModule
 from sync3_scale_editor import Sync3ScaleEditor
 from gateseq_pattern_editor import GateseqPatternEditor
+from osc3_scale_editor import Osc3ScaleEditor
 
 class MainWindow(QMainWindow, Ui_MainWindow):
 
@@ -22,6 +23,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.app_path = os.path.dirname(os.path.abspath(__file__))
 
+        self.setStyle(QStyleFactory.create("Fusion"));
         with open(self.app_path + '/viatools.qss') as stylesheet:
             self.style_text = stylesheet.read()
             self.setStyleSheet(self.style_text)
@@ -37,6 +39,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.dfu = DfuUtil(self.app_path)
         self.via = None
+ 
+        self.editSoftware = False
 
         self.get_remote()        
 
@@ -52,6 +56,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @Slot()    
     def on_detectButton_clicked(self):
         self.detect_module()    
+
+    @Slot()    
+    def on_editResources_clicked(self):
+        self.activate_editor()    
         
     @Slot()    
     def on_firmwareInfoButton_clicked(self):
@@ -76,7 +84,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 # Remote firmware flashing flow
  
     def get_remote(self):
-        r = requests.get(self.repo_url + '/manifest.json')
+        r = requests.get(self.repo_url + '/manifest.json', timeout=5)
         if r.status_code == 200:
             self.statusBar.showMessage('Remote firmware loaded')
             self.firmware_manifest = r.json()
@@ -91,6 +99,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.detectButton.hide()
             self.statusBar.showMessage('Via found with serial %s, looking for firmware..' % serial)
             self.via = ViaModule(serial, self.firmware_manifest)
+            self.editSoftware = False
+            self.editResources.hide()
             self.read_option_bytes()
         else:
             self.statusBar.showMessage('No hardware detected -- Pushed DFU button?  Removed expander cable?')
@@ -118,6 +128,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     if self.via.serial not in self.stored_module_data: 
                         print(self.stored_module_data)
                         self.dfu.store_eeprom_data(254, self.via.version, self.via.serial)
+                    self.firmwareSelect.setCurrentIndex(self.firmwareSelect.findText(self.via.firmware.upper()))
+                    self.on_firmwareSelect_activated()
 
         else:
             self.dfu.read_unprotect()
@@ -148,30 +160,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if 'token' in self.remote_firmware_selection:
             token = self.remote_firmware_selection['token']
             faceplate_path = '/img/' + token + '.png'
-            r = requests.get(self.repo_url + faceplate_path)
+            r = requests.get(self.repo_url + faceplate_path, timeout=5)
             path = self.app_path + faceplate_path
             if r.status_code == 200:
                 with open(path, 'wb') as f:
                     f.write(r.content)
-            # self.loadDefaultButton.show()
-            preset = self.get_latest_module_data(self.remote_firmware_selection['optionByte'])
-            if 'path' in preset:
-                if preset['path'].split('-')[0] == '254':
-                    self.statusBar.showMessage('No saved data found, loading factory deaults')
-                else:
-                    self.statusBar.showMessage('Loading lastest saved data')
-            else:
-                # TODO move and formalize
-                self.statusBar.showMessage('No calibration info, please select and run CALIBRATION')
             self.faceplate_image = QPixmap(path)
             self.faceplate.setPixmap(self.faceplate_image)
             self.firmwareInfoButton.show()
-            self.flashButton.show()
+            # self.loadDefaultButton.show()
+            if self.editSoftware is False:
+                preset = self.get_latest_module_data(self.remote_firmware_selection['optionByte'])
+                if 'path' in preset:
+                    if preset['path'].split('-')[0] == '254':
+                        self.statusBar.showMessage('No saved data found, loading factory deaults')
+                    else:
+                        self.statusBar.showMessage('Loading lastest saved data')
+                else:
+                    # TODO move and formalize
+                    self.statusBar.showMessage('No calibration info, please select and run CALIBRATION')
+                self.flashButton.show()
             self.init_set_editor(token)
         else:
             path = self.app_path + '/img/blank.png'
-            self.firmwareInfoButton.hide(True)
-            self.loadDefaultButton.hide(True)
+            self.firmwareInfoButton.hide()
+            self.loadDefaultButton.hide()
             self.reset_editor()
 
     def get_latest_module_data(self, firmware_key):
@@ -200,7 +213,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             os.mkdir(data_path)
         if 'token' in self.remote_firmware_selection:
             bin_path = '/binaries/' + self.remote_firmware_selection['token'] + '.bin'
-            r = requests.get(self.repo_url + bin_path)
+            r = requests.get(self.repo_url + bin_path, timeout=5)
             path = self.app_path + bin_path
             firmware_key = self.remote_firmware_selection['optionByte']
             firmware_version = self.remote_firmware_selection['latestVersion']
@@ -236,6 +249,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.detectButton.show()
         self.detectButton.setEnabled(True)
+        self.editResources.show()
+        self.editResources.setEnabled(True)
 
         self.firmwareSelectLabel.hide()
         self.firmwareSelect.hide()
@@ -251,12 +266,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         token = self.remote_firmware_selection['token']
         if token in self.editor_data:
             self.editor1.set.load_set(self.edit1Select.currentText())
-            self.editor1.set.pack_binary()
-            return self.dfu.start_resource_flash(self.editor_data[token]['resource1_address'], self.app_path + '/%s/binaries/%s.bin' % (token, self.editor1.set.slug)) 
+            resource_path = self.editor1.set.pack_binary()
+            return self.dfu.start_resource_flash(self.editor_data[token]['resource1_address'], self.app_path + '/%s/binaries/%s.%s' % (token, self.editor1.set.slug, token)) 
         else:
             return True
 
 # Resource editor setup
+
+    def activate_editor(self):
+        self.firmwareSelectLabel.show()        
+        self.firmwareSelect.show()        
+        self.editResources.hide()        
+        self.editSoftware = True
 
     def init_set_editor_data(self):
         self.editor_data = {}
@@ -268,6 +289,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.editor_data['sync3'] = {
             'object1_name': 'scale',
             'editor1_object': Sync3ScaleEditor,
+            'resource1_address': '0x8020000'
+        }       
+        self.editor_data['osc3'] = {
+            'object1_name': 'scale',
+            'editor1_object': Osc3ScaleEditor,
             'resource1_address': '0x8020000'
         }       
 
@@ -283,10 +309,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.openEdit2.hide()              
 
     def init_set_editor(self, token):
+        print("downloading resources")
         data_path = self.app_path + '/' + token
         if os.path.exists(data_path) is False:
             os.mkdir(data_path)
-        print('Initializing set editor')
         self.reset_editor()
         if token in self.editor_data:
             self.edit1Select.show()
@@ -298,22 +324,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.openEdit1.show()
             self.openEdit1.setText('Edit ' + object_name.title() + ' Set') 
             firmware_dir = self.app_path + '/%s/' % token
-            print(firmware_dir)
-            r = requests.get(self.repo_url + '/%s/manifest.json' % token)
+            r = requests.get(self.repo_url + '/%s/manifest.json' % token, timeout=5)
             if r.status_code == 200:
                 self.statusBar.showMessage('Remote %s sets loaded' % object_name)
+                firmware_bin_path = firmware_dir + '/binaries'
+                if os.path.exists(firmware_bin_path) is False:
+                    os.mkdir(firmware_bin_path)
                 self.remote_resources = {}
                 self.remote_resources['sets'] = r.json()
                 self.remote_resources['resources'] = []
                 for idx, set_slug in enumerate(self.remote_resources['sets']): 
                     set_url = self.repo_url + '/%s/%s.json' % (token, set_slug)
-                    r_set = requests.get(set_url)
+                    r_set = requests.get(set_url, timeout=5)
                     if r_set.status_code == 200:
                         with open(firmware_dir + '%s.json' % set_slug, 'wb') as set_file:
                             set_file.write(r_set.content)
                         for resource in r_set.json():
                             resource_url = (self.repo_url + '/%s/%s/%s.json' % (token, object_name_plural, resource)) # hacky pluralization of resource name
-                            r_resource = requests.get(resource_url)
+                            r_resource = requests.get(resource_url, timeout=5)
                             if r_resource.status_code == 200:
                                 self.remote_resources['resources'].append(resource)
                                 data_path = firmware_dir + '/' + object_name_plural
@@ -335,6 +363,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.populate_edit1Select(firmware_dir)
             self.editor1 = self.editor_data[token]['editor1_object'](firmware_dir, self.remote_resources, self.edit1Select.currentText(), self.style_text)
             self.editor1.finished.connect(self.get_slug_from_editor1)
+        else: 
+            self.statusBar.showMessage("No editable resources")
 
     def populate_edit1Select(self, firmware_dir, selected_slug='original'):
         self.edit1Select.clear()
