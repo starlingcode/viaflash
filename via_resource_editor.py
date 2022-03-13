@@ -143,12 +143,15 @@ class ViaResourceEditor(QDialog):
     def on_saveResource_clicked(self):
         name = self.get_resource_name()
         self.set.save_resource(name, self.active_idx)
+        self.update_resource_selection()
         self.update_resources()
-        self.selectResource.setCurrentIndex(self.selectResource.findText(name))
         self.update_resource_ui()
 
 # Save/load helpers
 
+    def update_resource_selection(self, name):
+        self.selectResource.setCurrentIndex(self.selectResource.findText(name))
+        
     def update_resource_sets(self):
         self.selectResourceSet.clear()
         self.resource_set_slugs = self.set.get_available_resource_sets()
@@ -170,7 +173,7 @@ class ViaResourceEditor(QDialog):
                 return 
         self.active_idx = slot_num
         resource_slug = self.set.data[slot_num]
-        self.selectResource.setCurrentIndex(self.selectResource.findText(resource_slug))
+        self.update_resource_selection(resource_slug)
         self.update_resource_ui()
 
     def prompt_to_discard(self):

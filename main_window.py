@@ -14,6 +14,7 @@ from via_module import ViaModule
 from sync3_scale_editor import Sync3ScaleEditor
 from gateseq_pattern_editor import GateseqPatternEditor
 from osc3_scale_editor import Osc3ScaleEditor
+from scanner_wavetable_editor import ScannerWavetableEditor
 
 class MainWindow(QMainWindow, Ui_MainWindow):
 
@@ -296,6 +297,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             'editor1_object': Osc3ScaleEditor,
             'resource1_address': '0x8020000'
         }       
+        self.editor_data['scanner'] = {
+            'object1_name': 'wavetable',
+            'editor1_object': ScannerWavetableEditor,
+            'resource1_address': '0x8020000'
+        }       
 
 
     def reset_editor(self):
@@ -339,18 +345,34 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     if r_set.status_code == 200:
                         with open(firmware_dir + '%s.json' % set_slug, 'wb') as set_file:
                             set_file.write(r_set.content)
-                        for resource in r_set.json():
-                            resource_url = (self.repo_url + '/%s/%s/%s.json' % (token, object_name_plural, resource)) # hacky pluralization of resource name
-                            r_resource = requests.get(resource_url, timeout=5)
-                            if r_resource.status_code == 200:
-                                self.remote_resources['resources'].append(resource)
-                                data_path = firmware_dir + '/' + object_name_plural
-                                if os.path.exists(data_path) is False:
-                                    os.mkdir(data_path)
-                                with open(firmware_dir + '%s/%s.json' % (object_name_plural, resource), 'wb') as resource_file:
-                                    resource_file.write(r_resource.content)
-                            else:
-                                print('Resource dl error on ' + resource_url)
+                        if object_name != 'wavetable':
+                            for resource in r_set.json():
+                                resource_url = (self.repo_url + '/%s/%s/%s.json' % (token, object_name_plural, resource)) # hacky pluralization of resource name
+                                r_resource = requests.get(resource_url, timeout=5)
+                                if r_resource.status_code == 200:
+                                    self.remote_resources['resources'].append(resource)
+                                    data_path = firmware_dir + '/' + object_name_plural
+                                    if os.path.exists(data_path) is False:
+                                        os.mkdir(data_path)
+                                    with open(firmware_dir + '%s/%s.json' % (object_name_plural, resource), 'wb') as resource_file:
+                                        resource_file.write(r_resource.content)
+                                else:
+                                    print('Resource dl error on ' + resource_url)
+                        else:
+                            table_dir = self.app_path + '/wavetables/'
+                            if os.path.exists(table_dir) is False:
+                                os.mkdir(table_dir)
+                            tables_url = self.repo_url + '/wavetables/tables.json'
+                            r_tables = requests.get(tables_url, timeout=5)
+                            if r_tables.status_code == 200:
+                                with open(table_dir + 'tables.json', 'wb') as tables_file:
+                                    tables_file.write(r_tables.content)
+                            slopes_url = self.repo_url + '/wavetables/slopes.json'
+                            r_slopes = requests.get(slopes_url, timeout=5)
+                            if r_slopes.status_code == 200:
+                                with open(table_dir + 'slopes.json', 'wb') as slopes_file:
+                                    slopes_file.write(r_slopes.content)
+                                 
                     else:
                         #TODO error handling
                         print('Set dl error on ' + set_url)
@@ -361,7 +383,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 print('Manifest dl error')
                 return
             self.populate_edit1Select(firmware_dir)
-            self.editor1 = self.editor_data[token]['editor1_object'](firmware_dir, self.remote_resources, self.edit1Select.currentText(), self.style_text)
+            if object_name != 'wavetable':
+                self.editor1 = self.editor_data[token]['editor1_object'](firmware_dir, self.remote_resources, self.edit1Select.currentText(), self.style_text)
+            else: 
+                self.editor1 = self.editor_data[token]['editor1_object'](firmware_dir, self.remote_resources, self.edit1Select.currentText(), self.style_text, table_dir + 'tables.json', table_dir + 'slopes.json')
             self.editor1.finished.connect(self.get_slug_from_editor1)
         else: 
             self.statusBar.showMessage("No editable resources")
