@@ -143,7 +143,7 @@ class ViaResourceEditor(QDialog):
     def on_saveResource_clicked(self):
         name = self.get_resource_name()
         self.set.save_resource(name, self.active_idx)
-        self.update_resource_selection()
+        self.update_resource_selection(name)
         self.update_resources()
         self.update_resource_ui()
 
