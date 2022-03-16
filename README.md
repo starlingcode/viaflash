@@ -12,7 +12,7 @@ After cloning the source code, initializing the submodules,and navigating to the
 
 From the top level of the source directory, with your vitual environment activated, download python dependencies with:
 
-```pip -r requirements.txt```
+```pip install -r requirements.txt```
 
 Next, create a directory called vendor and copy or symlink the dfu-util binary into that folder (editorial, this feels sketchy but I suppose it will be handled when packaging the app)
 
