@@ -14,7 +14,9 @@ from via_module import ViaModule
 from sync3_scale_editor import Sync3ScaleEditor
 from gateseq_pattern_editor import GateseqPatternEditor
 from osc3_scale_editor import Osc3ScaleEditor
-from scanner_wavetable_editor import ScannerWavetableEditor
+from wavetable_editor import ScannerWavetableEditor
+from wavetable_editor import MetaWavetableEditor
+from wavetable_editor import SyncWavetableEditor
 
 class MainWindow(QMainWindow, Ui_MainWindow):
 
@@ -300,6 +302,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.editor_data['scanner'] = {
             'object1_name': 'wavetable',
             'editor1_object': ScannerWavetableEditor,
+            'resource1_address': '0x8020000'
+        }       
+        self.editor_data['meta'] = {
+            'object1_name': 'wavetable',
+            'editor1_object': MetaWavetableEditor,
+            'resource1_address': '0x8020000'
+        }       
+        self.editor_data['sync'] = {
+            'object1_name': 'wavetable',
+            'editor1_object': SyncWavetableEditor,
             'resource1_address': '0x8020000'
         }       
 

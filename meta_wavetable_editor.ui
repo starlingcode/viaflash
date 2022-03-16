@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>scannerWavetableEditor</class>
- <widget class="QDialog" name="scannerWavetableEditor">
+ <class>metaWavetableEditor</class>
+ <widget class="QDialog" name="metaWavetableEditor">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>627</height>
+    <height>669</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>580</y>
+     <y>630</y>
      <width>341</width>
      <height>32</height>
     </rect>
@@ -56,25 +56,6 @@
      <widget class="QPushButton" name="saveForRack">
       <property name="text">
        <string>Save for Rack</string>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QWidget" name="horizontalLayoutWidget_2">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>200</y>
-     <width>381</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <layout class="QHBoxLayout" name="resourceSaveLoad">
-    <item>
-     <widget class="QPushButton" name="openBrowser">
-      <property name="text">
-       <string>Browser</string>
       </property>
      </widget>
     </item>
@@ -130,7 +111,7 @@
        <item>
         <widget class="QLabel" name="label1">
          <property name="text">
-          <string>X-1</string>
+          <string>A-1</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -167,7 +148,7 @@
        <item>
         <widget class="QLabel" name="label2">
          <property name="text">
-          <string>X-2</string>
+          <string>A-2</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -204,7 +185,7 @@
        <item>
         <widget class="QLabel" name="label3">
          <property name="text">
-          <string>X-3</string>
+          <string>A-3</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -241,7 +222,7 @@
        <item>
         <widget class="QLabel" name="label4">
          <property name="text">
-          <string>X-4</string>
+          <string>A-4</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -278,7 +259,7 @@
        <item>
         <widget class="QLabel" name="label5">
          <property name="text">
-          <string>X-5</string>
+          <string>A-5</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -315,7 +296,7 @@
        <item>
         <widget class="QLabel" name="label6">
          <property name="text">
-          <string>X-6</string>
+          <string>A-6</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -352,7 +333,7 @@
        <item>
         <widget class="QLabel" name="label7">
          <property name="text">
-          <string>X-7</string>
+          <string>A-7</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -389,7 +370,7 @@
        <item>
         <widget class="QLabel" name="label8">
          <property name="text">
-          <string>X-8</string>
+          <string>A-8</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -455,7 +436,7 @@
       <item>
        <widget class="QLabel" name="label1_2">
         <property name="text">
-         <string>Y-1</string>
+         <string>E-1</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -492,7 +473,7 @@
       <item>
        <widget class="QLabel" name="label2_2">
         <property name="text">
-         <string>Y-2</string>
+         <string>E-2</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -529,7 +510,7 @@
       <item>
        <widget class="QLabel" name="label3_2">
         <property name="text">
-         <string>Y-3</string>
+         <string>E-3</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -566,7 +547,7 @@
       <item>
        <widget class="QLabel" name="label4_2">
         <property name="text">
-         <string>Y-4</string>
+         <string>E-4</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -603,7 +584,7 @@
       <item>
        <widget class="QLabel" name="label5_2">
         <property name="text">
-         <string>Y-5</string>
+         <string>E-5</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -640,7 +621,7 @@
       <item>
        <widget class="QLabel" name="label6_2">
         <property name="text">
-         <string>Y-6</string>
+         <string>E-6</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -677,7 +658,7 @@
       <item>
        <widget class="QLabel" name="label7_2">
         <property name="text">
-         <string>Y-7</string>
+         <string>E-7</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -714,7 +695,7 @@
       <item>
        <widget class="QLabel" name="label8_2">
         <property name="text">
-         <string>Y-8</string>
+         <string>E-8</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -741,27 +722,319 @@
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
-  <widget class="QLabel" name="tableName">
+  <widget class="QWidget" name="layoutWidget_3">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>240</y>
-     <width>381</width>
-     <height>20</height>
+     <y>200</y>
+     <width>384</width>
+     <height>48</height>
     </rect>
    </property>
-   <property name="text">
-    <string>TABLENAME</string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignCenter</set>
-   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_19">
+    <item>
+     <layout class="QVBoxLayout" name="slot1layout_3">
+      <property name="sizeConstraint">
+       <enum>QLayout::SetDefaultConstraint</enum>
+      </property>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_20">
+        <item>
+         <widget class="QRadioButton" name="slot17">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QLabel" name="label1_3">
+        <property name="text">
+         <string>S-1</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QVBoxLayout" name="slot2layout_3">
+      <property name="sizeConstraint">
+       <enum>QLayout::SetDefaultConstraint</enum>
+      </property>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_21">
+        <item>
+         <widget class="QRadioButton" name="slot18">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QLabel" name="label2_3">
+        <property name="text">
+         <string>S-2</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QVBoxLayout" name="slot3layout_3">
+      <property name="sizeConstraint">
+       <enum>QLayout::SetDefaultConstraint</enum>
+      </property>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_22">
+        <item>
+         <widget class="QRadioButton" name="slot19">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QLabel" name="label3_3">
+        <property name="text">
+         <string>S-3</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QVBoxLayout" name="slot4layout_3">
+      <property name="sizeConstraint">
+       <enum>QLayout::SetDefaultConstraint</enum>
+      </property>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_23">
+        <item>
+         <widget class="QRadioButton" name="slot20">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QLabel" name="label4_3">
+        <property name="text">
+         <string>S-4</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QVBoxLayout" name="slot5layout_3">
+      <property name="sizeConstraint">
+       <enum>QLayout::SetDefaultConstraint</enum>
+      </property>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_24">
+        <item>
+         <widget class="QRadioButton" name="slot21">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QLabel" name="label5_3">
+        <property name="text">
+         <string>S-5</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QVBoxLayout" name="slot6layout_3">
+      <property name="sizeConstraint">
+       <enum>QLayout::SetDefaultConstraint</enum>
+      </property>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_25">
+        <item>
+         <widget class="QRadioButton" name="slot22">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QLabel" name="label6_3">
+        <property name="text">
+         <string>S-6</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QVBoxLayout" name="slot7layout_3">
+      <property name="sizeConstraint">
+       <enum>QLayout::SetDefaultConstraint</enum>
+      </property>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_26">
+        <item>
+         <widget class="QRadioButton" name="slot23">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QLabel" name="label7_3">
+        <property name="text">
+         <string>S-7</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QVBoxLayout" name="slot8layout_3">
+      <property name="sizeConstraint">
+       <enum>QLayout::SetDefaultConstraint</enum>
+      </property>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_27">
+        <item>
+         <widget class="QRadioButton" name="slot24">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QLabel" name="label8_3">
+        <property name="text">
+         <string>S-8</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
   </widget>
   <widget class="QWidget" name="horizontalLayoutWidget_3">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>260</y>
+     <y>310</y>
      <width>381</width>
      <height>41</height>
     </rect>
@@ -775,16 +1048,51 @@
     </item>
    </layout>
   </widget>
+  <widget class="QLabel" name="tableName">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>290</y>
+     <width>381</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>TABLENAME</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
   <widget class="QWidget" name="verticalLayoutWidget">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>310</y>
+     <y>360</y>
      <width>381</width>
      <height>261</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="tableViz"/>
+  </widget>
+  <widget class="QWidget" name="horizontalLayoutWidget_2">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>250</y>
+     <width>381</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="resourceSaveLoad">
+    <item>
+     <widget class="QPushButton" name="openBrowser">
+      <property name="text">
+       <string>Browser</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
  </widget>
  <resources/>
@@ -792,7 +1100,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>scannerWavetableEditor</receiver>
+   <receiver>metaWavetableEditor</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -808,7 +1116,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>scannerWavetableEditor</receiver>
+   <receiver>metaWavetableEditor</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

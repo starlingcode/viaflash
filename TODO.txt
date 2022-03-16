@@ -1,3 +1,8 @@
 Allow arbitrary sync3 ratio ordering
 Make provisions for displaying non-euclidean gateseq patterns
 Check scala file import for sync3
+Make table editor radio buttons exclusive
+Restyle radio buttons
+Add label to radio buttons for sync3, gateseq, osc3
+Implement wavetable browser and preview window
+Redo progress bar

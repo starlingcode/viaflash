@@ -29,7 +29,6 @@ class Sync3RatioXY(FigureCanvasQTAgg):
         domain = np.linspace(0, 2 * np.pi * denominator, 256)
         self.axes.plot(np.sin(domain), np.cos(domain * (numerator/denominator)), color='white')
         self.draw()
-        print('updating_plot')
 
 class Sync3Ratio(QDialog, Ui_sync3Ratio):
     def __init__(self, numerator, denominator):
