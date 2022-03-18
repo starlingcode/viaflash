@@ -896,7 +896,7 @@
      <widget class="QComboBox" name="displayType"/>
     </item>
     <item>
-     <widget class="QComboBox" name="indexSelector"/>
+     <widget class="QSpinBox" name="tableIndex"/>
     </item>
    </layout>
   </widget>

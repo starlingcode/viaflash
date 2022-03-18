@@ -93,7 +93,6 @@ class Wavetable2D(FigureCanvasQTAgg):
 class WavetableEditor(ViaResourceEditor):
     def __init__(self):
         super().__init__() 
-        self.d2viz = Wavetable2D
 
 # Edit wavetable recipe
 
@@ -103,8 +102,13 @@ class WavetableEditor(ViaResourceEditor):
 
     @Slot()
     def on_displayType_activated(self):
-        self
-        return
+        method = self.displayType.getCurrentText()
+        if method in self.d2_methods:
+            self.deinitd3()
+            self.initd2(self.set[active_idx], self.method, table_idx)
+        elif method in self.d3_methods:
+            self.deinitd2()
+            self.initd3(self.method)
 
     @Slot()
     def on_indexSelector_activated(self):
@@ -124,8 +128,21 @@ class WavetableEditor(ViaResourceEditor):
 
 # Visualization window
 
-    def updateVisualization(self):
+    def initd2(self, index):
+        #self.tableIndex.setMaximum(
+        table_idx = self.tableIndex.value()
+        self.initd2(self.set[active_idx], self.method, table_idx)
         return
+
+    def initd3(self, wavetable, name):
+        return
+
+    def deinitd2(self):
+        return
+
+    def deinitd3(self):
+        return
+
 
 
 class ScannerWavetableEditor(WavetableEditor, Ui_scannerWavetableEditor):
@@ -136,8 +153,8 @@ class ScannerWavetableEditor(WavetableEditor, Ui_scannerWavetableEditor):
 
         self.remote_resources = remote_resources
         # TODO check if new remote resource or set collides with existing local slug
-
-        self.set = WavetableSet(resource_dir, slug, table_file, slope_file)
+        size_limit_data = {'table_size': 5}
+        self.set = WavetableSet(resource_dir, slug, table_file, slope_file, size_limit_data)
 
         self.update_resource_sets()
         self.update_resources()

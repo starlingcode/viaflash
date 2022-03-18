@@ -1,8 +1,25 @@
 Allow arbitrary sync3 ratio ordering
+
 Make provisions for displaying non-euclidean gateseq patterns
+
 Check scala file import for sync3
+
 Make table editor radio buttons exclusive
+
 Restyle radio buttons
+
 Add label to radio buttons for sync3, gateseq, osc3
+
 Implement wavetable browser and preview window
+
 Redo progress bar
+
+Refactor wavetables to pair attack and release slopes as the atomic unit, with a table as an array of pairs. This will make the table hold the length attribute, so to speak.
+
+Refactor for 128(?) sync3 ratios per scale set
+
+Sync scale editor
+
+Wavetable import wizard/proisions for local wavetables
+
+Specify number of resources per set?
