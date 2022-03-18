@@ -19,14 +19,14 @@ from via_resource_editor import ViaResourceEditor
 
 class Wavetable3D(FigureCanvasQTAgg):
 
-    def __init__(self, wavetable, method):
+    def __init__(self, wavetable=None, method=None):
         self.methods = {'contour': self.render_contour, 'wireframe': self.render_wireframe, 'surface': self.render_surface}
         fig = Figure(figsize=(1,1), facecolor='black')
         self.axes = fig.add_subplot(111, projection='3d')
-        self.axes.axis('off')
-        self.axes.view_init(elev=85, azim=-50)
+        self.axes.set_axis_off()
+        #self.axes.view_init(elev=85, azim=-50)
         self.render_plot(wavetable.expand(), method)
-        super(WavetableSurface, self).__init__(fig)
+        super(Wavetable3D, self).__init__(fig)
     
     def update_plot(self, wavetable, method):
         self.axes.cla()
@@ -43,6 +43,7 @@ class Wavetable3D(FigureCanvasQTAgg):
         xrange = np.arange(0, 512, 1)
         X, Y = np.meshgrid(xrange, yrange)
         Z = np.array(tables)
+        self.axes.set_axis_off()
         self.axes.contour(X, Y + 1, Z, zdir="y")
 
     def render_wireframe(self, tables):
@@ -51,6 +52,7 @@ class Wavetable3D(FigureCanvasQTAgg):
         xrange = np.arange(0, 512, 1)
         X, Y = np.meshgrid(xrange, yrange)
         Z = np.array(tables)
+        self.axes.set_axis_off()
         self.axes.plot_wireframe(X, Y, Z, rcount=morph_size, ccount=256, alpha=0.4, color=(240/256, 200/256, 50/256))
 
     def render_surface(self, tables):
@@ -59,17 +61,17 @@ class Wavetable3D(FigureCanvasQTAgg):
         xrange = np.arange(0, 512, 1)
         X, Y = np.meshgrid(xrange, yrange)
         Z = np.array(tables)
+        self.axes.set_axis_off()
         self.axes.plot_surface(X, Y, Z, rcount=morph_size, ccount=256, alpha=0.8, cmap=cm.coolwarm)
 
 class Wavetable2D(FigureCanvasQTAgg):
 
 
     def __init__(self, wavetable, method, table_index):
-        self.methods = {'contour': self.render_waveform, 'wireframe': self.render_fft}
+        self.methods = {'waveform': self.render_waveform, 'fft': self.render_fft}
         fig = Figure(figsize=(1,1), facecolor='black')
         self.axes = fig.add_subplot(111)
         self.axes.axis('off')
-        self.axes.view_init(elev=85, azim=-50)
         self.render_plot(wavetable.expand(), method, table_index)
         super(Wavetable2D, self).__init__(fig)
     
@@ -80,7 +82,7 @@ class Wavetable2D(FigureCanvasQTAgg):
         self.draw()
 
     def render_plot(self, data, method, table_index):
-        self.methods[method](data, index)
+        self.methods[method](data, table_index)
 
     def render_waveform(self, tables, table_index):
         self.axes.plot(tables[table_index], color=(240/256, 200/256, 50/256), linewidth=2)
@@ -102,19 +104,21 @@ class WavetableEditor(ViaResourceEditor):
 
     @Slot()
     def on_displayType_activated(self):
-        method = self.displayType.getCurrentText()
-        if method in self.d2_methods:
-            self.deinitd3()
-            self.initd2(self.set[active_idx], self.method, table_idx)
-        elif method in self.d3_methods:
-            self.deinitd2()
-            self.initd3(self.method)
+        self.update_resource_ui()
 
     @Slot()
-    def on_indexSelector_activated(self):
-        return
+    def on_tableIndex_valueChanged(self):
+        self.d2viz.update_plot(self.set.resources[self.active_idx], self.displayType.currentText(), self.tableIndex.value())
 
 # Override set editor base class methods
+
+    def init_viz(self):
+        self.viz_methods = {'surface': '3d', 'contour': '3d', 'wireframe': '3d', 'waveform': '2d', 'fft': '2d'}    
+        self.d2viz = None
+        self.d3viz = None
+        for item in self.viz_methods:
+            self.displayType.insertItem(-1, item)
+        self.update_resource_ui()
  
     def update_resource_selection(self, name):
         self.tableName.setText(name)
@@ -123,26 +127,44 @@ class WavetableEditor(ViaResourceEditor):
         return
 
     def update_resource_ui(self):
-
-        return
+        method = self.displayType.currentText()
+        if self.viz_methods[method] == '2d':
+            self.deinitd3()
+            self.initd2(method)
+        else:
+            self.deinitd2()
+            self.initd3(method)
+        
 
 # Visualization window
 
-    def initd2(self, index):
-        #self.tableIndex.setMaximum(
+    def initd2(self, method):
+        self.tableIndex.setMaximum(len(self.set.resources[self.active_idx].expand()) - 1)
         table_idx = self.tableIndex.value()
-        self.initd2(self.set[active_idx], self.method, table_idx)
-        return
+        if self.d2viz:
+            self.d2viz.update_plot(self.set.resources[self.active_idx], method, table_idx)
+            self.d2viz.show()
+        else:
+            self.d2viz = Wavetable2D(self.set.resources[self.active_idx], method, table_idx)
+            self.tableViz.addWidget(self.d2viz)
+        self.tableIndex.show()
 
-    def initd3(self, wavetable, name):
-        return
+    def initd3(self, method):
+        if self.d3viz:
+            self.d3viz.update_plot(self.set.resources[self.active_idx], method)
+            self.d3viz.show()
+        else:
+            self.d3viz = Wavetable3D(self.set.resources[self.active_idx], method)
+            self.tableViz.addWidget(self.d3viz)
+        self.tableIndex.hide()
 
     def deinitd2(self):
-        return
+        if self.d2viz:
+            self.d2viz.hide()
 
     def deinitd3(self):
-        return
-
+        if self.d3viz:
+            self.d3viz.hide()
 
 
 class ScannerWavetableEditor(WavetableEditor, Ui_scannerWavetableEditor):
@@ -157,6 +179,9 @@ class ScannerWavetableEditor(WavetableEditor, Ui_scannerWavetableEditor):
         self.set = WavetableSet(resource_dir, slug, table_file, slope_file, size_limit_data)
 
         self.update_resource_sets()
+
+        self.init_viz()
+
         self.update_resources()
 
         self.slot1.setChecked(True)
@@ -174,6 +199,7 @@ class MetaWavetableEditor(WavetableEditor, Ui_metaWavetableEditor):
         self.set = WavetableSet(resource_dir, slug, table_file, slope_file)
 
         self.update_resource_sets()
+        self.init_viz()
         self.update_resources()
 
         self.slot1.setChecked(True)
@@ -192,6 +218,7 @@ class SyncWavetableEditor(WavetableEditor, Ui_syncWavetableEditor):
         self.set = WavetableSet(resource_dir, slug, table_file, slope_file)
 
         self.update_resource_sets()
+        self.init_viz()
         self.update_resources()
 
         self.slot1.setChecked(True)
