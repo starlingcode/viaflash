@@ -165,12 +165,12 @@ class ViaResourceEditor(QDialog):
              self.selectResource.insertItem(-1, resource)
 
     def switch_slot(self, slot_num):
-        if self.unsaved_changes:
-            if self.prompt_to_discard():
-                switch_slot(self.active_slot)
-                self.unsaved_pattern_changes = False
-            else:
-                return 
+#        if self.unsaved_changes:
+#            if self.prompt_to_discard():
+#                self.unsaved_changes = False
+#            else:
+#                switch_slot(self.active_idx)
+#                return 
         self.active_idx = slot_num
         resource_slug = self.set.data[slot_num]
         self.update_resource_selection(resource_slug)
