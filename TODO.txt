@@ -23,3 +23,5 @@ Sync scale editor
 Wavetable import wizard/proisions for local wavetables
 
 Specify number of resources per set?
+
+length 64 Scanner tables
