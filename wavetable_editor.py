@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QInputDialog, QMessageBox 
+from PySide6.QtWidgets import QInputDialog, QMessageBox, QDialog
 from PySide6.QtCore import Slot
 
 import numpy as np
@@ -13,8 +13,11 @@ from matplotlib import cm
 from ui_meta_wavetable_editor import Ui_metaWavetableEditor
 from ui_scanner_wavetable_editor import Ui_scannerWavetableEditor
 from ui_sync_wavetable_editor import Ui_syncWavetableEditor
+from ui_wavetable_browser import Ui_wavetableBrowser
 from viatools.wavetables import Wavetable, WavetableSet
 from via_resource_editor import ViaResourceEditor
+
+import json
 
 
 class Wavetable3D(FigureCanvasQTAgg):
@@ -24,6 +27,7 @@ class Wavetable3D(FigureCanvasQTAgg):
         fig = Figure(figsize=(1,1), facecolor='black')
         self.axes = fig.add_subplot(111, projection='3d')
         self.axes.set_axis_off()
+        self.axes.set_facecolor('black')
         #self.axes.view_init(elev=85, azim=-50)
         self.render_plot(wavetable.expand(), method)
         super(Wavetable3D, self).__init__(fig)
@@ -64,8 +68,8 @@ class Wavetable3D(FigureCanvasQTAgg):
         self.axes.set_axis_off()
         self.axes.plot_surface(X, Y, Z, rcount=morph_size, ccount=256, alpha=0.8, cmap=cm.coolwarm)
 
-class Wavetable2D(FigureCanvasQTAgg):
 
+class Wavetable2D(FigureCanvasQTAgg):
 
     def __init__(self, wavetable, method, table_index):
         self.methods = {'waveform': self.render_waveform, 'fft': self.render_fft}
@@ -92,15 +96,8 @@ class Wavetable2D(FigureCanvasQTAgg):
         fft_reading = np.log(fft_reading[:128])
         self.axes.plot(fft_reading)
 
-class WavetableEditor(ViaResourceEditor):
-    def __init__(self):
-        super().__init__() 
 
-# Edit wavetable recipe
-
-    @Slot()
-    def on_openBrowser_clicked(self):
-        return
+class WavetableViz():
 
     @Slot()
     def on_displayType_activated(self):
@@ -108,23 +105,16 @@ class WavetableEditor(ViaResourceEditor):
 
     @Slot()
     def on_tableIndex_valueChanged(self):
-        self.d2viz.update_plot(self.set.resources[self.active_idx], self.displayType.currentText(), self.tableIndex.value())
-
-# Override set editor base class methods
-
-    def init_viz(self):
+        self.d2viz.update_plot(self.table, self.displayType.currentText(), self.tableIndex.value())
+    
+    def init_viz(self, table):
+        self.table = table
         self.viz_methods = {'surface': '3d', 'contour': '3d', 'wireframe': '3d', 'waveform': '2d', 'fft': '2d'}    
         self.d2viz = None
         self.d3viz = None
         for item in self.viz_methods:
             self.displayType.insertItem(-1, item)
         self.update_resource_ui()
- 
-    def update_resource_selection(self, name):
-        self.tableName.setText(name)
-        
-    def update_resources(self):
-        return
 
     def update_resource_ui(self):
         method = self.displayType.currentText()
@@ -134,27 +124,24 @@ class WavetableEditor(ViaResourceEditor):
         else:
             self.deinitd2()
             self.initd3(method)
-        
-
-# Visualization window
 
     def initd2(self, method):
-        self.tableIndex.setMaximum(len(self.set.resources[self.active_idx].expand()) - 1)
+        self.tableIndex.setMaximum(len(self.table.expand()) - 1)
         table_idx = self.tableIndex.value()
         if self.d2viz:
-            self.d2viz.update_plot(self.set.resources[self.active_idx], method, table_idx)
+            self.d2viz.update_plot(self.table, method, table_idx)
             self.d2viz.show()
         else:
-            self.d2viz = Wavetable2D(self.set.resources[self.active_idx], method, table_idx)
+            self.d2viz = Wavetable2D(self.table, method, table_idx)
             self.tableViz.addWidget(self.d2viz)
         self.tableIndex.show()
 
     def initd3(self, method):
         if self.d3viz:
-            self.d3viz.update_plot(self.set.resources[self.active_idx], method)
+            self.d3viz.update_plot(self.table, method)
             self.d3viz.show()
         else:
-            self.d3viz = Wavetable3D(self.set.resources[self.active_idx], method)
+            self.d3viz = Wavetable3D(self.table, method)
             self.tableViz.addWidget(self.d3viz)
         self.tableIndex.hide()
 
@@ -167,20 +154,149 @@ class WavetableEditor(ViaResourceEditor):
             self.d3viz.hide()
 
 
+
+class WavetableBrowser(QDialog, Ui_wavetableBrowser, WavetableViz):
+    def __init__(self, table_file, slope_file, slug, max_table_size):
+        super().__init__()
+        self.setupUi(self)
+        self.init_table_dict(table_file, slope_file)
+        self.table_file = table_file
+        self.slope_file = slope_file
+        self.max_table_size = max_table_size
+        if self.table_dict[slug]['type'] == 'slope_pair':
+            self.slopePair.setChecked(True)
+            self.type = 'slope_pair'
+        else:
+            self.cycle.setChecked(True)
+            self.type = 'cycle'
+        self.update_type()
+        self.table_size = self.table_dict[slug]['size']
+        self.update_size()
+        self.tableSize.setCurrentIndex(self.tableSize.findText(str(self.table_size)))
+        self.selectTable.setCurrentIndex(self.selectTable.findText(slug))
+        self.tableSizeWarning.setText('(the first %d will be used)' % max_table_size) 
+        self.init_viz(Wavetable(self.table_file, slug, self.slope_file, max_table_size)
+)
+
+    @Slot() 
+    def on_slopePair_clicked(self):
+        self.type = 'slope_pair'
+        self.update_type()
+
+    @Slot() 
+    def on_cycle_clicked(self):
+        self.type = 'cycle'
+        self.update_type()
+
+    @Slot() 
+    def on_tableSize_activated(self):
+        try: 
+            self.table_size = int(self.tableSize.currentText())
+            self.update_size()
+        except:
+            pass
+
+    @Slot()
+    def on_selectTable_activated(self):
+        self.table = Wavetable(self.table_file, self.selectTable.currentText(), self.slope_file, self.max_table_size)
+        self.update_resource_ui()
+
+    def init_table_dict(self, table_file, slope_file):
+        self.table_dict = {}
+        with open(slope_file) as infile:
+            raw_slopes = json.load(infile)
+        with open(table_file) as infile:
+            raw_tables = json.load(infile)
+            for table in raw_tables:
+                self.table_dict[table] = {}
+                attack_samples = raw_slopes[raw_tables[table][0]]
+                self.table_dict[table]['size'] = len(attack_samples)
+                if attack_samples[0][0] == 0 and attack_samples[0][-1] == 32767:
+                    self.table_dict[table]['type'] = 'slope_pair'
+                else:
+                    self.table_dict[table]['type'] = 'cycle'
+                
+    def update_type(self):
+        self.selectTable.clear()
+        self.tableSize.clear()
+        valid_sizes = set()
+        valid_tables = []
+        for table, properties in self.table_dict.items():
+            if properties['type'] == self.type:
+                valid_sizes.add(properties['size'])
+                valid_tables.append(table)
+        valid_size_list = sorted(valid_sizes)
+        for size in valid_size_list:
+            self.tableSize.insertItem(-1, str(size))
+            self.table_size = size
+        for table in valid_tables:
+            self.selectTable.insertItem(-1, table)
+            
+    def update_size(self):
+        self.selectTable.clear()
+        valid_tables = []
+        for table, properties in self.table_dict.items():
+            if properties['type'] == self.type and properties['size'] == self.table_size:
+                valid_tables.append(table)
+        for table in valid_tables:
+            self.selectTable.insertItem(-1, table)
+
+
+class WavetableEditor(ViaResourceEditor, WavetableViz):
+    def __init__(self):
+        super().__init__() 
+
+# Edit wavetable recipe
+
+    @Slot()
+    def on_openBrowser_clicked(self):
+        self.launch_browser()
+        
+
+# Override set editor base class methods
+
+    def launch_browser(self):
+        self.browser = WavetableBrowser(self.table_file, self.slope_file, self.set.resources[self.active_idx].slug, self.size_limit_data['table_size'])
+        self.browser.swapTable.clicked.connect(self.swap_table)
+        self.browser.close.clicked.connect(self.close_browser)
+        self.browser.setStyleSheet(self.style_text)
+        self.browser.exec()
+
+    def swap_table(self):
+        slug = self.browser.selectTable.currentText()
+        self.set.replace_resource(slug, self.active_idx)
+        self.switch_slot(self.active_idx)
+        self.browser.accept()
+    
+    def close_browser(self):
+        self.browser.accept()
+
+ 
+    def update_resource_selection(self, slug):
+        self.tableName.setText(slug)
+        self.table = Wavetable(self.table_file, slug, self.slope_file, self.size_limit_data['table_size']) 
+        
+    def update_resources(self):
+        return
+
+
 class ScannerWavetableEditor(WavetableEditor, Ui_scannerWavetableEditor):
     def __init__(self, resource_dir='./', remote_resources = {}, slug='original', style_text="", table_file='./tables.json', slope_file='./slopes.json'):
         super().__init__() 
         self.setupUi(self)
         self.setStyleSheet(style_text)
+        self.style_text = style_text
 
         self.remote_resources = remote_resources
         # TODO check if new remote resource or set collides with existing local slug
-        size_limit_data = {'table_size': 5}
-        self.set = WavetableSet(resource_dir, slug, table_file, slope_file, size_limit_data)
+        self.size_limit_data = {'table_size': 5}
+        self.set = WavetableSet(resource_dir, slug, table_file, slope_file, self.size_limit_data)
+        self.slope_file = slope_file
+        self.table_file = table_file
 
         self.update_resource_sets()
 
-        self.init_viz()
+        self.init_viz(self.set.resources[0])
 
         self.update_resources()
 
@@ -192,14 +308,17 @@ class MetaWavetableEditor(WavetableEditor, Ui_metaWavetableEditor):
         super().__init__() 
         self.setupUi(self)
         self.setStyleSheet(style_text)
+        self.style_text = style_text
 
         self.remote_resources = remote_resources
         # TODO check if new remote resource or set collides with existing local slug
-
+        self.size_limit_data = {'table_size': 9}
         self.set = WavetableSet(resource_dir, slug, table_file, slope_file)
+        self.slope_file = slope_file
+        self.table_file = table_file
 
         self.update_resource_sets()
-        self.init_viz()
+        self.init_viz(self.set.resources[0])
         self.update_resources()
 
         self.slot1.setChecked(True)
@@ -211,14 +330,17 @@ class SyncWavetableEditor(WavetableEditor, Ui_syncWavetableEditor):
         super().__init__() 
         self.setupUi(self)
         self.setStyleSheet(style_text)
+        self.style_text = style_text
 
         self.remote_resources = remote_resources
         # TODO check if new remote resource or set collides with existing local slug
-
+        self.size_limit_data = {'table_size': 9}
         self.set = WavetableSet(resource_dir, slug, table_file, slope_file)
+        self.slope_file = slope_file
+        self.table_file = table_file
 
         self.update_resource_sets()
-        self.init_viz()
+        self.init_viz(self.set.resources[0])
         self.update_resources()
 
         self.slot1.setChecked(True)

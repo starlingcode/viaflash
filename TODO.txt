@@ -10,8 +10,6 @@ Restyle radio buttons
 
 Add label to radio buttons for sync3, gateseq, osc3
 
-Implement wavetable browser and preview window
-
 Redo progress bar
 
 Refactor wavetables to pair attack and release slopes as the atomic unit, with a table as an array of pairs. This will make the table hold the length attribute, so to speak.
@@ -25,3 +23,9 @@ Wavetable import wizard/proisions for local wavetables
 Specify number of resources per set?
 
 length 64 Scanner tables
+
+FFT looks terrible
+
+Check window titles
+
+Add "show all" to wavetable browser filters
