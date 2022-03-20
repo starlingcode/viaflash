@@ -4,9 +4,9 @@ Make provisions for displaying non-euclidean gateseq patterns
 
 Check scala file import for sync3
 
-Make table editor radio buttons exclusive
+* Make table editor radio buttons exclusive
 
-Restyle radio buttons
+* Restyle radio buttons
 
 Add label to radio buttons for sync3, gateseq, osc3
 
@@ -26,6 +26,9 @@ length 64 Scanner tables
 
 FFT looks terrible
 
-Check window titles
+* Check window titles
 
-Add "show all" to wavetable browser filters
+* Add "show all" to wavetable browser filters
+
+* Save for rack directory select
+

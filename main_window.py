@@ -13,10 +13,10 @@ from dfu_util import DfuUtil
 from via_module import ViaModule
 from sync3_scale_editor import Sync3ScaleEditor
 from gateseq_pattern_editor import GateseqPatternEditor
-from osc3_scale_editor import Osc3ScaleEditor
-from wavetable_editor import ScannerWavetableEditor
-from wavetable_editor import MetaWavetableEditor
-from wavetable_editor import SyncWavetableEditor
+from osc3_quantization_editor import Osc3QuantizationEditor
+from wavetable_set_editor import ScannerWavetableEditor
+from wavetable_set_editor import MetaWavetableEditor
+from wavetable_set_editor import SyncWavetableEditor
 
 class MainWindow(QMainWindow, Ui_MainWindow):
 
@@ -295,8 +295,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             'resource1_address': '0x8020000'
         }       
         self.editor_data['osc3'] = {
-            'object1_name': 'scale',
-            'editor1_object': Osc3ScaleEditor,
+            'object1_name': 'quantization',
+            'editor1_object': Osc3QuantizationEditor,
             'resource1_address': '0x8020000'
         }       
         self.editor_data['scanner'] = {

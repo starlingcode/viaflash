@@ -130,6 +130,10 @@ class ViaResourceEditor(QDialog):
     def on_slot24_clicked(self):
         self.switch_slot(23)
 
+    @Slot()
+    def on_slot25_clicked(self):
+        self.switch_slot(24)
+
 # Load/save pattern
 
     @Slot()

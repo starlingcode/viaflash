@@ -1,11 +1,11 @@
 from PySide6.QtWidgets import QInputDialog, QMessageBox 
 from PySide6.QtCore import Slot
 
-from ui_osc3_scale_editor import Ui_osc3ScaleEditor
-from viatools.osc3_scales import Osc3ScaleSet
+from ui_osc3_quantization_editor import Ui_osc3QuantizationEditor
+from viatools.osc3_quantizations import Osc3QuantizationSet
 from via_resource_editor import ViaResourceEditor
 
-class Osc3ScaleEditor(ViaResourceEditor, Ui_osc3ScaleEditor):
+class Osc3QuantizationEditor(ViaResourceEditor, Ui_osc3QuantizationEditor):
     def __init__(self, resource_dir='./', remote_resources = {}, slug='original', style_text=""):
         super().__init__() 
         self.setupUi(self)
@@ -14,7 +14,7 @@ class Osc3ScaleEditor(ViaResourceEditor, Ui_osc3ScaleEditor):
         self.remote_resources = remote_resources
         # TODO check if new remote resource or set collides with existing local slug
 
-        self.set = Osc3ScaleSet(resource_dir, slug)
+        self.set = Osc3QuantizationSet(resource_dir, slug)
 
         self.update_resource_sets()
         self.update_resources()
@@ -58,7 +58,8 @@ class Osc3ScaleEditor(ViaResourceEditor, Ui_osc3ScaleEditor):
             self.note9, self.note10, self.note11, self.note12
         ]
         for idx, button in enumerate(self.note_buttons):
-            button.toggled.connect(lambda state=True, x=idx: self.note_button_pushed(x))
+            button.clicked.connect(lambda state=True, x=idx: self.note_button_pushed(x))
+            button.setAutoExclusive(False)
 
     def note_button_pushed(self, idx):
         if self.note_buttons[idx].isChecked():
@@ -86,8 +87,10 @@ class Osc3ScaleEditor(ViaResourceEditor, Ui_osc3ScaleEditor):
         for pitch in range(0, 12):
             if pitch in scale:
                 self.note_buttons[pitch].setChecked(True)
+                print('Setting button %d checked' % pitch)
             else:
                 self.note_buttons[pitch].setChecked(False)
+                print('Setting button %d unchecked' % pitch)
         scale_size = len(scale)
         self.osc2Pitch.setMinimum(-scale_size + 1)
         self.osc2Pitch.setMaximum(scale_size - 1)

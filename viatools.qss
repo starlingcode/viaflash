@@ -24,3 +24,7 @@ QComboBox QAbstractItemView {
 
 QRadioButton {
 }
+
+QPushButton:checked {
+    background-color: #444444
+}
