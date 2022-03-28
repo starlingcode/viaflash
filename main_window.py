@@ -87,10 +87,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 # Remote firmware flashing flow
  
     def get_remote(self):
-        r = requests.get(self.repo_url + '/manifest.json', timeout=5)
-        if r.status_code == 200:
+        self.firmware_manifest = self.read_remote_manifest(self.repo_url + '/manifest.json')
+        if self.firmware_manifest:
             self.statusBar.showMessage('Remote firmware loaded')
-            self.firmware_manifest = r.json()
             for idx, firmware in enumerate(self.firmware_manifest):
                 self.firmwareSelect.insertItem(idx, firmware['name'])
         else: 
@@ -163,27 +162,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if 'token' in self.remote_firmware_selection:
             token = self.remote_firmware_selection['token']
             faceplate_path = '/img/' + token + '.png'
-            r = requests.get(self.repo_url + faceplate_path, timeout=5)
+            fp_url = self.repo_url + faceplate_path
             path = self.app_path + faceplate_path
-            if r.status_code == 200:
-                with open(path, 'wb') as f:
-                    f.write(r.content)
-            self.faceplate_image = QPixmap(path)
-            self.faceplate.setPixmap(self.faceplate_image)
-            self.firmwareInfoButton.show()
-            # self.loadDefaultButton.show()
-            if self.editSoftware is False:
-                preset = self.get_latest_module_data(self.remote_firmware_selection['optionByte'])
-                if 'path' in preset:
-                    if preset['path'].split('-')[0] == '254':
-                        self.statusBar.showMessage('No saved data found, loading factory deaults')
+            if self.download_remote_file(fp_url, path):
+                self.faceplate_image = QPixmap(path)
+                self.faceplate.setPixmap(self.faceplate_image)
+                self.firmwareInfoButton.show()
+                # self.loadDefaultButton.show()
+                if self.editSoftware is False:
+                    preset = self.get_latest_module_data(self.remote_firmware_selection['optionByte'])
+                    if 'path' in preset:
+                        if preset['path'].split('-')[0] == '254':
+                            self.statusBar.showMessage('No saved data found, loading factory deaults')
+                        else:
+                            self.statusBar.showMessage('Loading lastest saved data')
                     else:
-                        self.statusBar.showMessage('Loading lastest saved data')
-                else:
-                    # TODO move and formalize
-                    self.statusBar.showMessage('No calibration info, please select and run CALIBRATION')
-                self.flashButton.show()
-            self.init_set_editor(token)
+                        # TODO move and formalize
+                        self.statusBar.showMessage('No calibration info, please select and run CALIBRATION')
+                    self.flashButton.show()
+                self.init_set_editor(token)
+            else:
+                self.download_error()
         else:
             path = self.app_path + '/img/blank.png'
             self.firmwareInfoButton.hide()
@@ -216,13 +215,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             os.mkdir(data_path)
         if 'token' in self.remote_firmware_selection:
             bin_path = '/binaries/' + self.remote_firmware_selection['token'] + '.bin'
-            r = requests.get(self.repo_url + bin_path, timeout=5)
+            bin_url = self.repo_url + bin_path
             path = self.app_path + bin_path
             firmware_key = self.remote_firmware_selection['optionByte']
             firmware_version = self.remote_firmware_selection['latestVersion']
-            if r.status_code == 200:
-                with open(path, 'wb') as f:
-                    f.write(r.content)
+            if self.download_remote_file(bin_url, path):
                 preset_file = self.get_latest_module_data(firmware_key)
                 #TODO: fix for calibration
                 try:
@@ -241,7 +238,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 if success:
                     self.reset_for_new_via()
             else:
-                self.statusBar.showMessage('Firmware file not downloaded, check network')
+                self.download_error()
         else:
             return
             # Flash local
@@ -342,58 +339,50 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.openEdit1.show()
             self.openEdit1.setText('Edit ' + object_name.title() + ' Set') 
             firmware_dir = self.app_path + '/%s/' % token
-            r = requests.get(self.repo_url + '/%s/manifest.json' % token, timeout=5)
-            if r.status_code == 200:
+            manifest_url = self.repo_url + '/%s/manifest.json' % token
+            manifest_read = self.read_remote_manifest(manifest_url)
+            if manifest_read:
                 self.statusBar.showMessage('Remote %s sets loaded' % object_name)
                 firmware_bin_path = firmware_dir + '/binaries'
                 if os.path.exists(firmware_bin_path) is False:
                     os.mkdir(firmware_bin_path)
                 self.remote_resources = {}
-                self.remote_resources['sets'] = r.json()
+                self.remote_resources['sets'] = manifest_read
                 self.remote_resources['resources'] = []
                 for idx, set_slug in enumerate(self.remote_resources['sets']): 
                     set_url = self.repo_url + '/%s/%s.json' % (token, set_slug)
-                    r_set = requests.get(set_url, timeout=5)
-                    if r_set.status_code == 200:
-                        with open(firmware_dir + '%s.json' % set_slug, 'wb') as set_file:
-                            set_file.write(r_set.content)
+                    set_path = firmware_dir + '%s.json' % set_slug
+                    if self.download_remote_file(set_url, set_path):
                         if object_name != 'wavetable':
-                            for resource in r_set.json():
+                            data_path = firmware_dir + '/' + object_name_plural
+                            if os.path.exists(data_path) is False:
+                                os.mkdir(data_path)
+                            with open(set_path) as jsonfile:
+                                resources = json.load(jsonfile)
+                            for resource in resources:
                                 resource_url = (self.repo_url + '/%s/%s/%s.json' % (token, object_name_plural, resource)) # hacky pluralization of resource name
-                                r_resource = requests.get(resource_url, timeout=5)
-                                if r_resource.status_code == 200:
+                                resource_path = firmware_dir + '%s/%s.json' % (object_name_plural, resource)
+                                if self.download_remote_file(resource_url, resource_path):
                                     self.remote_resources['resources'].append(resource)
-                                    data_path = firmware_dir + '/' + object_name_plural
-                                    if os.path.exists(data_path) is False:
-                                        os.mkdir(data_path)
-                                    with open(firmware_dir + '%s/%s.json' % (object_name_plural, resource), 'wb') as resource_file:
-                                        resource_file.write(r_resource.content)
                                 else:
-                                    print('Resource dl error on ' + resource_url)
+                                    self.download_error()
                         else:
                             table_dir = self.app_path + '/wavetables/'
                             if os.path.exists(table_dir) is False:
                                 os.mkdir(table_dir)
                             tables_url = self.repo_url + '/wavetables/tables.json'
-                            r_tables = requests.get(tables_url, timeout=5)
-                            if r_tables.status_code == 200:
-                                with open(table_dir + 'tables.json', 'wb') as tables_file:
-                                    tables_file.write(r_tables.content)
+                            tables_path = table_dir + 'tables.json'
+                            if not self.download_remote_file(tables_url, tables_path):
+                                self.download_error()
                             slopes_url = self.repo_url + '/wavetables/slopes.json'
-                            r_slopes = requests.get(slopes_url, timeout=5)
-                            if r_slopes.status_code == 200:
-                                with open(table_dir + 'slopes.json', 'wb') as slopes_file:
-                                    slopes_file.write(r_slopes.content)
+                            slopes_path = table_dir + 'slopes.json'
+                            if not self.download_remote_file(slopes_url, slopes_path):
+                                self.download_error()
                                  
                     else:
-                        #TODO error handling
-                        print('Set dl error on ' + set_url)
-                        print(r_set)
-                        return
+                        self.download_error()
             else:
-                #TODO error handling
-                print('Manifest dl error')
-                return
+                self.download_error()
             self.populate_edit1Select(firmware_dir)
             if object_name != 'wavetable':
                 self.editor1 = self.editor_data[token]['editor1_object'](firmware_dir, self.remote_resources, self.edit1Select.currentText(), self.style_text)
@@ -423,11 +412,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 ###
 
-    def handle_network_error(self, error):
-        self.pop_up_message('Network error', 'Unable to load remote resource, please check internet connectivity and try again.')
+    def download_remote_file(self, url, path):
+        r = requests.get(url, timeout=20)
+        if r.status_code == 200:
+            with open(path, 'wb') as write_file:
+                write_file.write(r.content)
+            return True
+        else:
+            return False
 
-    def handle_flashing_error(self, error):
-        self.pop_up_message('Flashing error', 'Unable to flash resource, please reconnect module and try again')
+    def read_remote_manifest(self, url):
+        r = requests.get(url, timeout=20)
+        if r.status_code == 200:
+            return r.json()
+        else:
+            return None
 
-    def handle_detect_error(self, error):
-        self.pop_up_message('Module detect error', 'Unable to flash resource, please reconnect module and try again')
+    def download_error(self):
+        print('Network error', 'Unable to load remote resource, please check internet connectivity and try again.')
