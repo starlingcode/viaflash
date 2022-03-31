@@ -4,7 +4,7 @@ import shutil
 import json
 
 from PySide6.QtWidgets import QMainWindow, QMessageBox, QProgressDialog, QPushButton, QComboBox, QStyleFactory
-from PySide6.QtCore import Slot, QFileInfo, QFile, QIODevice, QSize, QRect
+from PySide6.QtCore import Slot, QFileInfo, QFile, QIODevice, QSize, QRect, QRunnable, QThreadPool
 from PySide6.QtGui import QPixmap
 from PySide6.QtUiTools import QUiLoader
 
@@ -32,6 +32,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.setStyleSheet(self.style_text)
         self.statusBar.setStyleSheet("background-color:rgb(0, 0, 0); color:rgb(255, 255, 255);");
         self.setFixedSize(QSize(585, 640))
+
+        self.threadpool = QThreadPool()
 
         self.stored_module_data = {}
         self.repo_url = 'https://raw.githubusercontent.com/starlingcode/viafirmware/master'
@@ -413,10 +415,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 ###
 
     def download_remote_file(self, url, path):
-        r = requests.get(url, timeout=20)
+        r = requests.get(url, stream=True, timeout=20)
         if r.status_code == 200:
-            with open(path, 'wb') as write_file:
-                write_file.write(r.content)
+            file_size = int(r.headers.get('content-length', 0))
+            block_size = 1024
+            if file_size > 10000:    
+                progress_bar = QProgressDialog()
+                progress_bar.setWindowTitle('Downloading remote file')
+                progress_bar.setStyleSheet(self.style_text)
+                progress_bar.setRange(0, file_size)
+                dl = FileDownloader(r, path, progress_bar, block_size, file_size)
+                self.threadpool.start(dl)     
+                progress_bar.exec()
+            else: 
+                with open(path, 'wb') as write_file:
+                    for data in r.iter_content(block_size):
+                        write_file.write(data)
             return True
         else:
             return False
@@ -430,3 +444,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def download_error(self):
         print('Network error', 'Unable to load remote resource, please check internet connectivity and try again.')
+
+
+class FileDownloader(QRunnable):
+    
+    def __init__(self, request, path, progress_bar, block_size, file_size):
+        super(FileDownloader, self).__init__()
+        self.r = request
+        self.path = path
+        self.progress_bar = progress_bar
+        self.block_size = block_size
+        self.file_size = file_size
+
+    @Slot()
+    def run(self):
+        size_downloaded = 0
+        with open(self.path, 'wb') as write_file:
+            for data in self.r.iter_content(self.block_size):
+                size_downloaded += self.block_size
+                self.progress_bar.setValue(size_downloaded)
+                write_file.write(data)
+        self.progress_bar.setValue(self.file_size)
+        
