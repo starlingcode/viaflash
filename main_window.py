@@ -2,11 +2,11 @@ import os
 import requests
 import shutil
 import json
+import time
 
-from PySide6.QtWidgets import QMainWindow, QMessageBox, QProgressDialog, QPushButton, QComboBox, QStyleFactory
-from PySide6.QtCore import Slot, QFileInfo, QFile, QIODevice, QSize, QRect, QRunnable, QThreadPool
+from PySide6.QtWidgets import QMainWindow, QMessageBox, QProgressDialog, QStyleFactory
+from PySide6.QtCore import Slot, Signal, QSize, QRect, QRunnable, QThreadPool, QObject
 from PySide6.QtGui import QPixmap
-from PySide6.QtUiTools import QUiLoader
 
 from ui_mainwindow import Ui_MainWindow
 from dfu_util import DfuUtil
@@ -326,7 +326,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.openEdit2.hide()              
 
     def init_set_editor(self, token):
-        print("downloading resources")
+        self.statusBar.showMessage("Downloading remote resources")
         data_path = self.app_path + '/' + token
         if os.path.exists(data_path) is False:
             os.mkdir(data_path)
@@ -425,8 +425,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 progress_bar.setStyleSheet(self.style_text)
                 progress_bar.setRange(0, file_size)
                 dl = FileDownloader(r, path, progress_bar, block_size, file_size)
+                dl.signals.result.connect(progress_bar.setValue)
                 self.threadpool.start(dl)     
                 progress_bar.exec()
+                time.sleep(.1) 
             else: 
                 with open(path, 'wb') as write_file:
                     for data in r.iter_content(block_size):
@@ -446,6 +448,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         print('Network error', 'Unable to load remote resource, please check internet connectivity and try again.')
 
 
+class WorkerSignals(QObject):
+    result = Signal(object)
+
+
 class FileDownloader(QRunnable):
     
     def __init__(self, request, path, progress_bar, block_size, file_size):
@@ -455,6 +461,7 @@ class FileDownloader(QRunnable):
         self.progress_bar = progress_bar
         self.block_size = block_size
         self.file_size = file_size
+        self.signals = WorkerSignals()
 
     @Slot()
     def run(self):
@@ -462,7 +469,7 @@ class FileDownloader(QRunnable):
         with open(self.path, 'wb') as write_file:
             for data in self.r.iter_content(self.block_size):
                 size_downloaded += self.block_size
-                self.progress_bar.setValue(size_downloaded)
-                write_file.write(data)
-        self.progress_bar.setValue(self.file_size)
+                self.signals.result.emit(size_downloaded)
+                write_file.write(data) 
+        self.signals.result.emit(self.file_size)
         

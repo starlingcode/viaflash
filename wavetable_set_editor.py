@@ -271,6 +271,7 @@ class WavetableEditor(ViaResourceEditor, WavetableViz):
 
         for slot_num, label in enumerate(self.slot_labels):
             eval('self.slot%d' % (slot_num+1)).setText(label)
+            eval('self.slot%d' % (slot_num+1)).clicked.connect(self.switch_slot(int(slot_num)))
         
         for slot_num in range(len(self.slot_labels), 25):
             eval('self.slot%d' % (slot_num+1)).hide()
