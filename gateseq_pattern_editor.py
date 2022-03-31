@@ -21,6 +21,11 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
 
         self.create_pattern_grid()
 
+        for slot_num in range(0, 8):
+            eval('self.slot%d' % (slot_num+1)).clicked.connect(lambda state=True, x=slot_num: self.switch_slot(x))
+        self.selectResource.activated.connect(self.handle_select_resource)
+        self.saveResource.clicked.connect(lambda state=True: self.handle_save_resource())
+
         self.slot1.setChecked(True)
         self.switch_slot(0)
 

@@ -23,6 +23,11 @@ class Osc3QuantizationEditor(ViaResourceEditor, Ui_osc3QuantizationEditor):
         self.create_chord_grid()
         self.update_resource_ui()
 
+        for slot_num in range(0, 3):
+            eval('self.slot%d' % (slot_num+1)).clicked.connect(lambda state=True, x=slot_num: self.switch_slot(x))
+        self.selectResource.activated.connect(self.handle_select_resource)
+        self.saveResource.clicked.connect(lambda state=True: self.handle_save_resource())
+
         self.slot1.setChecked(True)
         self.switch_slot(0)
 

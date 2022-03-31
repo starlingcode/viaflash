@@ -33,17 +33,15 @@ class ViaResourceEditor(QDialog):
         self.set.pack_binary()
 
 
-# Load/save pattern
+# Load/save resource 
 
-    @Slot()
-    def on_selectResource_activated(self):
+    def handle_select_resource(self):
         #TODO check for unsaved changes
         if self.selectResource.currentText() in self.resource_slugs:
             self.set.replace_resource(self.selectResource.currentText(), self.active_idx)
             self.switch_slot(self.active_idx)
 
-    @Slot()
-    def on_saveResource_clicked(self):
+    def handle_save_resource(self):
         name = self.get_resource_name()
         self.set.save_resource(name, self.active_idx)
         self.update_resource_selection(name)

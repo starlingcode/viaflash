@@ -419,20 +419,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if r.status_code == 200:
             file_size = int(r.headers.get('content-length', 0))
             block_size = 1024
-            if file_size > 10000:    
-                progress_bar = QProgressDialog()
-                progress_bar.setWindowTitle('Downloading remote file')
-                progress_bar.setStyleSheet(self.style_text)
-                progress_bar.setRange(0, file_size)
-                dl = FileDownloader(r, path, progress_bar, block_size, file_size)
-                dl.signals.result.connect(progress_bar.setValue)
-                self.threadpool.start(dl)     
-                progress_bar.exec()
-                time.sleep(.1) 
-            else: 
-                with open(path, 'wb') as write_file:
-                    for data in r.iter_content(block_size):
-                        write_file.write(data)
+            progress_bar = QProgressDialog()
+            progress_bar.setWindowTitle('Downloading remote file')
+            progress_bar.setStyleSheet(self.style_text)
+            progress_bar.setRange(0, file_size)
+            dl = FileDownloader(r, path, progress_bar, block_size, file_size)
+            dl.signals.result.connect(progress_bar.setValue)
+            self.threadpool.start(dl)     
+            progress_bar.exec()
             return True
         else:
             return False
