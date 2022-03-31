@@ -44,8 +44,8 @@ class ViaResourceEditor(QDialog):
     def handle_save_resource(self):
         name = self.get_resource_name()
         self.set.save_resource(name, self.active_idx)
-        self.update_resource_selection(name)
         self.update_resources()
+        self.update_resource_selection(name)
         self.update_resource_ui()
 
 # Save/load helpers
