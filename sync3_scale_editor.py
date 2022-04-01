@@ -75,6 +75,14 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
 # Edit scale recipe
 
     @Slot()
+    def on_sorted_clicked(self):
+        self.set.resources[self.active_idx].update_sorted(True)
+
+    @Slot()
+    def on_unsorted_clicked(self):
+        self.set.resources[self.active_idx].update_sorted(False)
+
+    @Slot()
     def on_addSeedRatio_clicked(self):
         ratio = [int(self.numerator.value()), int(self.denominator.value())]
         print(ratio)
@@ -204,6 +212,10 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
 
 
     def update_resource_ui(self):
+        self.sorted.setChecked(True)
+        if 'sorted' in self.set.resources[self.active_idx].data:
+            if self.set.resources[self.active_idx].data['sorted'] is False:
+                self.unsorted.setChecked(True) 
         seed_ratios = self.set.resources[self.active_idx].data['seed_ratios']
         idx = -1
         for idx, ratio in enumerate(seed_ratios):

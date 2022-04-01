@@ -16677,3 +16677,899 @@ class Ui_sync3ScaleEditor(object):
         self.label_5.setText(QCoreApplication.translate("sync3ScaleEditor", u"Knob Position", None))
     # retranslateUi
 
+# -*- coding: utf-8 -*-
+
+################################################################################
+## Form generated from reading UI file 'sync3_scale_editor.ui'
+##
+## Created by: Qt User Interface Compiler version 6.2.3
+##
+## WARNING! All changes made in this file will be lost when recompiling UI file!
+################################################################################
+
+from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
+    QMetaObject, QObject, QPoint, QRect,
+    QSize, QTime, QUrl, Qt)
+from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
+    QFont, QFontDatabase, QGradient, QIcon,
+    QImage, QKeySequence, QLinearGradient, QPainter,
+    QPalette, QPixmap, QRadialGradient, QTransform)
+from PySide6.QtWidgets import (QAbstractButton, QAbstractScrollArea, QApplication, QButtonGroup,
+    QComboBox, QDial, QDialog, QDialogButtonBox,
+    QFrame, QGridLayout, QHBoxLayout, QLabel,
+    QLayout, QPushButton, QScrollArea, QSizePolicy,
+    QSlider, QSpinBox, QVBoxLayout, QWidget)
+
+class Ui_sync3ScaleEditor(object):
+    def setupUi(self, sync3ScaleEditor):
+        if not sync3ScaleEditor.objectName():
+            sync3ScaleEditor.setObjectName(u"sync3ScaleEditor")
+        sync3ScaleEditor.resize(970, 724)
+        self.layoutWidget = QWidget(sync3ScaleEditor)
+        self.layoutWidget.setObjectName(u"layoutWidget")
+        self.layoutWidget.setGeometry(QRect(10, 10, 391, 701))
+        self.verticalLayout_8 = QVBoxLayout(self.layoutWidget)
+        self.verticalLayout_8.setObjectName(u"verticalLayout_8")
+        self.verticalLayout_8.setContentsMargins(0, 0, 0, 0)
+        self.label_8 = QLabel(self.layoutWidget)
+        self.label_8.setObjectName(u"label_8")
+        self.label_8.setAlignment(Qt.AlignCenter)
+
+        self.verticalLayout_8.addWidget(self.label_8)
+
+        self.scalesSetButtons = QHBoxLayout()
+        self.scalesSetButtons.setObjectName(u"scalesSetButtons")
+        self.selectResourceSet = QComboBox(self.layoutWidget)
+        self.selectResourceSet.setObjectName(u"selectResourceSet")
+
+        self.scalesSetButtons.addWidget(self.selectResourceSet)
+
+        self.saveResourceSet = QPushButton(self.layoutWidget)
+        self.saveResourceSet.setObjectName(u"saveResourceSet")
+
+        self.scalesSetButtons.addWidget(self.saveResourceSet)
+
+        self.saveForRack = QPushButton(self.layoutWidget)
+        self.saveForRack.setObjectName(u"saveForRack")
+
+        self.scalesSetButtons.addWidget(self.saveForRack)
+
+
+        self.verticalLayout_8.addLayout(self.scalesSetButtons)
+
+        self.label_9 = QLabel(self.layoutWidget)
+        self.label_9.setObjectName(u"label_9")
+        self.label_9.setAlignment(Qt.AlignCenter)
+
+        self.verticalLayout_8.addWidget(self.label_9)
+
+        self.slotGroup1 = QHBoxLayout()
+        self.slotGroup1.setObjectName(u"slotGroup1")
+        self.slotGroup1.setSizeConstraint(QLayout.SetMaximumSize)
+        self.slot1 = QPushButton(self.layoutWidget)
+        self.buttonGroup = QButtonGroup(sync3ScaleEditor)
+        self.buttonGroup.setObjectName(u"buttonGroup")
+        self.buttonGroup.addButton(self.slot1)
+        self.slot1.setObjectName(u"slot1")
+        self.slot1.setEnabled(True)
+        sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.slot1.sizePolicy().hasHeightForWidth())
+        self.slot1.setSizePolicy(sizePolicy)
+        self.slot1.setMinimumSize(QSize(30, 0))
+        self.slot1.setCheckable(True)
+
+        self.slotGroup1.addWidget(self.slot1)
+
+        self.slot2 = QPushButton(self.layoutWidget)
+        self.buttonGroup.addButton(self.slot2)
+        self.slot2.setObjectName(u"slot2")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Fixed)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.slot2.sizePolicy().hasHeightForWidth())
+        self.slot2.setSizePolicy(sizePolicy1)
+        self.slot2.setMinimumSize(QSize(30, 0))
+        self.slot2.setCheckable(True)
+
+        self.slotGroup1.addWidget(self.slot2)
+
+        self.slot3 = QPushButton(self.layoutWidget)
+        self.buttonGroup.addButton(self.slot3)
+        self.slot3.setObjectName(u"slot3")
+        sizePolicy1.setHeightForWidth(self.slot3.sizePolicy().hasHeightForWidth())
+        self.slot3.setSizePolicy(sizePolicy1)
+        self.slot3.setMinimumSize(QSize(30, 0))
+        self.slot3.setCheckable(True)
+
+        self.slotGroup1.addWidget(self.slot3)
+
+        self.slot4 = QPushButton(self.layoutWidget)
+        self.buttonGroup.addButton(self.slot4)
+        self.slot4.setObjectName(u"slot4")
+        sizePolicy1.setHeightForWidth(self.slot4.sizePolicy().hasHeightForWidth())
+        self.slot4.setSizePolicy(sizePolicy1)
+        self.slot4.setMinimumSize(QSize(30, 0))
+        self.slot4.setCheckable(True)
+
+        self.slotGroup1.addWidget(self.slot4)
+
+        self.slot5 = QPushButton(self.layoutWidget)
+        self.buttonGroup.addButton(self.slot5)
+        self.slot5.setObjectName(u"slot5")
+        sizePolicy1.setHeightForWidth(self.slot5.sizePolicy().hasHeightForWidth())
+        self.slot5.setSizePolicy(sizePolicy1)
+        self.slot5.setMinimumSize(QSize(30, 0))
+        self.slot5.setCheckable(True)
+
+        self.slotGroup1.addWidget(self.slot5)
+
+        self.slot6 = QPushButton(self.layoutWidget)
+        self.buttonGroup.addButton(self.slot6)
+        self.slot6.setObjectName(u"slot6")
+        sizePolicy1.setHeightForWidth(self.slot6.sizePolicy().hasHeightForWidth())
+        self.slot6.setSizePolicy(sizePolicy1)
+        self.slot6.setMinimumSize(QSize(30, 0))
+        self.slot6.setCheckable(True)
+
+        self.slotGroup1.addWidget(self.slot6)
+
+        self.slot7 = QPushButton(self.layoutWidget)
+        self.buttonGroup.addButton(self.slot7)
+        self.slot7.setObjectName(u"slot7")
+        sizePolicy1.setHeightForWidth(self.slot7.sizePolicy().hasHeightForWidth())
+        self.slot7.setSizePolicy(sizePolicy1)
+        self.slot7.setMinimumSize(QSize(30, 0))
+        self.slot7.setCheckable(True)
+
+        self.slotGroup1.addWidget(self.slot7)
+
+        self.slot8 = QPushButton(self.layoutWidget)
+        self.buttonGroup.addButton(self.slot8)
+        self.slot8.setObjectName(u"slot8")
+        sizePolicy1.setHeightForWidth(self.slot8.sizePolicy().hasHeightForWidth())
+        self.slot8.setSizePolicy(sizePolicy1)
+        self.slot8.setMinimumSize(QSize(30, 0))
+        self.slot8.setCheckable(True)
+
+        self.slotGroup1.addWidget(self.slot8)
+
+
+        self.verticalLayout_8.addLayout(self.slotGroup1)
+
+        self.saveLoadScale = QHBoxLayout()
+        self.saveLoadScale.setObjectName(u"saveLoadScale")
+        self.selectResource = QComboBox(self.layoutWidget)
+        self.selectResource.setObjectName(u"selectResource")
+
+        self.saveLoadScale.addWidget(self.selectResource)
+
+        self.saveResource = QPushButton(self.layoutWidget)
+        self.saveResource.setObjectName(u"saveResource")
+
+        self.saveLoadScale.addWidget(self.saveResource)
+
+
+        self.verticalLayout_8.addLayout(self.saveLoadScale)
+
+        self.horizontalLayout_17 = QHBoxLayout()
+        self.horizontalLayout_17.setObjectName(u"horizontalLayout_17")
+        self.label_7 = QLabel(self.layoutWidget)
+        self.label_7.setObjectName(u"label_7")
+        self.label_7.setAlignment(Qt.AlignCenter)
+
+        self.horizontalLayout_17.addWidget(self.label_7)
+
+
+        self.verticalLayout_8.addLayout(self.horizontalLayout_17)
+
+        self.horizontalLayout_2 = QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+
+        self.verticalLayout_8.addLayout(self.horizontalLayout_2)
+
+        self.horizontalLayout_3 = QHBoxLayout()
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.sorted = QPushButton(self.layoutWidget)
+        self.buttonGroup_3 = QButtonGroup(sync3ScaleEditor)
+        self.buttonGroup_3.setObjectName(u"buttonGroup_3")
+        self.buttonGroup_3.addButton(self.sorted)
+        self.sorted.setObjectName(u"sorted")
+        self.sorted.setCheckable(True)
+
+        self.horizontalLayout_3.addWidget(self.sorted)
+
+        self.unsorted = QPushButton(self.layoutWidget)
+        self.buttonGroup_3.addButton(self.unsorted)
+        self.unsorted.setObjectName(u"unsorted")
+        self.unsorted.setCheckable(True)
+
+        self.horizontalLayout_3.addWidget(self.unsorted)
+
+
+        self.verticalLayout_8.addLayout(self.horizontalLayout_3)
+
+        self.seedRatioEditor = QHBoxLayout()
+        self.seedRatioEditor.setObjectName(u"seedRatioEditor")
+        self.addSeedRatio = QPushButton(self.layoutWidget)
+        self.addSeedRatio.setObjectName(u"addSeedRatio")
+
+        self.seedRatioEditor.addWidget(self.addSeedRatio)
+
+        self.verticalLayout_2 = QVBoxLayout()
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.numerator = QSpinBox(self.layoutWidget)
+        self.numerator.setObjectName(u"numerator")
+        self.numerator.setMinimumSize(QSize(103, 26))
+        self.numerator.setMinimum(1)
+        self.numerator.setMaximum(65535)
+
+        self.verticalLayout_2.addWidget(self.numerator)
+
+        self.denominator = QSpinBox(self.layoutWidget)
+        self.denominator.setObjectName(u"denominator")
+        sizePolicy2 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.denominator.sizePolicy().hasHeightForWidth())
+        self.denominator.setSizePolicy(sizePolicy2)
+        self.denominator.setMinimumSize(QSize(103, 26))
+        self.denominator.setMinimum(1)
+        self.denominator.setMaximum(65535)
+
+        self.verticalLayout_2.addWidget(self.denominator)
+
+
+        self.seedRatioEditor.addLayout(self.verticalLayout_2)
+
+
+        self.verticalLayout_8.addLayout(self.seedRatioEditor)
+
+        self.horizontalLayout_15 = QHBoxLayout()
+        self.horizontalLayout_15.setObjectName(u"horizontalLayout_15")
+        self.addFromScala = QPushButton(self.layoutWidget)
+        self.addFromScala.setObjectName(u"addFromScala")
+
+        self.horizontalLayout_15.addWidget(self.addFromScala)
+
+        self.clearSeedRatios = QPushButton(self.layoutWidget)
+        self.clearSeedRatios.setObjectName(u"clearSeedRatios")
+
+        self.horizontalLayout_15.addWidget(self.clearSeedRatios)
+
+
+        self.verticalLayout_8.addLayout(self.horizontalLayout_15)
+
+        self.seedRatios = QScrollArea(self.layoutWidget)
+        self.seedRatios.setObjectName(u"seedRatios")
+        self.seedRatios.setFrameShadow(QFrame.Sunken)
+        self.seedRatios.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.seedRatios.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.seedRatios.setSizeAdjustPolicy(QAbstractScrollArea.AdjustIgnored)
+        self.seedRatios.setWidgetResizable(False)
+        self.seedRatios.setAlignment(Qt.AlignCenter)
+        self.scrollAreaWidgetContents = QWidget()
+        self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
+        self.scrollAreaWidgetContents.setGeometry(QRect(12, 26, 363, 85))
+        sizePolicy3 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.scrollAreaWidgetContents.sizePolicy().hasHeightForWidth())
+        self.scrollAreaWidgetContents.setSizePolicy(sizePolicy3)
+        self.gridLayoutWidget = QWidget(self.scrollAreaWidgetContents)
+        self.gridLayoutWidget.setObjectName(u"gridLayoutWidget")
+        self.gridLayoutWidget.setGeometry(QRect(10, 0, 351, 241))
+        self.seedRatioGrid = QGridLayout(self.gridLayoutWidget)
+        self.seedRatioGrid.setObjectName(u"seedRatioGrid")
+        self.seedRatioGrid.setSizeConstraint(QLayout.SetMinAndMaxSize)
+        self.seedRatioGrid.setContentsMargins(0, 0, 0, 0)
+        self.seedRatios.setWidget(self.scrollAreaWidgetContents)
+
+        self.verticalLayout_8.addWidget(self.seedRatios)
+
+        self.horizontalLayout_6 = QHBoxLayout()
+        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
+        self.fillOctave = QPushButton(self.layoutWidget)
+        self.buttonGroup_2 = QButtonGroup(sync3ScaleEditor)
+        self.buttonGroup_2.setObjectName(u"buttonGroup_2")
+        self.buttonGroup_2.addButton(self.fillOctave)
+        self.fillOctave.setObjectName(u"fillOctave")
+        self.fillOctave.setCheckable(True)
+
+        self.horizontalLayout_6.addWidget(self.fillOctave)
+
+        self.fillTritave = QPushButton(self.layoutWidget)
+        self.buttonGroup_2.addButton(self.fillTritave)
+        self.fillTritave.setObjectName(u"fillTritave")
+        self.fillTritave.setCheckable(True)
+
+        self.horizontalLayout_6.addWidget(self.fillTritave)
+
+        self.fillExpand = QPushButton(self.layoutWidget)
+        self.buttonGroup_2.addButton(self.fillExpand)
+        self.fillExpand.setObjectName(u"fillExpand")
+        self.fillExpand.setCheckable(True)
+
+        self.horizontalLayout_6.addWidget(self.fillExpand)
+
+
+        self.verticalLayout_8.addLayout(self.horizontalLayout_6)
+
+        self.tilingMethodButtons = QHBoxLayout()
+        self.tilingMethodButtons.setObjectName(u"tilingMethodButtons")
+
+        self.verticalLayout_8.addLayout(self.tilingMethodButtons)
+
+        self.horizontalLayout_16 = QHBoxLayout()
+        self.horizontalLayout_16.setObjectName(u"horizontalLayout_16")
+        self.label_2 = QLabel(self.layoutWidget)
+        self.label_2.setObjectName(u"label_2")
+        self.label_2.setAlignment(Qt.AlignCenter)
+
+        self.horizontalLayout_16.addWidget(self.label_2)
+
+
+        self.verticalLayout_8.addLayout(self.horizontalLayout_16)
+
+        self.previewControls = QHBoxLayout()
+        self.previewControls.setObjectName(u"previewControls")
+        self.verticalLayout_7 = QVBoxLayout()
+        self.verticalLayout_7.setObjectName(u"verticalLayout_7")
+        self.horizontalLayout_14 = QHBoxLayout()
+        self.horizontalLayout_14.setObjectName(u"horizontalLayout_14")
+        self.cvSlider = QSlider(self.layoutWidget)
+        self.cvSlider.setObjectName(u"cvSlider")
+        self.cvSlider.setMaximum(15)
+        self.cvSlider.setValue(8)
+        self.cvSlider.setSliderPosition(8)
+        self.cvSlider.setOrientation(Qt.Vertical)
+
+        self.horizontalLayout_14.addWidget(self.cvSlider)
+
+
+        self.verticalLayout_7.addLayout(self.horizontalLayout_14)
+
+        self.label_6 = QLabel(self.layoutWidget)
+        self.label_6.setObjectName(u"label_6")
+        self.label_6.setAlignment(Qt.AlignCenter)
+
+        self.verticalLayout_7.addWidget(self.label_6)
+
+
+        self.previewControls.addLayout(self.verticalLayout_7)
+
+        self.verticalLayout_6 = QVBoxLayout()
+        self.verticalLayout_6.setObjectName(u"verticalLayout_6")
+        self.knob = QDial(self.layoutWidget)
+        self.knob.setObjectName(u"knob")
+        self.knob.setMaximum(16)
+        self.knob.setPageStep(8)
+
+        self.verticalLayout_6.addWidget(self.knob)
+
+        self.label_5 = QLabel(self.layoutWidget)
+        self.label_5.setObjectName(u"label_5")
+        self.label_5.setAlignment(Qt.AlignCenter)
+
+        self.verticalLayout_6.addWidget(self.label_5)
+
+
+        self.previewControls.addLayout(self.verticalLayout_6)
+
+        self.previewLayout = QVBoxLayout()
+        self.previewLayout.setObjectName(u"previewLayout")
+        self.previewContainer = QHBoxLayout()
+        self.previewContainer.setObjectName(u"previewContainer")
+
+        self.previewLayout.addLayout(self.previewContainer)
+
+        self.previewSelect = QComboBox(self.layoutWidget)
+        self.previewSelect.setObjectName(u"previewSelect")
+
+        self.previewLayout.addWidget(self.previewSelect)
+
+
+        self.previewControls.addLayout(self.previewLayout)
+
+
+        self.verticalLayout_8.addLayout(self.previewControls)
+
+        self.verticalLayout = QVBoxLayout()
+        self.verticalLayout.setObjectName(u"verticalLayout")
+
+        self.verticalLayout_8.addLayout(self.verticalLayout)
+
+        self.buttonBox = QDialogButtonBox(self.layoutWidget)
+        self.buttonBox.setObjectName(u"buttonBox")
+        self.buttonBox.setOrientation(Qt.Horizontal)
+        self.buttonBox.setStandardButtons(QDialogButtonBox.Close)
+        self.buttonBox.setCenterButtons(True)
+
+        self.verticalLayout_8.addWidget(self.buttonBox)
+
+
+        self.retranslateUi(sync3ScaleEditor)
+        self.buttonBox.rejected.connect(sync3ScaleEditor.reject)
+        self.buttonBox.accepted.connect(sync3ScaleEditor.accept)
+
+        QMetaObject.connectSlotsByName(sync3ScaleEditor)
+    # setupUi
+
+    def retranslateUi(self, sync3ScaleEditor):
+        sync3ScaleEditor.setWindowTitle(QCoreApplication.translate("sync3ScaleEditor", u"SYNC3 Scale Set Editor", None))
+        self.label_8.setText(QCoreApplication.translate("sync3ScaleEditor", u"Edit Scale Set", None))
+        self.saveResourceSet.setText(QCoreApplication.translate("sync3ScaleEditor", u"Save Scale Set", None))
+        self.saveForRack.setText(QCoreApplication.translate("sync3ScaleEditor", u"Save for Rack", None))
+        self.label_9.setText(QCoreApplication.translate("sync3ScaleEditor", u"Select scale for editing:", None))
+        self.slot1.setText(QCoreApplication.translate("sync3ScaleEditor", u"1", None))
+        self.slot2.setText(QCoreApplication.translate("sync3ScaleEditor", u"2", None))
+        self.slot3.setText(QCoreApplication.translate("sync3ScaleEditor", u"3", None))
+        self.slot4.setText(QCoreApplication.translate("sync3ScaleEditor", u"4", None))
+        self.slot5.setText(QCoreApplication.translate("sync3ScaleEditor", u"5", None))
+        self.slot6.setText(QCoreApplication.translate("sync3ScaleEditor", u"6", None))
+        self.slot7.setText(QCoreApplication.translate("sync3ScaleEditor", u"7", None))
+        self.slot8.setText(QCoreApplication.translate("sync3ScaleEditor", u"8", None))
+        self.saveResource.setText(QCoreApplication.translate("sync3ScaleEditor", u"Save Scale", None))
+        self.label_7.setText(QCoreApplication.translate("sync3ScaleEditor", u"Edit Scale", None))
+        self.sorted.setText(QCoreApplication.translate("sync3ScaleEditor", u"Sorted", None))
+        self.unsorted.setText(QCoreApplication.translate("sync3ScaleEditor", u"Unsorted", None))
+        self.addSeedRatio.setText(QCoreApplication.translate("sync3ScaleEditor", u"Add Ratio", None))
+        self.addFromScala.setText(QCoreApplication.translate("sync3ScaleEditor", u"Import From Scala", None))
+        self.clearSeedRatios.setText(QCoreApplication.translate("sync3ScaleEditor", u"Clear", None))
+        self.fillOctave.setText(QCoreApplication.translate("sync3ScaleEditor", u"Fill Octave", None))
+        self.fillTritave.setText(QCoreApplication.translate("sync3ScaleEditor", u"Fill Tritave", None))
+        self.fillExpand.setText(QCoreApplication.translate("sync3ScaleEditor", u"Fill Expand", None))
+        self.label_2.setText(QCoreApplication.translate("sync3ScaleEditor", u"Preview", None))
+        self.label_6.setText(QCoreApplication.translate("sync3ScaleEditor", u"CV: 0V", None))
+        self.label_5.setText(QCoreApplication.translate("sync3ScaleEditor", u"Knob Position", None))
+    # retranslateUi
+
+# -*- coding: utf-8 -*-
+
+################################################################################
+## Form generated from reading UI file 'sync3_scale_editor.ui'
+##
+## Created by: Qt User Interface Compiler version 6.2.3
+##
+## WARNING! All changes made in this file will be lost when recompiling UI file!
+################################################################################
+
+from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
+    QMetaObject, QObject, QPoint, QRect,
+    QSize, QTime, QUrl, Qt)
+from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
+    QFont, QFontDatabase, QGradient, QIcon,
+    QImage, QKeySequence, QLinearGradient, QPainter,
+    QPalette, QPixmap, QRadialGradient, QTransform)
+from PySide6.QtWidgets import (QAbstractButton, QAbstractScrollArea, QApplication, QButtonGroup,
+    QComboBox, QDial, QDialog, QDialogButtonBox,
+    QFrame, QGridLayout, QHBoxLayout, QLabel,
+    QLayout, QPushButton, QScrollArea, QSizePolicy,
+    QSlider, QSpinBox, QVBoxLayout, QWidget)
+
+class Ui_sync3ScaleEditor(object):
+    def setupUi(self, sync3ScaleEditor):
+        if not sync3ScaleEditor.objectName():
+            sync3ScaleEditor.setObjectName(u"sync3ScaleEditor")
+        sync3ScaleEditor.resize(410, 724)
+        self.layoutWidget = QWidget(sync3ScaleEditor)
+        self.layoutWidget.setObjectName(u"layoutWidget")
+        self.layoutWidget.setGeometry(QRect(10, 10, 391, 701))
+        self.verticalLayout_8 = QVBoxLayout(self.layoutWidget)
+        self.verticalLayout_8.setObjectName(u"verticalLayout_8")
+        self.verticalLayout_8.setContentsMargins(0, 0, 0, 0)
+        self.label_8 = QLabel(self.layoutWidget)
+        self.label_8.setObjectName(u"label_8")
+        self.label_8.setAlignment(Qt.AlignCenter)
+
+        self.verticalLayout_8.addWidget(self.label_8)
+
+        self.scalesSetButtons = QHBoxLayout()
+        self.scalesSetButtons.setObjectName(u"scalesSetButtons")
+        self.selectResourceSet = QComboBox(self.layoutWidget)
+        self.selectResourceSet.setObjectName(u"selectResourceSet")
+
+        self.scalesSetButtons.addWidget(self.selectResourceSet)
+
+        self.saveResourceSet = QPushButton(self.layoutWidget)
+        self.saveResourceSet.setObjectName(u"saveResourceSet")
+
+        self.scalesSetButtons.addWidget(self.saveResourceSet)
+
+        self.saveForRack = QPushButton(self.layoutWidget)
+        self.saveForRack.setObjectName(u"saveForRack")
+
+        self.scalesSetButtons.addWidget(self.saveForRack)
+
+
+        self.verticalLayout_8.addLayout(self.scalesSetButtons)
+
+        self.label_9 = QLabel(self.layoutWidget)
+        self.label_9.setObjectName(u"label_9")
+        self.label_9.setAlignment(Qt.AlignCenter)
+
+        self.verticalLayout_8.addWidget(self.label_9)
+
+        self.slotGroup1 = QHBoxLayout()
+        self.slotGroup1.setObjectName(u"slotGroup1")
+        self.slotGroup1.setSizeConstraint(QLayout.SetMaximumSize)
+        self.slot1 = QPushButton(self.layoutWidget)
+        self.buttonGroup = QButtonGroup(sync3ScaleEditor)
+        self.buttonGroup.setObjectName(u"buttonGroup")
+        self.buttonGroup.addButton(self.slot1)
+        self.slot1.setObjectName(u"slot1")
+        self.slot1.setEnabled(True)
+        sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.slot1.sizePolicy().hasHeightForWidth())
+        self.slot1.setSizePolicy(sizePolicy)
+        self.slot1.setMinimumSize(QSize(30, 0))
+        self.slot1.setCheckable(True)
+
+        self.slotGroup1.addWidget(self.slot1)
+
+        self.slot2 = QPushButton(self.layoutWidget)
+        self.buttonGroup.addButton(self.slot2)
+        self.slot2.setObjectName(u"slot2")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Fixed)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.slot2.sizePolicy().hasHeightForWidth())
+        self.slot2.setSizePolicy(sizePolicy1)
+        self.slot2.setMinimumSize(QSize(30, 0))
+        self.slot2.setCheckable(True)
+
+        self.slotGroup1.addWidget(self.slot2)
+
+        self.slot3 = QPushButton(self.layoutWidget)
+        self.buttonGroup.addButton(self.slot3)
+        self.slot3.setObjectName(u"slot3")
+        sizePolicy1.setHeightForWidth(self.slot3.sizePolicy().hasHeightForWidth())
+        self.slot3.setSizePolicy(sizePolicy1)
+        self.slot3.setMinimumSize(QSize(30, 0))
+        self.slot3.setCheckable(True)
+
+        self.slotGroup1.addWidget(self.slot3)
+
+        self.slot4 = QPushButton(self.layoutWidget)
+        self.buttonGroup.addButton(self.slot4)
+        self.slot4.setObjectName(u"slot4")
+        sizePolicy1.setHeightForWidth(self.slot4.sizePolicy().hasHeightForWidth())
+        self.slot4.setSizePolicy(sizePolicy1)
+        self.slot4.setMinimumSize(QSize(30, 0))
+        self.slot4.setCheckable(True)
+
+        self.slotGroup1.addWidget(self.slot4)
+
+        self.slot5 = QPushButton(self.layoutWidget)
+        self.buttonGroup.addButton(self.slot5)
+        self.slot5.setObjectName(u"slot5")
+        sizePolicy1.setHeightForWidth(self.slot5.sizePolicy().hasHeightForWidth())
+        self.slot5.setSizePolicy(sizePolicy1)
+        self.slot5.setMinimumSize(QSize(30, 0))
+        self.slot5.setCheckable(True)
+
+        self.slotGroup1.addWidget(self.slot5)
+
+        self.slot6 = QPushButton(self.layoutWidget)
+        self.buttonGroup.addButton(self.slot6)
+        self.slot6.setObjectName(u"slot6")
+        sizePolicy1.setHeightForWidth(self.slot6.sizePolicy().hasHeightForWidth())
+        self.slot6.setSizePolicy(sizePolicy1)
+        self.slot6.setMinimumSize(QSize(30, 0))
+        self.slot6.setCheckable(True)
+
+        self.slotGroup1.addWidget(self.slot6)
+
+        self.slot7 = QPushButton(self.layoutWidget)
+        self.buttonGroup.addButton(self.slot7)
+        self.slot7.setObjectName(u"slot7")
+        sizePolicy1.setHeightForWidth(self.slot7.sizePolicy().hasHeightForWidth())
+        self.slot7.setSizePolicy(sizePolicy1)
+        self.slot7.setMinimumSize(QSize(30, 0))
+        self.slot7.setCheckable(True)
+
+        self.slotGroup1.addWidget(self.slot7)
+
+        self.slot8 = QPushButton(self.layoutWidget)
+        self.buttonGroup.addButton(self.slot8)
+        self.slot8.setObjectName(u"slot8")
+        sizePolicy1.setHeightForWidth(self.slot8.sizePolicy().hasHeightForWidth())
+        self.slot8.setSizePolicy(sizePolicy1)
+        self.slot8.setMinimumSize(QSize(30, 0))
+        self.slot8.setCheckable(True)
+
+        self.slotGroup1.addWidget(self.slot8)
+
+
+        self.verticalLayout_8.addLayout(self.slotGroup1)
+
+        self.saveLoadScale = QHBoxLayout()
+        self.saveLoadScale.setObjectName(u"saveLoadScale")
+        self.selectResource = QComboBox(self.layoutWidget)
+        self.selectResource.setObjectName(u"selectResource")
+
+        self.saveLoadScale.addWidget(self.selectResource)
+
+        self.saveResource = QPushButton(self.layoutWidget)
+        self.saveResource.setObjectName(u"saveResource")
+
+        self.saveLoadScale.addWidget(self.saveResource)
+
+
+        self.verticalLayout_8.addLayout(self.saveLoadScale)
+
+        self.horizontalLayout_17 = QHBoxLayout()
+        self.horizontalLayout_17.setObjectName(u"horizontalLayout_17")
+        self.label_7 = QLabel(self.layoutWidget)
+        self.label_7.setObjectName(u"label_7")
+        self.label_7.setAlignment(Qt.AlignCenter)
+
+        self.horizontalLayout_17.addWidget(self.label_7)
+
+
+        self.verticalLayout_8.addLayout(self.horizontalLayout_17)
+
+        self.horizontalLayout_2 = QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+
+        self.verticalLayout_8.addLayout(self.horizontalLayout_2)
+
+        self.horizontalLayout_3 = QHBoxLayout()
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.sorted = QPushButton(self.layoutWidget)
+        self.buttonGroup_3 = QButtonGroup(sync3ScaleEditor)
+        self.buttonGroup_3.setObjectName(u"buttonGroup_3")
+        self.buttonGroup_3.addButton(self.sorted)
+        self.sorted.setObjectName(u"sorted")
+        self.sorted.setCheckable(True)
+
+        self.horizontalLayout_3.addWidget(self.sorted)
+
+        self.unsorted = QPushButton(self.layoutWidget)
+        self.buttonGroup_3.addButton(self.unsorted)
+        self.unsorted.setObjectName(u"unsorted")
+        self.unsorted.setCheckable(True)
+
+        self.horizontalLayout_3.addWidget(self.unsorted)
+
+
+        self.verticalLayout_8.addLayout(self.horizontalLayout_3)
+
+        self.seedRatioEditor = QHBoxLayout()
+        self.seedRatioEditor.setObjectName(u"seedRatioEditor")
+        self.addSeedRatio = QPushButton(self.layoutWidget)
+        self.addSeedRatio.setObjectName(u"addSeedRatio")
+
+        self.seedRatioEditor.addWidget(self.addSeedRatio)
+
+        self.verticalLayout_2 = QVBoxLayout()
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.numerator = QSpinBox(self.layoutWidget)
+        self.numerator.setObjectName(u"numerator")
+        self.numerator.setMinimumSize(QSize(103, 26))
+        self.numerator.setMinimum(1)
+        self.numerator.setMaximum(65535)
+
+        self.verticalLayout_2.addWidget(self.numerator)
+
+        self.denominator = QSpinBox(self.layoutWidget)
+        self.denominator.setObjectName(u"denominator")
+        sizePolicy2 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.denominator.sizePolicy().hasHeightForWidth())
+        self.denominator.setSizePolicy(sizePolicy2)
+        self.denominator.setMinimumSize(QSize(103, 26))
+        self.denominator.setMinimum(1)
+        self.denominator.setMaximum(65535)
+
+        self.verticalLayout_2.addWidget(self.denominator)
+
+
+        self.seedRatioEditor.addLayout(self.verticalLayout_2)
+
+
+        self.verticalLayout_8.addLayout(self.seedRatioEditor)
+
+        self.horizontalLayout_15 = QHBoxLayout()
+        self.horizontalLayout_15.setObjectName(u"horizontalLayout_15")
+        self.addFromScala = QPushButton(self.layoutWidget)
+        self.addFromScala.setObjectName(u"addFromScala")
+
+        self.horizontalLayout_15.addWidget(self.addFromScala)
+
+        self.clearSeedRatios = QPushButton(self.layoutWidget)
+        self.clearSeedRatios.setObjectName(u"clearSeedRatios")
+
+        self.horizontalLayout_15.addWidget(self.clearSeedRatios)
+
+
+        self.verticalLayout_8.addLayout(self.horizontalLayout_15)
+
+        self.seedRatios = QScrollArea(self.layoutWidget)
+        self.seedRatios.setObjectName(u"seedRatios")
+        self.seedRatios.setFrameShadow(QFrame.Sunken)
+        self.seedRatios.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.seedRatios.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.seedRatios.setSizeAdjustPolicy(QAbstractScrollArea.AdjustIgnored)
+        self.seedRatios.setWidgetResizable(False)
+        self.seedRatios.setAlignment(Qt.AlignCenter)
+        self.scrollAreaWidgetContents = QWidget()
+        self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
+        self.scrollAreaWidgetContents.setGeometry(QRect(12, 26, 363, 85))
+        sizePolicy3 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.scrollAreaWidgetContents.sizePolicy().hasHeightForWidth())
+        self.scrollAreaWidgetContents.setSizePolicy(sizePolicy3)
+        self.gridLayoutWidget = QWidget(self.scrollAreaWidgetContents)
+        self.gridLayoutWidget.setObjectName(u"gridLayoutWidget")
+        self.gridLayoutWidget.setGeometry(QRect(10, 0, 351, 241))
+        self.seedRatioGrid = QGridLayout(self.gridLayoutWidget)
+        self.seedRatioGrid.setObjectName(u"seedRatioGrid")
+        self.seedRatioGrid.setSizeConstraint(QLayout.SetMinAndMaxSize)
+        self.seedRatioGrid.setContentsMargins(0, 0, 0, 0)
+        self.seedRatios.setWidget(self.scrollAreaWidgetContents)
+
+        self.verticalLayout_8.addWidget(self.seedRatios)
+
+        self.horizontalLayout_6 = QHBoxLayout()
+        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
+        self.fillOctave = QPushButton(self.layoutWidget)
+        self.buttonGroup_2 = QButtonGroup(sync3ScaleEditor)
+        self.buttonGroup_2.setObjectName(u"buttonGroup_2")
+        self.buttonGroup_2.addButton(self.fillOctave)
+        self.fillOctave.setObjectName(u"fillOctave")
+        self.fillOctave.setCheckable(True)
+
+        self.horizontalLayout_6.addWidget(self.fillOctave)
+
+        self.fillTritave = QPushButton(self.layoutWidget)
+        self.buttonGroup_2.addButton(self.fillTritave)
+        self.fillTritave.setObjectName(u"fillTritave")
+        self.fillTritave.setCheckable(True)
+
+        self.horizontalLayout_6.addWidget(self.fillTritave)
+
+        self.fillExpand = QPushButton(self.layoutWidget)
+        self.buttonGroup_2.addButton(self.fillExpand)
+        self.fillExpand.setObjectName(u"fillExpand")
+        self.fillExpand.setCheckable(True)
+
+        self.horizontalLayout_6.addWidget(self.fillExpand)
+
+
+        self.verticalLayout_8.addLayout(self.horizontalLayout_6)
+
+        self.tilingMethodButtons = QHBoxLayout()
+        self.tilingMethodButtons.setObjectName(u"tilingMethodButtons")
+
+        self.verticalLayout_8.addLayout(self.tilingMethodButtons)
+
+        self.horizontalLayout_16 = QHBoxLayout()
+        self.horizontalLayout_16.setObjectName(u"horizontalLayout_16")
+        self.label_2 = QLabel(self.layoutWidget)
+        self.label_2.setObjectName(u"label_2")
+        self.label_2.setAlignment(Qt.AlignCenter)
+
+        self.horizontalLayout_16.addWidget(self.label_2)
+
+
+        self.verticalLayout_8.addLayout(self.horizontalLayout_16)
+
+        self.previewControls = QHBoxLayout()
+        self.previewControls.setObjectName(u"previewControls")
+        self.verticalLayout_7 = QVBoxLayout()
+        self.verticalLayout_7.setObjectName(u"verticalLayout_7")
+        self.horizontalLayout_14 = QHBoxLayout()
+        self.horizontalLayout_14.setObjectName(u"horizontalLayout_14")
+        self.cvSlider = QSlider(self.layoutWidget)
+        self.cvSlider.setObjectName(u"cvSlider")
+        self.cvSlider.setMaximum(15)
+        self.cvSlider.setValue(8)
+        self.cvSlider.setSliderPosition(8)
+        self.cvSlider.setOrientation(Qt.Vertical)
+
+        self.horizontalLayout_14.addWidget(self.cvSlider)
+
+
+        self.verticalLayout_7.addLayout(self.horizontalLayout_14)
+
+        self.label_6 = QLabel(self.layoutWidget)
+        self.label_6.setObjectName(u"label_6")
+        self.label_6.setAlignment(Qt.AlignCenter)
+
+        self.verticalLayout_7.addWidget(self.label_6)
+
+
+        self.previewControls.addLayout(self.verticalLayout_7)
+
+        self.verticalLayout_6 = QVBoxLayout()
+        self.verticalLayout_6.setObjectName(u"verticalLayout_6")
+        self.knob = QDial(self.layoutWidget)
+        self.knob.setObjectName(u"knob")
+        self.knob.setMaximum(16)
+        self.knob.setPageStep(8)
+
+        self.verticalLayout_6.addWidget(self.knob)
+
+        self.label_5 = QLabel(self.layoutWidget)
+        self.label_5.setObjectName(u"label_5")
+        self.label_5.setAlignment(Qt.AlignCenter)
+
+        self.verticalLayout_6.addWidget(self.label_5)
+
+
+        self.previewControls.addLayout(self.verticalLayout_6)
+
+        self.previewLayout = QVBoxLayout()
+        self.previewLayout.setObjectName(u"previewLayout")
+        self.previewContainer = QHBoxLayout()
+        self.previewContainer.setObjectName(u"previewContainer")
+
+        self.previewLayout.addLayout(self.previewContainer)
+
+        self.previewSelect = QComboBox(self.layoutWidget)
+        self.previewSelect.setObjectName(u"previewSelect")
+
+        self.previewLayout.addWidget(self.previewSelect)
+
+
+        self.previewControls.addLayout(self.previewLayout)
+
+
+        self.verticalLayout_8.addLayout(self.previewControls)
+
+        self.verticalLayout = QVBoxLayout()
+        self.verticalLayout.setObjectName(u"verticalLayout")
+
+        self.verticalLayout_8.addLayout(self.verticalLayout)
+
+        self.buttonBox = QDialogButtonBox(self.layoutWidget)
+        self.buttonBox.setObjectName(u"buttonBox")
+        self.buttonBox.setOrientation(Qt.Horizontal)
+        self.buttonBox.setStandardButtons(QDialogButtonBox.Close)
+        self.buttonBox.setCenterButtons(True)
+
+        self.verticalLayout_8.addWidget(self.buttonBox)
+
+
+        self.retranslateUi(sync3ScaleEditor)
+        self.buttonBox.rejected.connect(sync3ScaleEditor.reject)
+        self.buttonBox.accepted.connect(sync3ScaleEditor.accept)
+
+        QMetaObject.connectSlotsByName(sync3ScaleEditor)
+    # setupUi
+
+    def retranslateUi(self, sync3ScaleEditor):
+        sync3ScaleEditor.setWindowTitle(QCoreApplication.translate("sync3ScaleEditor", u"SYNC3 Scale Set Editor", None))
+        self.label_8.setText(QCoreApplication.translate("sync3ScaleEditor", u"Edit Scale Set", None))
+        self.saveResourceSet.setText(QCoreApplication.translate("sync3ScaleEditor", u"Save Scale Set", None))
+        self.saveForRack.setText(QCoreApplication.translate("sync3ScaleEditor", u"Save for Rack", None))
+        self.label_9.setText(QCoreApplication.translate("sync3ScaleEditor", u"Select scale for editing:", None))
+        self.slot1.setText(QCoreApplication.translate("sync3ScaleEditor", u"1", None))
+        self.slot2.setText(QCoreApplication.translate("sync3ScaleEditor", u"2", None))
+        self.slot3.setText(QCoreApplication.translate("sync3ScaleEditor", u"3", None))
+        self.slot4.setText(QCoreApplication.translate("sync3ScaleEditor", u"4", None))
+        self.slot5.setText(QCoreApplication.translate("sync3ScaleEditor", u"5", None))
+        self.slot6.setText(QCoreApplication.translate("sync3ScaleEditor", u"6", None))
+        self.slot7.setText(QCoreApplication.translate("sync3ScaleEditor", u"7", None))
+        self.slot8.setText(QCoreApplication.translate("sync3ScaleEditor", u"8", None))
+        self.saveResource.setText(QCoreApplication.translate("sync3ScaleEditor", u"Save Scale", None))
+        self.label_7.setText(QCoreApplication.translate("sync3ScaleEditor", u"Edit Scale", None))
+        self.sorted.setText(QCoreApplication.translate("sync3ScaleEditor", u"Sorted", None))
+        self.unsorted.setText(QCoreApplication.translate("sync3ScaleEditor", u"Unsorted", None))
+        self.addSeedRatio.setText(QCoreApplication.translate("sync3ScaleEditor", u"Add Ratio", None))
+        self.addFromScala.setText(QCoreApplication.translate("sync3ScaleEditor", u"Import From Scala", None))
+        self.clearSeedRatios.setText(QCoreApplication.translate("sync3ScaleEditor", u"Clear", None))
+        self.fillOctave.setText(QCoreApplication.translate("sync3ScaleEditor", u"Fill Octave", None))
+        self.fillTritave.setText(QCoreApplication.translate("sync3ScaleEditor", u"Fill Tritave", None))
+        self.fillExpand.setText(QCoreApplication.translate("sync3ScaleEditor", u"Fill Expand", None))
+        self.label_2.setText(QCoreApplication.translate("sync3ScaleEditor", u"Preview", None))
+        self.label_6.setText(QCoreApplication.translate("sync3ScaleEditor", u"CV: 0V", None))
+        self.label_5.setText(QCoreApplication.translate("sync3ScaleEditor", u"Knob Position", None))
+    # retranslateUi
+
