@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QDialog, QInputDialog, QMessageBox
+from PySide6.QtWidgets import QDialog, QInputDialog, QMessageBox, QFileDialog
 from PySide6.QtCore import Slot, Qt
 
 class ViaResourceEditor(QDialog):
@@ -30,7 +30,8 @@ class ViaResourceEditor(QDialog):
 
     @Slot() 
     def on_saveForRack_clicked(self):
-        self.set.pack_binary()
+        bin_write_dir = QFileDialog.getExistingDirectory(self, "Select save directory")
+        self.set.pack_binary(bin_write_dir + '/')
 
 
 # Load/save resource 
