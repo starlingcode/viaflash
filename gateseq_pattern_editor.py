@@ -15,6 +15,7 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
         # TODO check if new remote resource or set collides with existing local slug
 
         self.set = GateseqPatternSet(resource_dir, slug)
+        self.set_slug = slug
 
         self.update_resource_sets()
         self.update_resources()

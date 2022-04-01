@@ -14,7 +14,9 @@ class ViaResourceEditor(QDialog):
 
     @Slot()
     def on_saveResourceSet_clicked(self):
-        name = self.get_resource_set_name()
+        name = self.get_resource_set_name(self.set_slug)
+        if name = '':
+            return
         self.set.save_set(name)
         self.update_resource_sets()
         self.selectResourceSet.setCurrentIndex(self.selectResourceSet.findText(name))
@@ -25,6 +27,7 @@ class ViaResourceEditor(QDialog):
         #TODO check for unsaved changes
         slug = self.selectResourceSet.currentText()
         if slug in self.resource_set_slugs:
+            self.set_slug = slug
             self.set.load_set(slug)
             self.switch_slot(self.active_idx)
 
@@ -38,12 +41,16 @@ class ViaResourceEditor(QDialog):
 
     def handle_select_resource(self):
         #TODO check for unsaved changes
-        if self.selectResource.currentText() in self.resource_slugs:
-            self.set.replace_resource(self.selectResource.currentText(), self.active_idx)
+        resource_slug = self.selectResource.currentText()
+        if resource_slug in self.resource_slugs:
+            self.resource_slug = resource_slug
+            self.set.replace_resource(resource_slug, self.active_idx)
             self.switch_slot(self.active_idx)
 
     def handle_save_resource(self):
-        name = self.get_resource_name()
+        name = self.get_resource_name(self.resource_slug)
+        if name = '':
+            return
         self.set.save_resource(name, self.active_idx)
         self.update_resources()
         self.update_resource_selection(name)
@@ -74,8 +81,8 @@ class ViaResourceEditor(QDialog):
 #                switch_slot(self.active_idx)
 #                return 
         self.active_idx = slot_num
-        resource_slug = self.set.data[slot_num]
-        self.update_resource_selection(resource_slug)
+        self.resource_slug = self.set.data[slot_num]
+        self.update_resource_selection(self.resource_slug)
         self.update_resource_ui()
 
     def prompt_to_discard(self):

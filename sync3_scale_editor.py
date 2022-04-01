@@ -52,6 +52,7 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
         # TODO check if new remote resource or set collides with existing local slug
 
         self.set = Sync3ScaleSet(resource_dir, slug)
+        self.set_slug = slug
 
         self.update_resource_sets()
         self.update_resources()

@@ -261,6 +261,7 @@ class WavetableEditor(ViaResourceEditor, WavetableViz):
         # TODO check if new remote resource or set collides with existing local slug
         self.size_limit_data = {'table_size': 9}
         self.set = WavetableSet(resource_dir, slug, table_file, slope_file)
+        self.set_slug = slug
         self.slope_file = slope_file
         self.table_file = table_file
 

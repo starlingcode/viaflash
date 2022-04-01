@@ -15,6 +15,7 @@ class Osc3QuantizationEditor(ViaResourceEditor, Ui_osc3QuantizationEditor):
         # TODO check if new remote resource or set collides with existing local slug
 
         self.set = Osc3QuantizationSet(resource_dir, slug)
+        self.set_slug = slug
 
         self.update_resource_sets()
         self.update_resources()
