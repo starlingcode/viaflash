@@ -155,6 +155,9 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
             print('Ratio %d/%d exists in set as %d/%d' % (ratio[0], ratio[1], reduced[0], reduced[1]))
     
     def check_data(self, ratio):
+        if 'sorted' in self.set.resources[self.active_idx].data:
+            if self.set.resources[self.active_idx].data['sorted'] is False:
+                return True
         reduced_ratio = self.reduce_ratio(ratio)
         if reduced_ratio in self.set.resources[self.active_idx].data['seed_ratios']:
             #TODO prompt to override
