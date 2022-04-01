@@ -83,15 +83,15 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
     @Slot()
     def on_addFromScala_clicked(self):
         scala_path = QFileDialog.getOpenFileName(self, 'Import Scala File')[0]
-        print(scala_path)
         with open(scala_path) as scala_file:
             scala_ratios = []
             for line in scala_file.readlines():
-                parse_try = line.split('/')
+                fixed_line = line.replace('\n', '')
+                fixed_line = fixed_line.replace(' ', '')
+                parse_try = fixed_line.split('/')
                 print(parse_try)
                 if len(parse_try) == 2:
-                    if parse_try[0].isnumeric() and parse_try[1].replace('\n','').isnumeric():
-                        print('adding from scala')
+                    if parse_try[0].isnumeric() and parse_try[1].isnumeric():
                         scala_ratios.append([int(parse_try[0]), int(parse_try[1])])
         for ratio in scala_ratios:
             self.add_seed_ratio(ratio)
