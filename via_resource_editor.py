@@ -15,7 +15,7 @@ class ViaResourceEditor(QDialog):
     @Slot()
     def on_saveResourceSet_clicked(self):
         name = self.get_resource_set_name(self.set_slug)
-        if name = '':
+        if name == '':
             return
         self.set.save_set(name)
         self.update_resource_sets()
@@ -49,7 +49,7 @@ class ViaResourceEditor(QDialog):
 
     def handle_save_resource(self):
         name = self.get_resource_name(self.resource_slug)
-        if name = '':
+        if name == '':
             return
         self.set.save_resource(name, self.active_idx)
         self.update_resources()
