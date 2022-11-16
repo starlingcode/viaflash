@@ -29,7 +29,8 @@ class DfuUtil:
         result = dfu_process.stdout.decode('utf-8')
         if 'Found DFU: [0483:df11]' in result:
             module_found = True
-            serial = result[-14:-2]
+            serial = result.split("serial=")[-1].replace('"', '')
+            serial = "".join(serial.split())
         else:
             module_found = False
             serial = ''
