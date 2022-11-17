@@ -90,9 +90,10 @@ class Wavetable2D(FigureCanvasQTAgg):
         self.axes.plot(tables[table_index], color=(240/256, 200/256, 50/256), linewidth=2)
 
     def render_fft(self, tables, table_index):
-        fft_reading = np.abs(np.fft.rfft(tables[table_index]))
-        fft_reading = np.log(fft_reading[:128])
-        self.axes.plot(fft_reading)
+        fft_reading = np.abs(np.fft.rfft(np.array(tables[table_index]) - 16384).real)
+        fft_reading = np.log(fft_reading[1:65])
+        self.axes.bar(np.arange(64), fft_reading, 1)
+        self.axes.set_ylim(0, 16)
 
 
 class WavetableViz():
