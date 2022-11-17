@@ -1203,3 +1203,127 @@ class Ui_sync3Ratio(object):
         self.close.setText(QCoreApplication.translate("sync3Ratio", u"Close", None))
     # retranslateUi
 
+# -*- coding: utf-8 -*-
+
+################################################################################
+## Form generated from reading UI file 'sync3_ratio.ui'
+##
+## Created by: Qt User Interface Compiler version 6.2.3
+##
+## WARNING! All changes made in this file will be lost when recompiling UI file!
+################################################################################
+
+from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
+    QMetaObject, QObject, QPoint, QRect,
+    QSize, QTime, QUrl, Qt)
+from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
+    QFont, QFontDatabase, QGradient, QIcon,
+    QImage, QKeySequence, QLinearGradient, QPainter,
+    QPalette, QPixmap, QRadialGradient, QTransform)
+from PySide6.QtWidgets import (QApplication, QDialog, QHBoxLayout, QLabel,
+    QLayout, QPushButton, QSizePolicy, QVBoxLayout,
+    QWidget)
+
+class Ui_sync3Ratio(object):
+    def setupUi(self, sync3Ratio):
+        if not sync3Ratio.objectName():
+            sync3Ratio.setObjectName(u"sync3Ratio")
+        sync3Ratio.resize(180, 270)
+        sync3Ratio.setMinimumSize(QSize(180, 270))
+        sync3Ratio.setMaximumSize(QSize(180, 270))
+        self.layoutWidget = QWidget(sync3Ratio)
+        self.layoutWidget.setObjectName(u"layoutWidget")
+        self.layoutWidget.setGeometry(QRect(10, 10, 161, 251))
+        self.verticalLayout = QVBoxLayout(self.layoutWidget)
+        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_2 = QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.horizontalLayout_2.setSizeConstraint(QLayout.SetFixedSize)
+        self.semitonesLabel = QLabel(self.layoutWidget)
+        self.semitonesLabel.setObjectName(u"semitonesLabel")
+        sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.semitonesLabel.sizePolicy().hasHeightForWidth())
+        self.semitonesLabel.setSizePolicy(sizePolicy)
+        self.semitonesLabel.setAlignment(Qt.AlignCenter)
+
+        self.horizontalLayout_2.addWidget(self.semitonesLabel)
+
+        self.semitonesData = QLabel(self.layoutWidget)
+        self.semitonesData.setObjectName(u"semitonesData")
+        sizePolicy.setHeightForWidth(self.semitonesData.sizePolicy().hasHeightForWidth())
+        self.semitonesData.setSizePolicy(sizePolicy)
+        self.semitonesData.setAlignment(Qt.AlignCenter)
+
+        self.horizontalLayout_2.addWidget(self.semitonesData)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_2)
+
+        self.horizontalLayout = QHBoxLayout()
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.decimalLabel = QLabel(self.layoutWidget)
+        self.decimalLabel.setObjectName(u"decimalLabel")
+        self.decimalLabel.setAlignment(Qt.AlignCenter)
+
+        self.horizontalLayout.addWidget(self.decimalLabel)
+
+        self.decimalData = QLabel(self.layoutWidget)
+        self.decimalData.setObjectName(u"decimalData")
+        self.decimalData.setAlignment(Qt.AlignCenter)
+
+        self.horizontalLayout.addWidget(self.decimalData)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout)
+
+        self.horizontalLayout_3 = QHBoxLayout()
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.label = QLabel(self.layoutWidget)
+        self.label.setObjectName(u"label")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
+        self.label.setSizePolicy(sizePolicy1)
+        self.label.setAlignment(Qt.AlignCenter)
+
+        self.horizontalLayout_3.addWidget(self.label)
+
+        self.xyLayout = QVBoxLayout()
+        self.xyLayout.setObjectName(u"xyLayout")
+
+        self.horizontalLayout_3.addLayout(self.xyLayout)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_3)
+
+        self.removeRatio = QPushButton(self.layoutWidget)
+        self.removeRatio.setObjectName(u"removeRatio")
+
+        self.verticalLayout.addWidget(self.removeRatio)
+
+        self.close = QPushButton(self.layoutWidget)
+        self.close.setObjectName(u"close")
+
+        self.verticalLayout.addWidget(self.close)
+
+
+        self.retranslateUi(sync3Ratio)
+
+        QMetaObject.connectSlotsByName(sync3Ratio)
+    # setupUi
+
+    def retranslateUi(self, sync3Ratio):
+        sync3Ratio.setWindowTitle(QCoreApplication.translate("sync3Ratio", u"Ratio", None))
+        self.semitonesLabel.setText(QCoreApplication.translate("sync3Ratio", u"Semitones:", None))
+        self.semitonesData.setText(QCoreApplication.translate("sync3Ratio", u"TextLabel", None))
+        self.decimalLabel.setText(QCoreApplication.translate("sync3Ratio", u"Decimal:", None))
+        self.decimalData.setText(QCoreApplication.translate("sync3Ratio", u"TextLabel", None))
+        self.label.setText(QCoreApplication.translate("sync3Ratio", u"XY:", None))
+        self.removeRatio.setText(QCoreApplication.translate("sync3Ratio", u"Remove", None))
+        self.close.setText(QCoreApplication.translate("sync3Ratio", u"Close", None))
+    # retranslateUi
+

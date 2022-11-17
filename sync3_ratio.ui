@@ -7,8 +7,20 @@
     <x>0</x>
     <y>0</y>
     <width>180</width>
-    <height>271</height>
+    <height>270</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>180</width>
+    <height>270</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>180</width>
+    <height>270</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Ratio</string>
