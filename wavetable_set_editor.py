@@ -160,6 +160,7 @@ class WavetableViz():
         self.displayType.clear()
         for item in self.viz_methods:
             self.displayType.insertItem(-1, item)
+        self.update_resource_ui()
 
 
 
