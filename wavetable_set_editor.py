@@ -325,7 +325,7 @@ class ScannerWavetableEditor(WavetableEditor, Ui_wavetableSetEditor):
             x_slot_labels.append('X-%d' % mode)
             y_slot_labels.append('Y-%d' % mode)
         self.slot_labels = x_slot_labels + y_slot_labels 
-        self.size_limit_data = {'table_size': 5}
+        self.size_limit_data = {'table_size': 5, 'memory_footprint': 160000}
         super().__init__(resource_dir, remote_resources, slug, style_text, table_file, slope_file) 
 
 class MetaWavetableEditor(WavetableEditor, Ui_wavetableSetEditor):
@@ -339,7 +339,7 @@ class MetaWavetableEditor(WavetableEditor, Ui_wavetableSetEditor):
             s_slot_labels.append('S-%d' % mode)
         self.slot_labels = a_slot_labels + e_slot_labels + e_slot_labels
         self.slot_labels.append('Drum')
-        self.size_limit_data = {'table_size': 9}
+        self.size_limit_data = {'table_size': 9, 'memory_footprint': 160000}
         super().__init__(resource_dir, remote_resources, slug, style_text, table_file, slope_file) 
 
 
@@ -357,7 +357,7 @@ class SyncWavetableEditor(WavetableEditor, Ui_wavetableSetEditor):
             IV_slot_labels.append('IV-%d' % mode)
             G_slot_labels.append('G-%d' % mode)
         self.slot_labels = I_slot_labels + II_slot_labels + III_slot_labels + IV_slot_labels + G_slot_labels
-        self.size_limit_data = {'table_size': 9}
+        self.size_limit_data = {'table_size': 9, 'memory_footprint': 116000}
         super().__init__(resource_dir, remote_resources, slug, style_text, table_file, slope_file) 
 
 
