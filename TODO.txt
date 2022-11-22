@@ -1,2 +1,31 @@
 - Persist wavetable visualization selection
 - Add titles to resources
+- Local firmware
+- Update flash location for table modules+
+- Metadata for sets in manifest
+- Default usage metadata for resources
+- Wavetable browser filtering
+- Description for wavetables
+- Replace firmware info dialog with text description that changes on firmware selection
+- Do the same thing with sets ^^
+- Title to slug and slug to title conversion to play nice with combo boxes
+- Progress bars for downloading should be cumulative for all resources
+- Integerate progress bar into main window
+- Rework set browser ui
+- Chord editor really sucks
+- Pop out for adding ratio
+- Description for fill buttons
+- Better ratio grid, make scrollbar optional
+- Sorted unsorted paradigm makes no sense because you cant reorder ratios
+- Scale description tag
+- Wavetables need to get filterable tags in general including default usage
+- Wavetables need a wizard to create titles and generally edit remote resources
+! Fix table flashing for modules
+- Augment the buttons for the wavetable modules
+! Figure out how to live code the UI
+- Truncate FFT readout
+- Why is FFT for the sine wave of impevens so noisy?
+- Simultaneous visualizations
+- Minmax filter for number of table filterings (two handle slider is best)
+- Redo slope pair/cycle concept as tag system that encompasses that idea, default to all on, add button to clear filter
+- Poll for connected via
