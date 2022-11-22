@@ -1,4 +1,4 @@
-- Add titles to resources
+
 - Rework set browser ui with custom Via LED buttons
 ! Figure out how to live code the UI
 
@@ -6,14 +6,13 @@ Main Window:
 - Poll for connected via
 - Integerate progress bar into main window
 - Progress bars for downloading should be cumulative for all resources
-- Title to slug and slug to title conversion to play nice with combo boxes
-- Replace firmware info dialog with text description that changes on firmware selection
-- Do the same thing with sets ^^
 - Local firmware
 
 OSC3 Editor:
 - Chord editor really sucks
 
+GATESEQ Editor:
+- Pattern entry paradigm is lameeeeee, consider something similar to SYNC3
 
 SYNC3 Editor:
 - Better ratio grid, make scrollbar optional

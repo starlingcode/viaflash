@@ -31,7 +31,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.style_text = stylesheet.read()
             self.setStyleSheet(self.style_text)
         self.statusBar.setStyleSheet("background-color:rgb(0, 0, 0); color:rgb(255, 255, 255);");
-        self.setFixedSize(QSize(585, 640))
 
         self.threadpool = QThreadPool()
 
@@ -65,13 +64,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @Slot()    
     def on_editResources_clicked(self):
         self.activate_editor()    
-        
-    @Slot()    
-    def on_firmwareInfoButton_clicked(self):
-        infoBox = QMessageBox();
-        infoBox.setText(self.remote_firmware_selection['description']);
-        infoBox.setStyleSheet(self.style_text)
-        infoBox.exec();
     
     @Slot()    
     def on_flashButton_clicked(self):
@@ -84,6 +76,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         except IndexError:
             self.remote_firmware_selection = {}
         self.update_firmware_selection()
+
+    @Slot()    
+    def on_edit1Select_activated(self):
+        self.resourceInfo.setText(self.titles_to_descriptions[self.edit1Select.currentText()])
 
 
 # Remote firmware flashing flow
@@ -169,7 +165,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if self.download_remote_file(fp_url, path):
                 self.faceplate_image = QPixmap(path)
                 self.faceplate.setPixmap(self.faceplate_image)
-                self.firmwareInfoButton.show()
+                self.firmwareInfo.show()
+                self.firmwareInfo.setText(self.remote_firmware_selection['description'])
                 # self.loadDefaultButton.show()
                 if self.editSoftware is False:
                     preset = self.get_latest_module_data(self.remote_firmware_selection['optionByte'])
@@ -187,7 +184,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.download_error()
         else:
             path = self.app_path + '/img/blank.png'
-            self.firmwareInfoButton.hide()
+            self.firmwareInfo.hide()
             self.loadDefaultButton.hide()
             self.reset_editor()
 
@@ -257,8 +254,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.firmwareSelectLabel.hide()
         self.firmwareSelect.hide()
         self.flashButton.hide()
-        self.firmwareInfoButton.hide()
+        self.firmwareInfo.hide()
         self.loadDefaultButton.hide()
+
+        self.progressBar.hide()
+        self.progressBarLabel.hide()
 
         self.reset_editor()
 
@@ -267,7 +267,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def flash_resources(self):
         token = self.remote_firmware_selection['token']
         if token in self.editor_data:
-            self.editor1.set.load_set(self.slugs_to_titles[self.edit1Select.currentText()])
+            self.editor1.set.load_set(self.titles_to_slugs[self.edit1Select.currentText()])
             resource_path = self.editor1.set.pack_binary()
             return self.dfu.start_resource_flash(self.editor_data[token]['resource1_address'], self.app_path + '/%s/binaries/%s.%s' % (token, self.editor1.set.slug, token)) 
         else:
@@ -319,11 +319,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.edit1Label.hide()
         self.edit1Select.clear()
         self.edit1Select.hide()
-        self.openEdit1.hide()              
-        self.edit2Label.hide()
-        self.edit2Select.hide()
-        self.edit2Select.clear()
-        self.openEdit2.hide()              
+        self.openEdit1.hide()
+        self.resourceInfo.hide()
+        self.resourceSeparator.hide()                      
 
     def init_set_editor(self, token):
         self.statusBar.showMessage("Downloading remote resources")
@@ -334,8 +332,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if token in self.editor_data:
             self.edit1Select.show()
             self.edit1Label.show()
+            self.resourceInfo.show()
+            self.resourceSeparator.show()
             self.slugs_to_titles = {}
             self.titles_to_slugs = {}
+            self.titles_to_descriptions = {}
             object_name = self.editor_data[token]['object1_name']
             object_name_plural = object_name + 's'
             self.edit1Label.setText("Select %s set:" % object_name)
@@ -388,13 +389,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             else:
                 self.download_error()
             self.populate_edit1Select(firmware_dir)
+            self.on_edit1Select_activated()
             set_slug = self.titles_to_slugs[self.edit1Select.currentText()]
             if object_name != 'wavetable':
                 self.editor1 = self.editor_data[token]['editor1_object'](firmware_dir, self.remote_resources, set_slug, self.style_text)
             else: 
                 self.editor1 = self.editor_data[token]['editor1_object'](firmware_dir, self.remote_resources, set_slug, self.style_text, table_dir + 'tables.json', table_dir + 'slopes.json')
             self.editor1.finished.connect(self.get_slug_from_editor1)
-        else: 
+        else:
+            self.edit1Select.hide()
+            self.edit1Label.hide()
+            self.resourceInfo.hide()
+            self.resourceSeparator.hide()
+            self.openEdit1.hide() 
             self.statusBar.showMessage("No editable resources")
 
     def populate_edit1Select(self, firmware_dir, selected_title='Default'):
@@ -403,9 +410,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             for file in files:
                 slug = file.replace('.json', '')
                 with open(os.path.join(root, file)) as setfile:
-                    title = json.load(setfile)['title']
+                    setinfo = json.load(setfile)
+                    title = setinfo['title']
+                    description = setinfo['description']
                 self.slugs_to_titles[slug] = title
                 self.titles_to_slugs[title] = slug
+                self.titles_to_descriptions[title] = description
                 self.edit1Select.insertItem(-1, title)
             break
         self.edit1Select.setCurrentIndex(self.edit1Select.findText(selected_title))        

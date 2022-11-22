@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>500</width>
-    <height>750</height>
+    <width>800</width>
+    <height>640</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,14 +18,14 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>500</width>
-    <height>750</height>
+    <width>800</width>
+    <height>640</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>500</width>
-    <height>750</height>
+    <width>800</width>
+    <height>640</height>
    </size>
   </property>
   <property name="font">
@@ -45,7 +45,7 @@
      <rect>
       <x>20</x>
       <y>0</y>
-      <width>211</width>
+      <width>421</width>
       <height>451</height>
      </rect>
     </property>
@@ -66,9 +66,9 @@
       <number>10</number>
      </property>
      <item>
-      <widget class="QPushButton" name="detectButton">
+      <widget class="QPushButton" name="editResources">
        <property name="text">
-        <string>Detect Via Module</string>
+        <string>Edit Resources</string>
        </property>
       </widget>
      </item>
@@ -193,6 +193,31 @@
       </widget>
      </item>
      <item>
+      <widget class="QLabel" name="firmwareInfo">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Tons of amazing text its so good how much text is in here</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+       <property name="margin">
+        <number>5</number>
+       </property>
+       <property name="openExternalLinks">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QRadioButton" name="loadDefaultButton">
        <property name="font">
         <font>
@@ -208,9 +233,9 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="firmwareInfoButton">
-       <property name="text">
-        <string>Firmware Info</string>
+      <widget class="Line" name="firmwareSeparator">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
        </property>
       </widget>
      </item>
@@ -231,6 +256,28 @@
       <widget class="QComboBox" name="edit1Select"/>
      </item>
      <item>
+      <widget class="QLabel" name="resourceInfo">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+       <property name="margin">
+        <number>5</number>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="openEdit1">
        <property name="text">
         <string>Open Editor 1</string>
@@ -238,25 +285,19 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="edit2Label">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
+      <widget class="Line" name="resourceSeparator">
+       <property name="frameShadow">
+        <enum>QFrame::Sunken</enum>
        </property>
-       <property name="text">
-        <string>Select Edit 2:</string>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="edit2Select"/>
-     </item>
-     <item>
-      <widget class="QPushButton" name="openEdit2">
+      <widget class="QPushButton" name="detectButton">
        <property name="text">
-        <string>Open Editor 2</string>
+        <string>Detect Via Module</string>
        </property>
       </widget>
      </item>
@@ -264,13 +305,6 @@
       <widget class="QPushButton" name="flashButton">
        <property name="text">
         <string>Flash!</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="editResources">
-       <property name="text">
-        <string>Edit Resources</string>
        </property>
       </widget>
      </item>
@@ -292,7 +326,7 @@
    <widget class="QLabel" name="faceplate">
     <property name="geometry">
      <rect>
-      <x>240</x>
+      <x>440</x>
       <y>0</y>
       <width>351</width>
       <height>618</height>
@@ -312,6 +346,32 @@
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QProgressBar" name="progressBar">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>570</y>
+      <width>401</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="value">
+     <number>24</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="progressBarLabel">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>550</y>
+      <width>60</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
     </property>
    </widget>
   </widget>
