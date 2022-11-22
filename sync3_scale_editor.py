@@ -45,6 +45,12 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
         self.setStyleSheet(style_text)
         self.style_text = style_text
 
+        self.expand_help = "The ratios in the grid will be spread evenly across the full knob/CV range."
+        self.octave_help = "The ratios in the grid will be spread across the knob/CV range by transposing by the total range in octaves. Use this for specifying a scale or arpeggio using a small number of ratios."
+        self.tritave_help = "The ratios in the grid will be spread across the knob/CV range by transposing by the total range in tritaves. Use this for Bohlen Peirce experiments."
+        self.sorted_help = "The ratios in the grid are being automatically sorted and loaded in ascending order."
+        self.unsorted_help = "Theoretically you can drag and drop the ratios to reorder them."
+
         #TODO pass through to resources through constructors
         self.scale_size = 32
 
@@ -78,14 +84,17 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
     @Slot()
     def on_sorted_clicked(self):
         self.set.resources[self.active_idx].update_sorted(True)
+        self.sortedHelp.setText(self.sorted_help)
 
     @Slot()
     def on_unsorted_clicked(self):
         self.set.resources[self.active_idx].update_sorted(False)
+        self.sortedHelp.setText(self.unsorted_help)
 
     @Slot()
     def on_addSeedRatio_clicked(self):
-        ratio = [int(self.numerator.value()), int(self.denominator.value())]
+        # TODO launch add ratio dialog
+        # ratio = [int(self.numerator.value()), int(self.denominator.value())]
         print(ratio)
         self.add_seed_ratio(ratio)
 
@@ -117,14 +126,18 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
     @Slot()
     def on_fillExpand_clicked(self):
         self.update_fill_method('expand')
+        self.fillHelp.setText(self.expand_help)
 
     @Slot()
     def on_fillOctave_clicked(self):
         self.update_fill_method('octave')
+        self.fillHelp.setText(self.octave_help)
 
     @Slot()
     def on_fillTritave_clicked(self):
         self.update_fill_method('tritave')
+        self.fillHelp.setText(self.tritave_help)
+
 
 # Preview section slots
 
@@ -193,12 +206,13 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
         self.ratio_dialog.accept()
 
     def create_seed_ratio_grid(self):
-        self.scroll_widget = QWidget()
-        self.scroll_widget.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-        self.seedRatioGrid = QGridLayout()
+        #self.scroll_widget = QWidget()
+        #self.scroll_widget.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+        #self.seedRatioGrid = QGridLayout()
         self.seed_ratio_buttons = []
-        self.num_columns = 4
-        self.num_rows = 8
+        self.num_columns = 8
+        self.num_rows = 4
+        self.seedRatioGrid.setVerticalSpacing(20)
         for row in range(0, self.num_rows):
             for column in range(0, self.num_columns):
                 idx = row * self.num_columns + column
@@ -211,15 +225,22 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
                 new_button.clicked.connect(lambda state=True, x=idx: self.seed_button_pushed(x))
                 self.seed_ratio_buttons.append(new_button)
                 self.seedRatioGrid.addWidget(new_button, row, column)
-        self.scroll_widget.setLayout(self.seedRatioGrid)
-        self.seedRatios.setWidget(self.scroll_widget)      
+        #self.scroll_widget.setLayout(self.seedRatioGrid)
+        #self.seedRatios.setWidget(self.scroll_widget)      
 
 
     def update_resource_ui(self):
+        self.scaleDescription.setText(self.set.resources[self.active_idx].data['description'])
         self.sorted.setChecked(True)
         if 'sorted' in self.set.resources[self.active_idx].data:
             if self.set.resources[self.active_idx].data['sorted'] is False:
-                self.unsorted.setChecked(True) 
+                self.unsorted.setChecked(True)
+                self.sortedHelp.setText(self.unsorted_help)
+            else:
+                self.sortedHelp.setText(self.sorted_help)
+        else:
+            self.sortedHelp.setText(self.sorted_help)
+
         seed_ratios = self.set.resources[self.active_idx].data['seed_ratios']
         idx = -1
         for idx, ratio in enumerate(seed_ratios):
@@ -256,12 +277,15 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
         if fill_method == 'octave':
             self.fillOctave.setChecked(True)
             self.set.resources[self.active_idx].data['fill_method'] = fill_method
+            self.fillHelp.setText(self.octave_help)
         elif fill_method == 'tritave': 
             self.fillTritave.setChecked(True)
             self.set.resources[self.active_idx].data['fill_method'] = fill_method
+            self.fillHelp.setText(self.tritave_help)
         elif fill_method == 'expand':       
             self.fillExpand.setChecked(True)
             self.set.resources[self.active_idx].data['fill_method'] = fill_method
+            self.fillHelp.setText(self.expand_help)
         self.set.bake()
         self.update_preview()
 

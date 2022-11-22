@@ -1,6 +1,7 @@
 
 - Rework set browser ui with custom Via LED buttons
 ! Figure out how to live code the UI
+- Add descriptions to save logic
 
 Main Window:
 - Poll for connected via
@@ -10,14 +11,13 @@ Main Window:
 
 OSC3 Editor:
 - Chord editor really sucks
+- Quantization descriptions?
 
 GATESEQ Editor:
 - Pattern entry paradigm is lameeeeee, consider something similar to SYNC3
+- Pattern descriptions
 
 SYNC3 Editor:
-- Better ratio grid, make scrollbar optional
-- Description for fill buttons
-- Scale description tag
 - Sorted unsorted paradigm makes no sense because you cant reorder ratios
 - Pop out for adding ratio
 
@@ -35,5 +35,6 @@ Wavetable Set Editor:
 Viafirmware Repo:
 - Wavetables need to get filterable tags in general including default usage
 - Wavetables need a wizard to create titles and generally edit remote resources
+- Wavetable descriptions
 
 
