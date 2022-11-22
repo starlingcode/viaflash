@@ -333,6 +333,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.edit1Select.show()
             self.edit1Label.show()
             self.resourceInfo.show()
+            self.resourceInfo.setText("Downloading remote resources...")
             self.resourceSeparator.show()
             self.slugs_to_titles = {}
             self.titles_to_slugs = {}
