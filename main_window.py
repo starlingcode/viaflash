@@ -267,7 +267,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def flash_resources(self):
         token = self.remote_firmware_selection['token']
         if token in self.editor_data:
-            self.editor1.set.load_set(self.edit1Select.currentText())
+            self.editor1.set.load_set(self.slugs_to_titles[self.edit1Select.currentText()])
             resource_path = self.editor1.set.pack_binary()
             return self.dfu.start_resource_flash(self.editor_data[token]['resource1_address'], self.app_path + '/%s/binaries/%s.%s' % (token, self.editor1.set.slug, token)) 
         else:
@@ -334,6 +334,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if token in self.editor_data:
             self.edit1Select.show()
             self.edit1Label.show()
+            self.slugs_to_titles = {}
+            self.titles_to_slugs = {}
             object_name = self.editor_data[token]['object1_name']
             object_name_plural = object_name + 's'
             self.edit1Label.setText("Select %s set:" % object_name)
@@ -386,21 +388,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             else:
                 self.download_error()
             self.populate_edit1Select(firmware_dir)
+            set_slug = self.titles_to_slugs[self.edit1Select.currentText()]
             if object_name != 'wavetable':
-                self.editor1 = self.editor_data[token]['editor1_object'](firmware_dir, self.remote_resources, self.edit1Select.currentText(), self.style_text)
+                self.editor1 = self.editor_data[token]['editor1_object'](firmware_dir, self.remote_resources, set_slug, self.style_text)
             else: 
-                self.editor1 = self.editor_data[token]['editor1_object'](firmware_dir, self.remote_resources, self.edit1Select.currentText(), self.style_text, table_dir + 'tables.json', table_dir + 'slopes.json')
+                self.editor1 = self.editor_data[token]['editor1_object'](firmware_dir, self.remote_resources, set_slug, self.style_text, table_dir + 'tables.json', table_dir + 'slopes.json')
             self.editor1.finished.connect(self.get_slug_from_editor1)
         else: 
             self.statusBar.showMessage("No editable resources")
 
-    def populate_edit1Select(self, firmware_dir, selected_slug='original'):
+    def populate_edit1Select(self, firmware_dir, selected_title='Default'):
         self.edit1Select.clear()
         for root, dirs, files in os.walk(firmware_dir):
             for file in files:
-                self.edit1Select.insertItem(-1, file.replace('.json', ''))
+                slug = file.replace('.json', '')
+                with open(os.path.join(root, file)) as setfile:
+                    title = json.load(setfile)['title']
+                self.slugs_to_titles[slug] = title
+                self.titles_to_slugs[title] = slug
+                self.edit1Select.insertItem(-1, title)
             break
-        self.edit1Select.setCurrentIndex(self.edit1Select.findText(selected_slug))        
+        self.edit1Select.setCurrentIndex(self.edit1Select.findText(selected_title))        
 
     @Slot()
     def launch_editor1(self):
@@ -409,8 +417,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     @Slot()
     def get_slug_from_editor1(self):
-        selected_slug = self.editor1.set.slug
-        self.populate_edit1Select(self.remote_firmware_selection['token'], selected_slug)
+        selected_title = self.slugs_to_titles[self.editor1.set.slug]
+        self.populate_edit1Select(self.remote_firmware_selection['token'], selected_title)
 
 ###
 

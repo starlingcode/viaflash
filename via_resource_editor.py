@@ -7,8 +7,10 @@ class ViaResourceEditor(QDialog):
         self.unsaved_changes = False
         self.active_idx = 0
 
-        self.resource_slugs = []
-        self.resource_set_slugs = []
+        self.resource_slugs = {}
+        self.resource_set_slugs = {}
+        self.resource_titles = {}
+        self.resource_set_titlesa = {}
         
         # Base class must initialize self.set as ViaResourceSet derived class
 
@@ -41,10 +43,10 @@ class ViaResourceEditor(QDialog):
 
     def handle_select_resource(self):
         #TODO check for unsaved changes
-        resource_slug = self.selectResource.currentText()
-        if resource_slug in self.resource_slugs:
-            self.resource_slug = resource_slug
-            self.set.replace_resource(resource_slug, self.active_idx)
+        resource_title = self.selectResource.currentText()
+        if resource_title in self.resource_titles:
+            self.resource_slug = self.resource_titles[resource_title]
+            self.set.replace_resource(self.resource_slug, self.active_idx)
             self.switch_slot(self.active_idx)
 
     def handle_save_resource(self):
@@ -63,15 +65,15 @@ class ViaResourceEditor(QDialog):
         
     def update_resource_sets(self):
         self.selectResourceSet.clear()
-        self.resource_set_slugs = self.set.get_available_resource_sets()
+        self.resource_set_slugs, self.resource_set_titles = self.set.get_available_resource_sets()
         for resource_set in self.resource_set_slugs:
-             self.selectResourceSet.insertItem(-1, resource_set)
+             self.selectResourceSet.insertItem(-1, self.resource_set_slugs[resource_set])
     
     def update_resources(self):
         self.selectResource.clear()
-        self.resource_slugs = self.set.get_available_resources()
+        self.resource_slugs, self.resource_titles = self.set.get_available_resources()
         for resource in self.resource_slugs:
-             self.selectResource.insertItem(-1, resource)
+             self.selectResource.insertItem(-1, self.resource_slugs[resource])
 
     def switch_slot(self, slot_num):
 #        if self.unsaved_changes:
@@ -82,7 +84,7 @@ class ViaResourceEditor(QDialog):
 #                return 
         self.active_idx = slot_num
         self.resource_slug = self.set.data[slot_num]
-        self.update_resource_selection(self.resource_slug)
+        self.update_resource_selection(self.resource_slugs[self.resource_slug])
         self.update_resource_ui()
 
     def prompt_to_discard(self):
