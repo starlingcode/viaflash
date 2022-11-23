@@ -1,3 +1,7 @@
+NEXT!!!
+- Handle add duplicate ratio for sync3
+- Update helper tips for expand and fill to explain size limits
+
 
 - Rework set browser ui with custom Via LED buttons
 ! Figure out how to live code the UI

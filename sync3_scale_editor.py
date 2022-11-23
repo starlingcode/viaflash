@@ -11,6 +11,7 @@ from PySide6.QtGui import QDrag
 
 from ui_sync3_scale_editor import Ui_sync3ScaleEditor
 from ui_sync3_ratio import Ui_sync3Ratio
+from ui_sync3_ratio_add import Ui_sync3RatioAdd
 from viatools.sync3_scales import Sync3ScaleSet
 from via_resource_editor import ViaResourceEditor
 
@@ -39,6 +40,36 @@ class Sync3Ratio(QDialog, Ui_sync3Ratio):
         self.semitonesData.setText('%.4f' % (np.log2(numerator/denominator) * 12))
         self.xyLayout.addWidget(Sync3RatioXY(numerator,denominator))
 
+class Sync3RatioAdd(QDialog, Ui_sync3RatioAdd):
+    def __init__(self, parent_window):
+        super().__init__()
+        self.setupUi(self)
+        self.parent_window = parent_window
+        numerator = int(self.numerator.value())
+        denominator = int(self.denominator.value())
+        self.decimalData.setText('%.4f' % (numerator/denominator))
+        self.semitonesData.setText('%.4f' % (np.log2(numerator/denominator) * 12))
+        self.lissa_plot = Sync3RatioXY(numerator,denominator)
+        self.xyLayout.addWidget(self.lissa_plot)
+
+    def update(self, numerator, denominator):
+        self.decimalData.setText('%.4f' % (numerator/denominator))
+        self.semitonesData.setText('%.4f' % (np.log2(numerator/denominator) * 12))
+        self.lissa_plot.update_plot(numerator, denominator)
+
+    @Slot()
+    def on_numerator_valueChanged(self):
+        self.update(self.numerator.value(), self.denominator.value())
+
+    @Slot()
+    def on_denominator_valueChanged(self):
+        self.update(self.numerator.value(), self.denominator.value())
+
+    @Slot()
+    def on_addRatio_clicked(self):
+        self.parent_window.add_seed_ratio([self.numerator.value(), self.denominator.value()])     
+
+
 class RatioButton(QPushButton):
     def __init__(self, parent_window):
         super().__init__()
@@ -57,6 +88,8 @@ class RatioButton(QPushButton):
         drag.setMimeData(mimeData)
         drag.setHotSpot(e.pos() - self.rect().topLeft())
 
+        self.parent_window.dragged_idx = self.idx
+
         dropAction = drag.exec()
 
 
@@ -71,11 +104,8 @@ class RatioButton(QPushButton):
 
     def dropEvent(self, e):
 
-        print("Got a drop on slot: " + str(self.idx))
-        if self.parent_window.sorted_flag:
-            print("Naughty naughty!!!")
-
-
+        if not self.parent_window.sorted_flag:
+            self.parent_window.handle_drop(self.idx)
 
 class RatioGrid(QGridLayout):
     def __init__(self):
@@ -92,7 +122,7 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
         self.octave_help = "The ratios in the grid will be spread across the knob/CV range by transposing by the total range in octaves. Use this for specifying a scale or arpeggio using a small number of ratios."
         self.tritave_help = "The ratios in the grid will be spread across the knob/CV range by transposing by the total range in tritaves. Use this for Bohlen Peirce experiments."
         self.sorted_help = "The ratios in the grid are being automatically sorted and loaded in ascending order."
-        self.unsorted_help = "Theoretically you can drag and drop the ratios to reorder them."
+        self.unsorted_help = "Right click a ratio and drag it to the desired grid position to reorder."
 
         #TODO pass through to resources through constructors
         self.scale_size = 32
@@ -132,22 +162,27 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
 
     @Slot()
     def on_sorted_clicked(self):
+        if QMessageBox.question(self, 'Discard order?', 'Any custom ratio ordering will be lost, continue?') == QMessageBox.No:
+            self.unsorted.setChecked(True)
+            return
         self.set.resources[self.active_idx].update_sorted(True)
         self.sortedHelp.setText(self.sorted_help)
         self.sorted_flag = True
+        self.update_resource_ui()
 
     @Slot()
     def on_unsorted_clicked(self):
         self.set.resources[self.active_idx].update_sorted(False)
         self.sortedHelp.setText(self.unsorted_help)
         self.sorted_flag = False
+        self.update_resource_ui()
 
     @Slot()
     def on_addSeedRatio_clicked(self):
-        # TODO launch add ratio dialog
-        # ratio = [int(self.numerator.value()), int(self.denominator.value())]
-        print(ratio)
-        self.add_seed_ratio(ratio)
+        self.ratio_add_dialog = Sync3RatioAdd(self)
+        self.ratio_add_dialog.setWindowTitle("Add ratio")
+        self.ratio_add_dialog.setStyleSheet(self.style_text)
+        self.ratio_add_dialog.exec()
 
     @Slot()
     def on_addFromScala_clicked(self):
@@ -218,6 +253,11 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
         else:
             reduced = self.reduce_ratio(ratio)
             print('Ratio %d/%d exists in set as %d/%d' % (ratio[0], ratio[1], reduced[0], reduced[1]))
+        self.ratio_add_dialog.accept()
+
+    def handle_drop(self, destination_idx):
+        self.set.resources[self.active_idx].reorder_data(self.dragged_idx, destination_idx)
+        self.update_resource_ui()
     
     def check_data(self, ratio):
         if 'sorted' in self.set.resources[self.active_idx].data:
@@ -248,6 +288,9 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
         self.ratio_dialog.exec()
 
     def close_ratio_dialog(self):
+        self.ratio_dialog.accept()
+
+    def close_ratio_add_dialog(self):
         self.ratio_dialog.accept()
 
     def remove_ratio(self):
