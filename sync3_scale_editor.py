@@ -5,8 +5,9 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 from matplotlib import pyplot as plt
 
-from PySide6.QtWidgets import QDialog, QPushButton, QSpacerItem, QSizePolicy, QMessageBox, QLabel, QFileDialog, QWidget, QGridLayout
-from PySide6.QtCore import Slot, QRect, Qt
+from PySide6.QtWidgets import QDialog, QPushButton, QSpacerItem, QSizePolicy, QMessageBox, QLabel, QFileDialog, QWidget, QGridLayout, QLayout
+from PySide6.QtCore import Slot, QRect, Qt, QMimeData
+from PySide6.QtGui import QDrag
 
 from ui_sync3_scale_editor import Ui_sync3ScaleEditor
 from ui_sync3_ratio import Ui_sync3Ratio
@@ -38,6 +39,48 @@ class Sync3Ratio(QDialog, Ui_sync3Ratio):
         self.semitonesData.setText('%.4f' % (np.log2(numerator/denominator) * 12))
         self.xyLayout.addWidget(Sync3RatioXY(numerator,denominator))
 
+class RatioButton(QPushButton):
+    def __init__(self, parent_window):
+        super().__init__()
+        self.setAcceptDrops(True)
+        self.idx = 0
+        self.parent_window = parent_window
+
+    def mouseMoveEvent(self, e):
+
+        if e.buttons() != Qt.RightButton:
+            return
+
+        mimeData = QMimeData()
+
+        drag = QDrag(self)
+        drag.setMimeData(mimeData)
+        drag.setHotSpot(e.pos() - self.rect().topLeft())
+
+        dropAction = drag.exec()
+
+
+    def mousePressEvent(self, e):
+      
+        if e.button() == Qt.LeftButton:
+            QPushButton.mousePressEvent(self, e)
+
+    def dragEnterEvent(self, e):
+      
+        e.accept()
+
+    def dropEvent(self, e):
+
+        print("Got a drop on slot: " + str(self.idx))
+        if self.parent_window.sorted_flag:
+            print("Naughty naughty!!!")
+
+
+
+class RatioGrid(QGridLayout):
+    def __init__(self):
+        super().__init__()
+
 class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
     def __init__(self, resource_dir='./', remote_resources = {}, slug='original', style_text=''):
         super().__init__() 
@@ -59,6 +102,12 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
 
         self.set = Sync3ScaleSet(resource_dir, slug)
         self.set_slug = slug
+
+        self.seedRatioGrid = RatioGrid()
+        self.seedRatioGrid.setObjectName(u"seedRatioGrid")
+        self.seedRatioGrid.setSizeConstraint(QLayout.SetMinAndMaxSize)
+
+        self.seedRatioHolder.addLayout(self.seedRatioGrid, 0, 0)
 
         self.update_resource_sets()
         self.update_resources()
@@ -85,11 +134,13 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
     def on_sorted_clicked(self):
         self.set.resources[self.active_idx].update_sorted(True)
         self.sortedHelp.setText(self.sorted_help)
+        self.sorted_flag = True
 
     @Slot()
     def on_unsorted_clicked(self):
         self.set.resources[self.active_idx].update_sorted(False)
         self.sortedHelp.setText(self.unsorted_help)
+        self.sorted_flag = False
 
     @Slot()
     def on_addSeedRatio_clicked(self):
@@ -206,9 +257,6 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
         self.ratio_dialog.accept()
 
     def create_seed_ratio_grid(self):
-        #self.scroll_widget = QWidget()
-        #self.scroll_widget.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-        #self.seedRatioGrid = QGridLayout()
         self.seed_ratio_buttons = []
         self.num_columns = 8
         self.num_rows = 4
@@ -216,17 +264,16 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
         for row in range(0, self.num_rows):
             for column in range(0, self.num_columns):
                 idx = row * self.num_columns + column
-                new_button = QPushButton()
+                new_button = RatioButton(self)
                 new_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
                 new_button.setFixedSize(80, 20)
                 sp = new_button.sizePolicy()
                 sp.setRetainSizeWhenHidden(True)
                 new_button.setSizePolicy(sp)
                 new_button.clicked.connect(lambda state=True, x=idx: self.seed_button_pushed(x))
+                new_button.idx = idx
                 self.seed_ratio_buttons.append(new_button)
-                self.seedRatioGrid.addWidget(new_button, row, column)
-        #self.scroll_widget.setLayout(self.seedRatioGrid)
-        #self.seedRatios.setWidget(self.scroll_widget)      
+                self.seedRatioGrid.addWidget(new_button, row, column)    
 
 
     def update_resource_ui(self):
@@ -236,10 +283,13 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
             if self.set.resources[self.active_idx].data['sorted'] is False:
                 self.unsorted.setChecked(True)
                 self.sortedHelp.setText(self.unsorted_help)
+                self.sorted_flag = False
             else:
                 self.sortedHelp.setText(self.sorted_help)
+                self.sorted_flag = True
         else:
             self.sortedHelp.setText(self.sorted_help)
+            self.sorted_flag = True
 
         seed_ratios = self.set.resources[self.active_idx].data['seed_ratios']
         idx = -1

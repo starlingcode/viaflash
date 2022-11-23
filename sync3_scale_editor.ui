@@ -384,7 +384,7 @@
      </layout>
     </item>
     <item>
-     <layout class="QGridLayout" name="seedRatioGrid">
+     <layout class="QGridLayout" name="seedRatioHolder">
       <property name="sizeConstraint">
        <enum>QLayout::SetMinAndMaxSize</enum>
       </property>
@@ -672,8 +672,8 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="buttonGroup"/>
-  <buttongroup name="buttonGroup_2"/>
   <buttongroup name="buttonGroup_3"/>
+  <buttongroup name="buttonGroup_2"/>
+  <buttongroup name="buttonGroup"/>
  </buttongroups>
 </ui>
