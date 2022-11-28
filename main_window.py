@@ -408,16 +408,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def populate_edit1Select(self, firmware_dir, selected_title='Default'):
         self.edit1Select.clear()
         for root, dirs, files in os.walk(firmware_dir):
-            for file in files:
+            for file in [x for x in files if ".json" in x]:
                 slug = file.replace('.json', '')
-                with open(os.path.join(root, file)) as setfile:
-                    setinfo = json.load(setfile)
-                    title = setinfo['title']
-                    description = setinfo['description']
-                self.slugs_to_titles[slug] = title
-                self.titles_to_slugs[title] = slug
-                self.titles_to_descriptions[title] = description
-                self.edit1Select.insertItem(-1, title)
+                try:
+                    with open(os.path.join(root, file)) as setfile:
+                        setinfo = json.load(setfile)
+                        title = setinfo['title']
+                        description = setinfo['description']
+                    self.slugs_to_titles[slug] = title
+                    self.titles_to_slugs[title] = slug
+                    self.titles_to_descriptions[title] = description
+                    self.edit1Select.insertItem(-1, title)
+                except:
+                    print("Issue loading " + file)
             break
         self.edit1Select.setCurrentIndex(self.edit1Select.findText(selected_title))        
 

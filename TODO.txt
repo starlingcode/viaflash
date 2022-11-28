@@ -1,6 +1,11 @@
 NEXT!!!
+You broke file load :)
 - Handle add duplicate ratio for sync3
 - Update helper tips for expand and fill to explain size limits
+- Cents display for ratio add?
+- Connect close to accept dialog slot
+- Firmware selection does not update editor properly
+- Figure out how ordering resources in combo boxes actually worksx
 
 
 - Rework set browser ui with custom Via LED buttons
@@ -20,10 +25,6 @@ OSC3 Editor:
 GATESEQ Editor:
 - Pattern entry paradigm is lameeeeee, consider something similar to SYNC3
 - Pattern descriptions
-
-SYNC3 Editor:
-- Sorted unsorted paradigm makes no sense because you cant reorder ratios
-- Pop out for adding ratio
 
 Wavetable Set Editor:
 ! Fix table flashing for modules
