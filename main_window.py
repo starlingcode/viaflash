@@ -364,7 +364,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                             if os.path.exists(data_path) is False:
                                 os.mkdir(data_path)
                             with open(set_path) as jsonfile:
-                                resources = json.load(jsonfile)['data']
+                                resources = json.load(jsonfile)['slug_list']
                             for resource in resources:
                                 resource_url = (self.repo_url + '/%s/%s/%s.json' % (token, object_name_plural, resource)) # hacky pluralization of resource name
                                 resource_path = firmware_dir + '%s/%s.json' % (object_name_plural, resource)

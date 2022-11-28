@@ -83,7 +83,7 @@ class ViaResourceEditor(QDialog):
 #                switch_slot(self.active_idx)
 #                return 
         self.active_idx = slot_num
-        self.resource_slug = self.set.data[slot_num]
+        self.resource_slug = self.set.data['slug_list'][slot_num]
         self.update_resource_selection(self.resource_slugs[self.resource_slug])
         self.update_resource_ui()
 
