@@ -1,9 +1,13 @@
 NEXT!!!
+- Gateseq exception for sort not in class
+- Finish table and slope reformatting in viafirmware
+- Update viaflash to handle that new formatting
 - Handle add duplicate ratio for sync3
 - Update helper tips for expand and fill to explain size limits
 - Cents display for ratio add?
 - Connect close to accept dialog slot
-- Figure out how ordering resources in combo boxes actually worksx
+- Figure out how ordering resources in combo boxes actually works
+- Progress dialog box for downloading just sucks, integrate it to the main window
 
 
 - Rework set browser ui with custom Via LED buttons
@@ -12,8 +16,6 @@ NEXT!!!
 
 Main Window:
 - Poll for connected via
-- Integerate progress bar into main window
-- Progress bars for downloading should be cumulative for all resources
 - Local firmware
 - init_set_editor is full of duplicated horror
 

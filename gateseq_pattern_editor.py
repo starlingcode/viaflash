@@ -38,7 +38,7 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
 
     @Slot()
     def on_addEuclidean_clicked(self):
-        if (len(self.set.resources[self.active_idx].data) < 16):
+        if (len(self.set.resources[self.active_idx].data['data']) < 16):
             self.set.resources[self.active_idx].add_data([self.steps.value(), self.length.value()])
             self.update_resource_ui()
             self.unsaved_changes = True
@@ -53,7 +53,7 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
     @Slot()
     def on_addText_clicked(self):
         #TODO check if valid sequence 
-        if len(self.set.resources[self.active_idx].data) < 16:
+        if len(self.set.resources[self.active_idx].data['data']) < 16:
             text = QInputDialog.getText(title='Enter Sequence As Text', label='Use ^ for on and _ for off')
             for character in text:
                 if character not in ['^','_']:
@@ -68,7 +68,7 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
     @Slot()
     def on_clearSequences_clicked(self):
         if QMessageBox.question(self, 'Clear Sequences', 'Clear all sequences?') == QMessageBox.Yes: 
-            self.set.resources[self.active_idx].data = []
+            self.set.resources[self.active_idx].data['data'] = []
             self.update_resource_ui()
 
 # Pattern recipe dispaly helpers
@@ -90,7 +90,7 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
         self.update_resource_ui()
 
     def update_resource_ui(self):
-        sequences = self.set.resources[self.active_idx].data
+        sequences = self.set.resources[self.active_idx].data['data']
         idx = -1
         for idx, sequence in enumerate(sequences):
             self.sequence_buttons[idx].show()
