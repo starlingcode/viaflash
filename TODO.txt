@@ -1,6 +1,4 @@
 NEXT!!!
-- Gateseq exception for sort not in class
-- Finish table and slope reformatting in viafirmware
 - Update viaflash to handle that new formatting
 - Handle add duplicate ratio for sync3
 - Update helper tips for expand and fill to explain size limits
@@ -30,6 +28,7 @@ GATESEQ Editor:
 Wavetable Set Editor:
 ! Fix table flashing for modules
 - Simultaneous visualizations
+- We don't really need both surface and wireframe
 - Truncate FFT readout
 - Why is FFT for the sine wave of impevens so noisy?
 - Minmax filter for number of table filterings (two handle slider is best)
@@ -42,5 +41,6 @@ Viafirmware Repo:
 - Wavetables need to get filterable tags in general including default usage
 - Wavetables need a wizard to create titles and generally edit remote resources
 - Wavetable descriptions
+- Add real titles to wavetables
 
 

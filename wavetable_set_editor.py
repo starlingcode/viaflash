@@ -219,7 +219,7 @@ class WavetableBrowser(QDialog, Ui_wavetableBrowser, WavetableViz):
             raw_tables = json.load(infile)
             for table in raw_tables:
                 self.table_dict[table] = {}
-                attack_samples = raw_slopes[raw_tables[table][0]]
+                attack_samples = raw_slopes[raw_tables[table]['slopes'][0]]['samples']
                 self.table_dict[table]['size'] = len(attack_samples)
                 if attack_samples[0][0] == 0 and attack_samples[0][-1] == 32767:
                     self.table_dict[table]['type'] = 'slope_pair'
@@ -314,7 +314,7 @@ class WavetableEditor(ViaResourceEditor, WavetableViz):
         self.switch_table()
         
     def update_resources(self):
-        return
+        self.resource_slugs, self.resource_titles = self.set.get_available_resources()
 
 
 class ScannerWavetableEditor(WavetableEditor, Ui_wavetableSetEditor):
