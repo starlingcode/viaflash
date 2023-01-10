@@ -246,14 +246,21 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
 # Seed ratio dispaly helpers
 
     def add_seed_ratio(self, ratio): 
-        if self.check_data(ratio):
+        if not self.check_data(ratio):
+            reduced = self.reduce_ratio(ratio)
+            warning_string = 'Ratio %d/%d exists in set as %d/%d, add duplicate?' % (ratio[0], ratio[1], reduced[0], reduced[1])
+            if QMessageBox.question(self, 'Add duplicate?', warning_string) == QMessageBox.No:
+                self.ratio_add_dialog.accept()
+                return
             self.set.resources[self.active_idx].add_data(self.reduce_ratio(ratio))
             self.update_resource_ui()
             self.unsaved_scale_changes = True
             print('Added')
         else:
-            reduced = self.reduce_ratio(ratio)
-            print('Ratio %d/%d exists in set as %d/%d' % (ratio[0], ratio[1], reduced[0], reduced[1]))
+            self.set.resources[self.active_idx].add_data(self.reduce_ratio(ratio))
+            self.update_resource_ui()
+            self.unsaved_scale_changes = True
+            print('Added')
         self.ratio_add_dialog.accept()
 
     def handle_drop(self, destination_idx):

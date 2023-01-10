@@ -1,5 +1,4 @@
 NEXT!!!
-- Handle add duplicate ratio for sync3
 - Update helper tips for expand and fill to explain size limits
 - Figure out how ordering resources in combo boxes actually works
 - Progress dialog box for downloading just sucks, integrate it to the main window
