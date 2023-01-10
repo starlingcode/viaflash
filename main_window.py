@@ -179,6 +179,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         # TODO move and formalize
                         self.statusBar.showMessage('No calibration info, please select and run CALIBRATION')
                     self.flashButton.show()
+                self.show_progress_bar("Testing")
                 self.init_set_editor(token)
             else:
                 self.download_error()
@@ -256,10 +257,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.flashButton.hide()
         self.firmwareInfo.hide()
         self.loadDefaultButton.hide()
-
-        self.progressBar.hide()
-        self.progressBarLabel.hide()
-
         self.reset_editor()
 
 # Viatools compatible binary packing
@@ -321,7 +318,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.edit1Select.hide()
         self.openEdit1.hide()
         self.resourceInfo.hide()
-        self.resourceSeparator.hide()                      
+        self.resourceSeparator.hide() 
+        self.hide_progress_bar()
+                     
 
     def init_set_editor(self, token):
         self.statusBar.showMessage("Downloading remote resources")
@@ -441,14 +440,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if r.status_code == 200:
             file_size = int(r.headers.get('content-length', 0))
             block_size = 1024
-            progress_bar = QProgressDialog()
-            progress_bar.setWindowTitle('Downloading remote file')
-            progress_bar.setStyleSheet(self.style_text)
-            progress_bar.setRange(0, file_size)
-            dl = FileDownloader(r, path, progress_bar, block_size, file_size)
-            dl.signals.result.connect(progress_bar.setValue)
+            self.show_progress_bar('Downloading remote file')
+            self.progressBar.setRange(0, file_size)
+            dl = FileDownloader(r, path, self.progressBar, block_size, file_size)
+            dl.signals.result.connect(self.progressBar.setValue)
             self.threadpool.start(dl)     
-            progress_bar.exec()
+            # while self.progressBar.value() < file_size:
+            #     time.sleep(.01)
+            #     print(self.progressBar.value())
             return True
         else:
             return False
@@ -461,7 +460,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return None
 
     def download_error(self):
-        print('Network error', 'Unable to load remote resource, please check internet connectivity and try again.')
+        self.hide_progress_bar()
+        self.statusBar.showMessage('Network error', 'Unable to load remote resource, please check internet connectivity and try again.')
+
+    def hide_progress_bar(self):
+        self.progressBar.hide()
+        self.progressBarLabel.hide()
+
+    def show_progress_bar(self, caption):
+        self.progressBar.show()
+        self.progressBarLabel.show()
+        self.progressBarLabel.setText(caption)
+
 
 
 class WorkerSignals(QObject):

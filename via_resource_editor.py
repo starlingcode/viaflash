@@ -71,7 +71,7 @@ class ViaResourceEditor(QDialog):
              resource_titles.append(self.resource_set_slugs[resource])
         resource_titles = sorted(resource_titles, reverse=True)
         for resource_title in resource_titles:
-             self.selectResource.insertItem(-1, resource_title)
+             self.selectResourceSet.insertItem(-1, resource_title)
 
     
     def update_resources(self):
