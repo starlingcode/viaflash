@@ -182,6 +182,7 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
         self.ratio_add_dialog = Sync3RatioAdd(self)
         self.ratio_add_dialog.setWindowTitle("Add ratio")
         self.ratio_add_dialog.setStyleSheet(self.style_text)
+        self.ratio_add_dialog.close.clicked.connect(self.ratio_add_dialog.accept)
         self.ratio_add_dialog.exec()
 
     @Slot()
@@ -281,17 +282,11 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
         ratio = self.set.resources[self.active_idx].data['seed_ratios'][idx]
         self.ratio_dialog = Sync3Ratio(ratio[0], ratio[1])
         self.ratio_dialog.removeRatio.clicked.connect(self.remove_ratio)
-        self.ratio_dialog.close.clicked.connect(self.close_ratio_dialog)
+        self.ratio_dialog.close.clicked.connect(self.ratio_dialog.accept)
         self.ratio_dialog.setWindowTitle('%d/%d' % (ratio[0], ratio[1]))
         self.ratio_dialog.setStyleSheet(self.style_text)
         self.active_ratio_idx = idx
         self.ratio_dialog.exec()
-
-    def close_ratio_dialog(self):
-        self.ratio_dialog.accept()
-
-    def close_ratio_add_dialog(self):
-        self.ratio_dialog.accept()
 
     def remove_ratio(self):
         self.set.resources[self.active_idx].remove_data(self.active_ratio_idx)
