@@ -1,7 +1,6 @@
 NEXT!!!
-- Update helper tips for expand and fill to explain size limits
-- Figure out how ordering resources in combo boxes actually works
 - Progress dialog box for downloading just sucks, integrate it to the main window
+- Fix Default Mode 2 title in sync3 scales in viafirmware
 
 
 - Rework set browser ui with custom Via LED buttons

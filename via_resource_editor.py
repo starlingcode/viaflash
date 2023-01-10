@@ -66,14 +66,23 @@ class ViaResourceEditor(QDialog):
     def update_resource_sets(self):
         self.selectResourceSet.clear()
         self.resource_set_slugs, self.resource_set_titles = self.set.get_available_resource_sets()
-        for resource_set in self.resource_set_slugs:
-             self.selectResourceSet.insertItem(-1, self.resource_set_slugs[resource_set])
+        resource_titles = []
+        for resource in self.resource_set_slugs:
+             resource_titles.append(self.resource_set_slugs[resource])
+        resource_titles = sorted(resource_titles, reverse=True)
+        for resource_title in resource_titles:
+             self.selectResource.insertItem(-1, resource_title)
+
     
     def update_resources(self):
         self.selectResource.clear()
         self.resource_slugs, self.resource_titles = self.set.get_available_resources()
+        resource_titles = []
         for resource in self.resource_slugs:
-             self.selectResource.insertItem(-1, self.resource_slugs[resource])
+             resource_titles.append(self.resource_slugs[resource])
+        resource_titles = sorted(resource_titles, reverse=True)
+        for resource_title in resource_titles:
+             self.selectResource.insertItem(-1, resource_title)
 
     def switch_slot(self, slot_num):
 #        if self.unsaved_changes:

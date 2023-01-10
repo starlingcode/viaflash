@@ -119,8 +119,8 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
         self.style_text = style_text
 
         self.expand_help = "The ratios in the grid will be spread evenly across the full knob/CV range."
-        self.octave_help = "The ratios in the grid will be spread across the knob/CV range by transposing by the total range in octaves. Use this for specifying a scale or arpeggio using a small number of ratios."
-        self.tritave_help = "The ratios in the grid will be spread across the knob/CV range by transposing by the total range in tritaves. Use this for Bohlen Peirce experiments."
+        self.octave_help = "The ratios in the grid will be spread across the knob/CV range by transposing by the total range in octaves. Use this for specifying a scale or arpeggio using a small number of ratios. You can specify a maximum of 8 ratios greater than 1/1 and 8 less than."
+        self.tritave_help = "The ratios in the grid will be spread across the knob/CV range by transposing by the total range in tritaves. Use this for Bohlen Peirce experiments. You can specify a maximum of 8 ratios greater than 1/1 and 8 less than."
         self.sorted_help = "The ratios in the grid are being automatically sorted and loaded in ascending order."
         self.unsorted_help = "Right click a ratio and drag it to the desired grid position to reorder."
 
