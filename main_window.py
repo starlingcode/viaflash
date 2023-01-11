@@ -18,6 +18,40 @@ from wavetable_set_editor import ScannerWavetableEditor
 from wavetable_set_editor import MetaWavetableEditor
 from wavetable_set_editor import SyncWavetableEditor
 
+class WorkerSignals(QObject):
+    finished = Signal()
+
+class Worker(QRunnable):
+    '''
+    Worker thread
+
+    Inherits from QRunnable to handler worker thread setup, signals and wrap-up.
+
+    :param callback: The function callback to run on this worker thread. Supplied args and
+                     kwargs will be passed through to the runner.
+    :type callback: function
+    :param args: Arguments to pass to the callback function
+    :param kwargs: Keywords to pass to the callback function
+
+    '''
+
+    def __init__(self, fn, *args, **kwargs):
+        super(Worker, self).__init__()
+        # Store constructor arguments (re-used for processing)
+        self.args = args
+        self.kwargs = kwargs
+        self.fn = fn
+        self.signals = WorkerSignals()
+
+
+    @Slot()  
+    def run(self):
+        '''
+        Initialise the runner function with passed args, kwargs.
+        '''
+        self.fn(*self.args, **self.kwargs)
+        self.signals.finished.emit()
+
 class MainWindow(QMainWindow, Ui_MainWindow):
 
     def __init__(self, parent=None):
@@ -55,7 +89,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def __del__(self):
         return
 
-# User input slots
+    # User input slots (make em quick so they dont block the UI)
 
     @Slot()    
     def on_detectButton_clicked(self):
@@ -75,11 +109,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.remote_firmware_selection = self.firmware_manifest[self.firmwareSelect.currentIndex()]
         except IndexError:
             self.remote_firmware_selection = {}
-        self.update_firmware_selection()
+        update_worker = Worker(self.update_firmware_selection)
+        update_worker.signals.finished.connect(self.create_set_editor_object)
+        self.threadpool.start(update_worker)
 
     @Slot()    
     def on_edit1Select_activated(self):
         self.resourceInfo.setText(self.titles_to_descriptions[self.edit1Select.currentText()])
+
+    # General purpose functions
+
+    @Slot()
+    def launch_editor1(self):
+        self.editor1.show()
+
+    @Slot()
+    def get_slug_from_editor1(self):
+        selected_title = self.slugs_to_titles[self.editor1.set.slug]
+        self.populate_edit1Select(self.remote_firmware_selection['token'], selected_title)
 
 
 # Remote firmware flashing flow
@@ -158,31 +205,30 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def update_firmware_selection(self): 
         if 'token' in self.remote_firmware_selection:
-            token = self.remote_firmware_selection['token']
-            faceplate_path = '/img/' + token + '.png'
+            self.token = self.remote_firmware_selection['token']
+            faceplate_path = '/img/' + self.token + '.png'
             fp_url = self.repo_url + faceplate_path
             path = self.app_path + faceplate_path
-            if self.download_remote_file(fp_url, path):
-                self.faceplate_image = QPixmap(path)
-                self.faceplate.setPixmap(self.faceplate_image)
-                self.firmwareInfo.show()
-                self.firmwareInfo.setText(self.remote_firmware_selection['description'])
-                # self.loadDefaultButton.show()
-                if self.editSoftware is False:
-                    preset = self.get_latest_module_data(self.remote_firmware_selection['optionByte'])
-                    if 'path' in preset:
-                        if preset['path'].split('-')[0] == '254':
-                            self.statusBar.showMessage('No saved data found, loading factory deaults')
-                        else:
-                            self.statusBar.showMessage('Loading lastest saved data')
+            FileDownloader(fp_url, path, self.progressBar, self.progressBarLabel).run()
+            self.faceplate_image = QPixmap(path)
+            self.faceplate.setPixmap(self.faceplate_image)
+            self.firmwareInfo.show()
+            self.firmwareInfo.setText(self.remote_firmware_selection['description'])
+            # self.loadDefaultButton.show()
+            if self.editSoftware is False:
+                preset = self.get_latest_module_data(self.remote_firmware_selection['optionByte'])
+                if 'path' in preset:
+                    if preset['path'].split('-')[0] == '254':
+                        self.statusBar.showMessage('No saved data found, loading factory deaults')
                     else:
-                        # TODO move and formalize
-                        self.statusBar.showMessage('No calibration info, please select and run CALIBRATION')
-                    self.flashButton.show()
-                self.show_progress_bar("Testing")
-                self.init_set_editor(token)
-            else:
-                self.download_error()
+                        self.statusBar.showMessage('Loading lastest saved data')
+                else:
+                    # TODO move and formalize
+                    self.statusBar.showMessage('No calibration info, please select and run CALIBRATION')
+                self.flashButton.show()
+            self.show_progress_bar("Testing")
+            self.init_set_editor()
+
         else:
             path = self.app_path + '/img/blank.png'
             self.firmwareInfo.hide()
@@ -219,26 +265,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             path = self.app_path + bin_path
             firmware_key = self.remote_firmware_selection['optionByte']
             firmware_version = self.remote_firmware_selection['latestVersion']
-            if self.download_remote_file(bin_url, path):
-                preset_file = self.get_latest_module_data(firmware_key)
-                #TODO: fix for calibration
-                try:
-                    success = self.dfu.flash_eeprom(self.app_path + '/module_data/' + preset_file['path'])
-                except:
-                    success = False
-                #TODO Handle errors
-                if success:
-                    success = self.dfu.start_firmware_flash(path)
-                if success:
-                    self.flash_resources()
-                if success:
-                    ob_key = firmware_key
-                    self.dfu.construct_optionbytes(ob_key, firmware_version)
-                    success = self.dfu.flash_optionbytes()
-                if success:
-                    self.reset_for_new_via()
-            else:
-                self.download_error()
+            FileDownloader(bin_url, path, self.progressBar, self.progressBarLabel).run()
+            preset_file = self.get_latest_module_data(firmware_key)
+            #TODO: fix for calibration
+            try:
+                success = self.dfu.flash_eeprom(self.app_path + '/module_data/' + preset_file['path'])
+            except:
+                success = False
+            #TODO Handle errors
+            if success:
+                success = self.dfu.start_firmware_flash(path)
+            if success:
+                self.flash_resources()
+            if success:
+                ob_key = firmware_key
+                self.dfu.construct_optionbytes(ob_key, firmware_version)
+                success = self.dfu.flash_optionbytes()
+            if success:
+                self.reset_for_new_via()
         else:
             return
             # Flash local
@@ -320,15 +364,71 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.resourceInfo.hide()
         self.resourceSeparator.hide() 
         self.hide_progress_bar()
-                     
 
-    def init_set_editor(self, token):
+    @Slot()
+    def create_set_editor_object(self):
+        if self.editor_data[self.token]['object1_name'] != 'wavetable':
+            self.editor1 = self.editor_data[self.token]['editor1_object'](self.firmware_dir, self.remote_resources, self.set_slug, self.style_text)
+        else: 
+            self.editor1 = self.editor_data[self.token]['editor1_object'](self.firmware_dir, self.remote_resources, self.set_slug, self.style_text, self.app_path + '/wavetables/tables.json', self.app_path + '/wavetables/slopes.json')
+        self.editor1.finished.connect(self.get_slug_from_editor1)
+
+
+    def init_resource_set_editor(self):
+        self.populate_edit1Select(self.firmware_dir)
+        self.on_edit1Select_activated()
+        self.set_slug = self.titles_to_slugs[self.edit1Select.currentText()]
+
+
+    def init_resource_set_data(self, set_path):
+        object_name = self.editor_data[self.token]['object1_name']
+        if object_name != 'wavetable':
+            data_path = self.firmware_dir + '/' + object_name + 's'
+            if os.path.exists(data_path) is False:
+                os.mkdir(data_path)
+            with open(set_path) as jsonfile:
+                resources = json.load(jsonfile)['slug_list']
+            for resource in resources:
+                resource_url = (self.repo_url + '/%s/%s/%s.json' % (self.token, object_name + 's', resource)) # hacky pluralization of resource name
+                resource_path = self.firmware_dir + '%s/%s.json' % (object_name + 's', resource)
+                FileDownloader(resource_url, resource_path, self.progressBar, self.progressBarLabel).run()
+                self.remote_resources['resources'].append(resource)
+        else:
+            table_dir = self.app_path + '/wavetables/'
+            if os.path.exists(table_dir) is False:
+                os.mkdir(table_dir)
+            tables_url = self.repo_url + '/wavetables/tables.json'
+            tables_path = table_dir + 'tables.json'
+            FileDownloader(tables_url, tables_path, self.progressBar, self.progressBarLabel).run()
+            slopes_url = self.repo_url + '/wavetables/slopes.json'
+            slopes_path = table_dir + 'slopes.json'
+            FileDownloader(slopes_url, slopes_path, self.progressBar, self.progressBarLabel).run()
+
+    def init_resource_sets(self):
+        manifest_url = self.repo_url + '/%s/manifest.json' % self.token
+        manifest_read = self.read_remote_manifest(manifest_url)
+        self.statusBar.showMessage('Remote %s sets loaded' % self.editor_data[self.token]['object1_name'])
+        firmware_bin_path = self.firmware_dir + '/binaries'
+        if os.path.exists(firmware_bin_path) is False:
+            os.mkdir(firmware_bin_path)
+        self.remote_resources = {}
+        self.remote_resources['sets'] = manifest_read
+        self.remote_resources['resources'] = []
+        for idx, set_slug in enumerate(self.remote_resources['sets']): 
+            set_url = self.repo_url + '/%s/%s.json' % (self.token, set_slug)
+            set_path = self.firmware_dir + '%s.json' % set_slug
+            # WCM TODO this is ugggggg
+            FileDownloader(set_url, set_path, self.progressBar, self.progressBarLabel).run()
+            self.init_resource_set_data(set_path)
+
+
+    def init_set_editor(self):
         self.statusBar.showMessage("Downloading remote resources")
-        data_path = self.app_path + '/' + token
+        data_path = self.app_path + '/' + self.token
         if os.path.exists(data_path) is False:
             os.mkdir(data_path)
         self.reset_editor()
-        if token in self.editor_data:
+        if self.token in self.editor_data:
             self.edit1Select.show()
             self.edit1Label.show()
             self.resourceInfo.show()
@@ -337,65 +437,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.slugs_to_titles = {}
             self.titles_to_slugs = {}
             self.titles_to_descriptions = {}
-            object_name = self.editor_data[token]['object1_name']
-            object_name_plural = object_name + 's'
+            object_name = self.editor_data[self.token]['object1_name']
             self.edit1Label.setText("Select %s set:" % object_name)
             self.openEdit1.clicked.connect(self.launch_editor1)
             self.openEdit1.show()
             self.openEdit1.setText('Edit ' + object_name.title() + ' Set') 
-            firmware_dir = self.app_path + '/%s/' % token
-            manifest_url = self.repo_url + '/%s/manifest.json' % token
-            manifest_read = self.read_remote_manifest(manifest_url)
-            if manifest_read:
-                self.statusBar.showMessage('Remote %s sets loaded' % object_name)
-                firmware_bin_path = firmware_dir + '/binaries'
-                if os.path.exists(firmware_bin_path) is False:
-                    os.mkdir(firmware_bin_path)
-                self.remote_resources = {}
-                self.remote_resources['sets'] = manifest_read
-                self.remote_resources['resources'] = []
-                for idx, set_slug in enumerate(self.remote_resources['sets']): 
-                    set_url = self.repo_url + '/%s/%s.json' % (token, set_slug)
-                    set_path = firmware_dir + '%s.json' % set_slug
-                    if self.download_remote_file(set_url, set_path):
-                        if object_name != 'wavetable':
-                            data_path = firmware_dir + '/' + object_name_plural
-                            if os.path.exists(data_path) is False:
-                                os.mkdir(data_path)
-                            with open(set_path) as jsonfile:
-                                resources = json.load(jsonfile)['slug_list']
-                            for resource in resources:
-                                resource_url = (self.repo_url + '/%s/%s/%s.json' % (token, object_name_plural, resource)) # hacky pluralization of resource name
-                                resource_path = firmware_dir + '%s/%s.json' % (object_name_plural, resource)
-                                if self.download_remote_file(resource_url, resource_path):
-                                    self.remote_resources['resources'].append(resource)
-                                else:
-                                    self.download_error()
-                        else:
-                            table_dir = self.app_path + '/wavetables/'
-                            if os.path.exists(table_dir) is False:
-                                os.mkdir(table_dir)
-                            tables_url = self.repo_url + '/wavetables/tables.json'
-                            tables_path = table_dir + 'tables.json'
-                            if not self.download_remote_file(tables_url, tables_path):
-                                self.download_error()
-                            slopes_url = self.repo_url + '/wavetables/slopes.json'
-                            slopes_path = table_dir + 'slopes.json'
-                            if not self.download_remote_file(slopes_url, slopes_path):
-                                self.download_error()
-                                 
-                    else:
-                        self.download_error()
-            else:
-                self.download_error()
-            self.populate_edit1Select(firmware_dir)
-            self.on_edit1Select_activated()
-            set_slug = self.titles_to_slugs[self.edit1Select.currentText()]
-            if object_name != 'wavetable':
-                self.editor1 = self.editor_data[token]['editor1_object'](firmware_dir, self.remote_resources, set_slug, self.style_text)
-            else: 
-                self.editor1 = self.editor_data[token]['editor1_object'](firmware_dir, self.remote_resources, set_slug, self.style_text, table_dir + 'tables.json', table_dir + 'slopes.json')
-            self.editor1.finished.connect(self.get_slug_from_editor1)
+            self.firmware_dir = self.app_path + '/%s/' % self.token
+            self.init_resource_sets()
+            print("Set editor initialized")
+            self.init_resource_set_editor()
         else:
             self.edit1Select.hide()
             self.edit1Label.hide()
@@ -403,6 +453,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.resourceSeparator.hide()
             self.openEdit1.hide() 
             self.statusBar.showMessage("No editable resources")
+
 
     def populate_edit1Select(self, firmware_dir, selected_title='Default'):
         self.edit1Select.clear()
@@ -423,34 +474,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             break
         self.edit1Select.setCurrentIndex(self.edit1Select.findText(selected_title))        
 
-    @Slot()
-    def launch_editor1(self):
-        # set editor size?
-        self.editor1.show()
-
-    @Slot()
-    def get_slug_from_editor1(self):
-        selected_title = self.slugs_to_titles[self.editor1.set.slug]
-        self.populate_edit1Select(self.remote_firmware_selection['token'], selected_title)
-
 ###
-
-    def download_remote_file(self, url, path):
-        r = requests.get(url, stream=True, timeout=20)
-        if r.status_code == 200:
-            file_size = int(r.headers.get('content-length', 0))
-            block_size = 1024
-            self.show_progress_bar('Downloading remote file')
-            self.progressBar.setRange(0, file_size)
-            dl = FileDownloader(r, path, self.progressBar, block_size, file_size)
-            dl.signals.result.connect(self.progressBar.setValue)
-            self.threadpool.start(dl)     
-            # while self.progressBar.value() < file_size:
-            #     time.sleep(.01)
-            #     print(self.progressBar.value())
-            return True
-        else:
-            return False
 
     def read_remote_manifest(self, url):
         r = requests.get(url, timeout=20)
@@ -472,30 +496,43 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.progressBarLabel.show()
         self.progressBarLabel.setText(caption)
 
-
-
-class WorkerSignals(QObject):
+class FileDownloaderSignals(QObject):
     result = Signal(object)
+    error = Signal(object)
+    finished = Signal()
 
 
 class FileDownloader(QRunnable):
     
-    def __init__(self, request, path, progress_bar, block_size, file_size):
+    def __init__(self, url, path, pb, pblabel):
         super(FileDownloader, self).__init__()
-        self.r = request
+        self.url = url
         self.path = path
-        self.progress_bar = progress_bar
-        self.block_size = block_size
-        self.file_size = file_size
-        self.signals = WorkerSignals()
+        self.pb = pb
+        self.pblabel = pblabel
+        self.signals = FileDownloaderSignals()
 
     @Slot()
     def run(self):
-        size_downloaded = 0
-        with open(self.path, 'wb') as write_file:
-            for data in self.r.iter_content(self.block_size):
-                size_downloaded += self.block_size
-                self.signals.result.emit(size_downloaded)
-                write_file.write(data) 
-        self.signals.result.emit(self.file_size)
+        print("Downloading " + self.url)
+        r = requests.get(self.url, stream=True, timeout=20)
+        if r.status_code == 200:
+            file_size = int(r.headers.get('content-length', 0))
+            block_size = 1024
+            self.pb.show()
+            self.pblabel.show()
+            self.pblabel.setText('Downloading : ' + self.url)
+            self.pb.setRange(0, file_size)
+            size_downloaded = 0
+            with open(self.path, 'wb') as write_file:
+                for data in r.iter_content(block_size):
+                    size_downloaded += block_size
+                    self.signals.result.emit(size_downloaded)
+                    write_file.write(data) 
+            self.pb.hide()
+            self.pblabel.hide()
+            self.signals.finished.emit()
+        else:
+            self.signals.error.emit()
+        
         
