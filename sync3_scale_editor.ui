@@ -89,7 +89,7 @@
        <enum>QLayout::SetMaximumSize</enum>
       </property>
       <item>
-       <widget class="QPushButton" name="slot1">
+       <widget class="Slot1Button" name="slot1">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -636,6 +636,13 @@
    </layout>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>Slot1Button</class>
+   <extends>QPushButton</extends>
+   <header>resourcesetbuttons.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>
@@ -673,7 +680,7 @@
  </connections>
  <buttongroups>
   <buttongroup name="buttonGroup_3"/>
-  <buttongroup name="buttonGroup_2"/>
   <buttongroup name="buttonGroup"/>
+  <buttongroup name="buttonGroup_2"/>
  </buttongroups>
 </ui>

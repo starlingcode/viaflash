@@ -21,6 +21,8 @@ from PySide6.QtWidgets import (QAbstractButton, QApplication, QButtonGroup, QCom
     QPushButton, QSizePolicy, QSlider, QVBoxLayout,
     QWidget)
 
+from resourcesetbuttons import Slot1Button
+
 class Ui_sync3ScaleEditor(object):
     def setupUi(self, sync3ScaleEditor):
         if not sync3ScaleEditor.objectName():
@@ -76,7 +78,7 @@ class Ui_sync3ScaleEditor(object):
         self.slotGroup1 = QHBoxLayout()
         self.slotGroup1.setObjectName(u"slotGroup1")
         self.slotGroup1.setSizeConstraint(QLayout.SetMaximumSize)
-        self.slot1 = QPushButton(self.layoutWidget)
+        self.slot1 = Slot1Button(self.layoutWidget)
         self.buttonGroup = QButtonGroup(sync3ScaleEditor)
         self.buttonGroup.setObjectName(u"buttonGroup")
         self.buttonGroup.addButton(self.slot1)

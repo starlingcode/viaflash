@@ -28,3 +28,7 @@ QRadioButton {
 QPushButton:checked {
     background-color: #444444
 }
+
+Slot1Button {
+    background-color: red;
+}
