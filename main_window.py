@@ -151,7 +151,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     @Slot()    
     def on_detectButton_clicked(self):
-        self.detect_module()    
+        detect_worker = Worker(self.detect_module)
+        self.threadpool.start(detect_worker)    
 
     @Slot()    
     def on_editResources_clicked(self):
@@ -161,19 +162,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def on_flashButton_clicked(self):
         self.initiate_flash()
     
+    # WCM TODO the root of all evil
+
+    def launch_firmware_update(self):
+        update_worker = Worker(self.update_firmware_selection)
+        update_worker.signals.finished.connect(self.create_set_editor_object)
+        self.threadpool.start(update_worker)
+
     @Slot()    
     def on_firmwareSelect_activated(self):
         try:
             self.remote_firmware_selection = self.firmware_manifest[self.firmwareSelect.currentIndex()]
         except IndexError:
             self.remote_firmware_selection = {}
-        update_worker = Worker(self.update_firmware_selection)
-        update_worker.signals.finished.connect(self.create_set_editor_object)
-        self.threadpool.start(update_worker)
+        self.launch_firmware_update()
+
+
 
     @Slot()    
     def on_edit1Select_activated(self):
         self.resourceInfo.setText(self.titles_to_descriptions[self.edit1Select.currentText()])
+
+    @Slot()
+    def on_openEdit1_clicked(self):
+        self.editor1.show()
+
 
     # General purpose functions
 
@@ -185,10 +198,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             else: 
                 self.editor1 = self.editor_data[self.token]['editor1_object'](self.firmware_dir, self.remote_resources, self.set_slug, self.style_text, self.app_path + '/wavetables/tables.json', self.app_path + '/wavetables/slopes.json')
             self.editor1.finished.connect(self.get_slug_from_editor1)
-
-    @Slot()
-    def launch_editor1(self):
-        self.editor1.show()
 
     @Slot()
     def get_slug_from_editor1(self):
@@ -239,14 +248,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def update_ui_module_detected(self):
         self.detectButton.hide()
-        self.update_status_bar('Via found with serial %s, looking for firmware..' % serial)
         self.editResources.hide()        
 
     def update_ui_module_loaded(self):
         self.firmwareSelectLabel.show()
         self.firmwareSelect.show()    
-        self.firmwareSelect.setCurrentIndex(self.firmwareSelect.findText(self.via.firmware.upper()))
-        self.flashFirmware.show()
+        self.flashButton.show()
 
     def update_ui_firmware_selected(self):
         self.faceplate.setPixmap(self.faceplate_image)
@@ -312,12 +319,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if module_found:
             self.via = ViaModule(serial, self.firmware_manifest)
             self.editSoftware = False
+            self.update_status_bar('Via found with serial %s, looking for firmware..' % serial)
             self.update_ui_module_detected()
             self.read_option_bytes()
+            self.update_ui_module_loaded()
         else:
             self.update_status_bar('No hardware detected -- Pushed DFU button?  Removed expander cable?')
 
     def read_option_bytes(self):
+        # WCM DEBUG
+        # import pdb; pdb.set_trace()
         self.get_stored_module_data()
         read_successful, ob_path = self.dfu.read_option_bytes()
         if read_successful:
@@ -340,6 +351,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     if self.via.serial not in self.stored_module_data: 
                         print(self.stored_module_data)
                         self.dfu.store_eeprom_data(254, self.via.version, self.via.serial)
+                    # TODO FIX THIS
+                    self.firmwareSelect.setCurrentIndex(self.firmwareSelect.findText(self.via.firmware.upper()))
                     self.on_firmwareSelect_activated()
         else:
             self.dfu.read_unprotect()
@@ -362,7 +375,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 if firmware_slug not in self.stored_module_data:
                     self.stored_module_data[serial][firmware_slug] = {}
                 self.stored_module_data[serial][firmware_slug][datecode] = {'version': version, 'path': file}
-        self.update_ui_module_loaded()
         #TODO: implement default preset load for relevant firmwares
 
     def update_firmware_selection(self): 
@@ -500,7 +512,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.slugs_to_titles = {}
             self.titles_to_slugs = {}
             self.titles_to_descriptions = {}
-            self.openEdit1.clicked.connect(self.launch_editor1)
             self.firmware_dir = self.app_path + '/%s/' % self.token
             self.init_resource_sets()
             print("Set editor initialized")
