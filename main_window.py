@@ -54,40 +54,47 @@ class Worker(QRunnable):
 
 
 class FileDownloaderSignals(QObject):
-    result = Signal(object)
+    showpb = Signal()
+    progress = Signal(object)
+    setrange = Signal(object, object)
+    setcaption = Signal(object)
+    hidepb = Signal()
     error = Signal(object)
     finished = Signal()
 
 
 class FileDownloader(QRunnable):
     
-    def __init__(self, url, path, pb, pblabel):
+    def __init__(self, url, path, main_window):
         super(FileDownloader, self).__init__()
         self.url = url
         self.path = path
-        self.pb = pb
-        self.pblabel = pblabel
+        self.main_window = main_window
+        self.pb = main_window.progressBar
+        self.pblabel = main_window.progressBarLabel
         self.signals = FileDownloaderSignals()
+        self.signals.showpb.connect(self.main_window.show_pb)
+        self.signals.progress.connect(self.main_window.progressBar.setValue)
+        self.signals.setrange.connect(self.main_window.progressBar.setRange)
+        self.signals.setcaption.connect(self.main_window.progressBarLabel.setText)
+        self.signals.hidepb.connect(self.main_window.hide_pb)
 
     @Slot()
     def run(self):
-        print("Downloading " + self.url)
         r = requests.get(self.url, stream=True, timeout=20)
         if r.status_code == 200:
             file_size = int(r.headers.get('content-length', 0))
             block_size = 1024
-            self.pb.show()
-            self.pblabel.show()
-            self.pblabel.setText('Downloading : ' + self.url)
-            self.pb.setRange(0, file_size)
+            self.signals.showpb.emit()
+            self.signals.setcaption.emit('Downloading : ' + self.url.split('/')[-1])
+            self.signals.setrange.emit(0, file_size)
             size_downloaded = 0
             with open(self.path, 'wb') as write_file:
                 for data in r.iter_content(block_size):
                     size_downloaded += block_size
-                    self.signals.result.emit(size_downloaded)
+                    self.signals.progress.emit(size_downloaded)
                     write_file.write(data) 
-            self.pb.hide()
-            self.pblabel.hide()
+            self.signals.hidepb.emit()
             self.signals.finished.emit()
         else:
             self.signals.error.emit()
@@ -175,6 +182,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.remote_firmware_selection = self.firmware_manifest[self.firmwareSelect.currentIndex()]
         except IndexError:
             self.remote_firmware_selection = {}
+        self.firmwareSelect.setEnabled(False) 
         self.launch_firmware_update()
 
 
@@ -198,6 +206,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             else: 
                 self.editor1 = self.editor_data[self.token]['editor1_object'](self.firmware_dir, self.remote_resources, self.set_slug, self.style_text, self.app_path + '/wavetables/tables.json', self.app_path + '/wavetables/slopes.json')
             self.editor1.finished.connect(self.get_slug_from_editor1)
+        self.update_ui_new_editor()
 
     @Slot()
     def get_slug_from_editor1(self):
@@ -272,14 +281,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.openEdit1.show()
         self.openEdit1.setText('Edit ' + object_name.title() + ' Set') 
         self.edit1Label.setText("Select %s set:" % object_name)
+        self.firmwareSelect.setEnabled(True)
 
     def update_ui_no_editor(self):
         self.edit1Select.hide()
         self.edit1Label.hide()
         self.resourceInfo.hide()
         self.resourceSeparator.hide()
-        self.openEdit1.hide() 
+        self.openEdit1.hide()
+        self.firmwareSelect.setEnabled(True) 
         self.update_status_bar("No editable resources")
+        self.firmwareSelect.setEnabled(True)
 
     def update_ui_local_firmware_selected(self):
         self.firmwareInfo.hide()
@@ -304,6 +316,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     print("Issue loading " + file)
             break
         self.edit1Select.setCurrentIndex(self.edit1Select.findText(selected_title))
+
+    def show_pb(self):
+        self.progressBar.show()
+        self.progressBarLabel.show()
+        self.progressBarLabel.setText('')
+
+    def hide_pb(self):
+        self.progressBar.hide()
+        self.progressBarLabel.hide()
 
 # Remote firmware flashing flow
  
@@ -383,7 +404,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             faceplate_path = '/img/' + self.token + '.png'
             fp_url = self.repo_url + faceplate_path
             path = self.app_path + faceplate_path
-            FileDownloader(fp_url, path, self.progressBar, self.progressBarLabel).run()
+            self.download_blocking(fp_url, path)
             self.faceplate_image = QPixmap(path)
             if self.editSoftware is False:
                 preset = self.get_latest_module_data(self.remote_firmware_selection['optionByte'])
@@ -433,7 +454,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             path = self.app_path + bin_path
             firmware_key = self.remote_firmware_selection['optionByte']
             firmware_version = self.remote_firmware_selection['latestVersion']
-            FileDownloader(bin_url, path, self.progressBar, self.progressBarLabel).run()
+            self.download_blocking(bin_url, path)
             preset_file = self.get_latest_module_data(firmware_key)
             #TODO: fix for calibration
             try:
@@ -508,7 +529,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             os.mkdir(data_path)
         self.reset_editor()
         if self.token in self.editor_data:
-            self.update_ui_new_editor()
             self.slugs_to_titles = {}
             self.titles_to_slugs = {}
             self.titles_to_descriptions = {}
@@ -534,7 +554,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             set_url = self.repo_url + '/%s/%s.json' % (self.token, set_slug)
             set_path = self.firmware_dir + '%s.json' % set_slug
             # WCM TODO this is ugggggg
-            FileDownloader(set_url, set_path, self.progressBar, self.progressBarLabel).run()
+            self.download_blocking(set_url, set_path)
             self.init_resource_set_data(set_path)
 
 
@@ -556,10 +576,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 os.mkdir(table_dir)
             tables_url = self.repo_url + '/wavetables/tables.json'
             tables_path = table_dir + 'tables.json'
-            FileDownloader(tables_url, tables_path, self.progressBar, self.progressBarLabel).run()
+            self.download_blocking(tables_url, tables_path)
             slopes_url = self.repo_url + '/wavetables/slopes.json'
             slopes_path = table_dir + 'slopes.json'
-            FileDownloader(slopes_url, slopes_path, self.progressBar, self.progressBarLabel).run()
+            self.download_blocking(slopes_url, slopes_path)
 
 
     def init_resource_set_editor(self):
@@ -577,12 +597,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.download_error()
 
     def download_blocking(self, url, path):
-        dl_job = FileDownloader(url, url, self.progressBar, self.progressBarLabel)
-        dl_job.signals.error.connect(self.download_error)
+        dl_job = FileDownloader(url, path, self)
         dl_job.run()
 
     def download_async(self, url, path, finish_callback=None):
-        dl_job = FileDownloader(url, url, self.progressBar, self.progressBarLabel)
+        dl_job = FileDownloader(url, path, self)
         if finish_callback:
             dl_job.signals.finished.connect(finish_callback)
         dl_job.signals.error.connect(self.download_error)
