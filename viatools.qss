@@ -3,7 +3,7 @@ QRadioButton, QComboBox, QPushButton, QSpinBox, QStatusBar {
     background-color: #111111;
 }
 
-QProgressBar, QDialog, QMessageBox, QLabel, QMainWindow, QScrollArea, QScrollBar {
+QProgressBar, QDialog, QMessageBox, QLabel, QMainWindow, QScrollArea, QScrollBar, QStatusBar {
     color: white;
     background-color: black;
 }
