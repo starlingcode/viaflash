@@ -6,20 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>670</height>
+    <width>600</width>
+    <height>800</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>400</width>
-    <height>670</height>
+    <width>600</width>
+    <height>800</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>400</width>
-    <height>670</height>
+    <width>600</width>
+    <height>800</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -30,8 +30,8 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>381</width>
-     <height>651</height>
+     <width>581</width>
+     <height>781</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -113,7 +113,7 @@
        <enum>QLayout::SetMaximumSize</enum>
       </property>
       <item>
-       <widget class="QPushButton" name="slot1">
+       <widget class="Slot1Button" name="slot1">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -125,8 +125,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>30</width>
-          <height>0</height>
+          <width>50</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>50</height>
          </size>
         </property>
         <property name="text">
@@ -141,7 +147,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="slot2">
+       <widget class="Slot2Button" name="slot2">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -150,8 +156,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>30</width>
-          <height>0</height>
+          <width>50</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>50</height>
          </size>
         </property>
         <property name="text">
@@ -166,7 +178,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="slot3">
+       <widget class="Slot3Button" name="slot3">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -175,8 +187,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>30</width>
-          <height>0</height>
+          <width>50</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>50</height>
          </size>
         </property>
         <property name="text">
@@ -191,7 +209,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="slot4">
+       <widget class="Slot4Button" name="slot4">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -200,8 +218,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>30</width>
-          <height>0</height>
+          <width>50</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>50</height>
          </size>
         </property>
         <property name="text">
@@ -216,7 +240,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="slot5">
+       <widget class="Slot5Button" name="slot5">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -225,8 +249,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>30</width>
-          <height>0</height>
+          <width>50</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>50</height>
          </size>
         </property>
         <property name="text">
@@ -241,7 +271,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="slot6">
+       <widget class="Slot6Button" name="slot6">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -250,8 +280,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>30</width>
-          <height>0</height>
+          <width>50</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>50</height>
          </size>
         </property>
         <property name="text">
@@ -266,7 +302,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="slot7">
+       <widget class="Slot7Button" name="slot7">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -275,8 +311,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>30</width>
-          <height>0</height>
+          <width>50</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>50</height>
          </size>
         </property>
         <property name="text">
@@ -291,7 +333,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="slot8">
+       <widget class="Slot8Button" name="slot8">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -300,8 +342,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>30</width>
-          <height>0</height>
+          <width>50</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>50</height>
          </size>
         </property>
         <property name="text">
@@ -323,7 +371,7 @@
        <enum>QLayout::SetMaximumSize</enum>
       </property>
       <item>
-       <widget class="QPushButton" name="slot9">
+       <widget class="Slot1Button" name="slot9">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -335,8 +383,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>30</width>
-          <height>0</height>
+          <width>50</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>50</height>
          </size>
         </property>
         <property name="text">
@@ -351,7 +405,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="slot10">
+       <widget class="Slot2Button" name="slot10">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -360,8 +414,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>30</width>
-          <height>0</height>
+          <width>50</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>50</height>
          </size>
         </property>
         <property name="text">
@@ -376,7 +436,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="slot11">
+       <widget class="Slot3Button" name="slot11">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -385,8 +445,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>30</width>
-          <height>0</height>
+          <width>50</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>50</height>
          </size>
         </property>
         <property name="text">
@@ -401,7 +467,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="slot12">
+       <widget class="Slot4Button" name="slot12">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -410,8 +476,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>30</width>
-          <height>0</height>
+          <width>50</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>50</height>
          </size>
         </property>
         <property name="text">
@@ -426,7 +498,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="slot13">
+       <widget class="Slot5Button" name="slot13">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -435,8 +507,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>30</width>
-          <height>0</height>
+          <width>50</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>50</height>
          </size>
         </property>
         <property name="text">
@@ -451,7 +529,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="slot14">
+       <widget class="Slot6Button" name="slot14">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -460,8 +538,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>30</width>
-          <height>0</height>
+          <width>50</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>50</height>
          </size>
         </property>
         <property name="text">
@@ -476,7 +560,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="slot15">
+       <widget class="Slot7Button" name="slot15">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -485,8 +569,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>30</width>
-          <height>0</height>
+          <width>50</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>50</height>
          </size>
         </property>
         <property name="text">
@@ -501,7 +591,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="slot16">
+       <widget class="Slot8Button" name="slot16">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -510,8 +600,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>30</width>
-          <height>0</height>
+          <width>50</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>50</height>
          </size>
         </property>
         <property name="text">
@@ -533,7 +629,7 @@
        <enum>QLayout::SetMaximumSize</enum>
       </property>
       <item>
-       <widget class="QPushButton" name="slot17">
+       <widget class="Slot1Button" name="slot17">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -545,8 +641,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>30</width>
-          <height>0</height>
+          <width>50</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>50</height>
          </size>
         </property>
         <property name="text">
@@ -561,7 +663,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="slot18">
+       <widget class="Slot2Button" name="slot18">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -570,8 +672,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>30</width>
-          <height>0</height>
+          <width>50</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>50</height>
          </size>
         </property>
         <property name="text">
@@ -586,7 +694,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="slot19">
+       <widget class="Slot3Button" name="slot19">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -595,8 +703,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>30</width>
-          <height>0</height>
+          <width>50</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>50</height>
          </size>
         </property>
         <property name="text">
@@ -611,7 +725,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="slot20">
+       <widget class="Slot4Button" name="slot20">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -620,8 +734,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>30</width>
-          <height>0</height>
+          <width>50</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>50</height>
          </size>
         </property>
         <property name="text">
@@ -636,7 +756,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="slot21">
+       <widget class="Slot5Button" name="slot21">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -645,8 +765,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>30</width>
-          <height>0</height>
+          <width>50</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>50</height>
          </size>
         </property>
         <property name="text">
@@ -661,7 +787,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="slot22">
+       <widget class="Slot6Button" name="slot22">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -670,8 +796,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>30</width>
-          <height>0</height>
+          <width>50</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>50</height>
          </size>
         </property>
         <property name="text">
@@ -686,7 +818,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="slot23">
+       <widget class="Slot7Button" name="slot23">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -695,8 +827,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>30</width>
-          <height>0</height>
+          <width>50</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>50</height>
          </size>
         </property>
         <property name="text">
@@ -711,7 +849,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="slot24">
+       <widget class="Slot8Button" name="slot24">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -720,47 +858,18 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>30</width>
-          <height>0</height>
+          <width>50</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>50</height>
          </size>
         </property>
         <property name="text">
          <string>I-4</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <attribute name="buttonGroup">
-         <string notr="true">buttonGroup</string>
-        </attribute>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="slotGroup3_2">
-      <property name="sizeConstraint">
-       <enum>QLayout::SetMaximumSize</enum>
-      </property>
-      <item>
-       <widget class="QPushButton" name="slot25">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>30</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Drum</string>
         </property>
         <property name="checkable">
          <bool>true</bool>
@@ -852,6 +961,48 @@
    </layout>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>Slot1Button</class>
+   <extends>QPushButton</extends>
+   <header>resourcesetbuttons.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Slot2Button</class>
+   <extends>QPushButton</extends>
+   <header>resourcesetbuttons.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Slot3Button</class>
+   <extends>QPushButton</extends>
+   <header>resourcesetbuttons.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Slot4Button</class>
+   <extends>QPushButton</extends>
+   <header>resourcesetbuttons.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Slot5Button</class>
+   <extends>QPushButton</extends>
+   <header>resourcesetbuttons.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Slot6Button</class>
+   <extends>QPushButton</extends>
+   <header>resourcesetbuttons.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Slot7Button</class>
+   <extends>QPushButton</extends>
+   <header>resourcesetbuttons.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Slot8Button</class>
+   <extends>QPushButton</extends>
+   <header>resourcesetbuttons.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>
