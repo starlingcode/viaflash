@@ -30,5 +30,41 @@ QPushButton:checked {
 }
 
 Slot1Button {
-    background-color: red;
+    background-image: url(ui_resources/viamode1.png);
+    background-position: center; 
+}
+
+Slot2Button {
+    background-image: url(ui_resources/viamode2.png);
+    background-position: center; 
+}
+
+Slot3Button {
+    background-image: url(ui_resources/viamode3.png);
+    background-position: center; 
+}
+
+Slot4Button {
+    background-image: url(ui_resources/viamode4.png);
+    background-position: center; 
+}
+
+Slot5Button {
+    background-image: url(ui_resources/viamode5.png);
+    background-position: center; 
+}
+
+Slot6Button {
+    background-image: url(ui_resources/viamode6.png);
+    background-position: center; 
+}
+
+Slot7Button {
+    background-image: url(ui_resources/viamode7.png);
+    background-position: center; 
+}
+
+Slot8Button {
+    background-image: url(ui_resources/viamode8.png);
+    background-position: center; 
 }
