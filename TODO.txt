@@ -1,9 +1,12 @@
 NEXT!!!
 - Fix Default Mode 2 title in sync3 scales in viafirmware
+- Progress bar covers up percentage complete text
+- Resource set descriptions are not updating
+- Simultaneous visualizations
+- We don't really need both surface and wireframe
 
 
-- Rework set browser ui with custom Via LED buttons
-! Figure out how to live code the UI
+
 - Add descriptions to save logic
 
 Main Window:
@@ -20,8 +23,7 @@ GATESEQ Editor:
 
 Wavetable Set Editor:
 ! Fix table flashing for modules
-- Simultaneous visualizations
-- We don't really need both surface and wireframe
+
 - Truncate FFT readout
 - Why is FFT for the sine wave of impevens so noisy?
 - Minmax filter for number of table filterings (two handle slider is best)

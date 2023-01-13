@@ -4,7 +4,9 @@ from PySide6.QtCore import QSize
 class SlotButton(QPushButton):
 	def __init__(self, *args, **kwargs):
 		super(SlotButton, self).__init__(*args, **kwargs)
-		#self.setFixedSize(QSize(30, 30))
+		
+	def configure_size(self):
+		self.setFixedSize(QSize(50, 50))
 
 class Slot1Button(SlotButton):
 	def __init__(self, *args, **kwargs):

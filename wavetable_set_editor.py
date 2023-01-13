@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QInputDialog, QMessageBox, QDialog
+from PySide6.QtWidgets import QInputDialog, QMessageBox, QDialog, QButtonGroup
 from PySide6.QtCore import Slot
 
 import numpy as np
@@ -14,6 +14,9 @@ from ui_wavetable_set_editor import Ui_wavetableSetEditor
 from ui_wavetable_browser import Ui_wavetableBrowser
 from viatools.wavetables import Wavetable, WavetableSet
 from via_resource_editor import ViaResourceEditor
+
+from resourcesetbuttons import (Slot1Button, Slot2Button, Slot3Button, Slot4Button,
+    Slot5Button, Slot6Button, Slot7Button, Slot8Button)
 
 import json
 
@@ -272,24 +275,60 @@ class WavetableEditor(ViaResourceEditor, WavetableViz):
         self.init_viz(self.set.resources[0])
         self.update_resources()
 
-        for slot_num, label in enumerate(self.slot_labels):
-            eval('self.slot%d' % (slot_num+1)).setText(label)
-            eval('self.slot%d' % (slot_num+1)).clicked.connect(lambda state=True, x=slot_num: self.switch_slot(x))
-        
-        for slot_num in range(len(self.slot_labels), 25):
-            eval('self.slot%d' % (slot_num+1)).hide()
+        self.slot_lists_per_mode = {}
+        self.slot_list = []
+        self.buttonGroup = QButtonGroup(self)
+        slot_count = 0
 
-        self.slot1.setChecked(True)
-        self.switch_slot(0)
+        for mode in self.table_modes:
+            self.tableMode.addItem(mode)
+            self.slot_lists_per_mode[mode] = []
+            for i in range(0, self.table_mode_sizes[mode]):
+                this_slot_button_name = 'slot%d' % (slot_count+1)
+                # Shame shame shame shame
+                setattr(self, this_slot_button_name, eval('Slot%dButton(self.layoutWidget)' % (i+1)))
+                this_slot = eval('self.'+this_slot_button_name)
+                self.buttonGroup.addButton(this_slot)
+                self.slotGroup1.addWidget(this_slot)
+                this_slot.configure_size()
+                this_slot.setEnabled(True)
+                this_slot.setCheckable(True)
+                this_slot.setCheckable(True)
+                this_slot.hide()
+                self.slot_lists_per_mode[mode].append(this_slot)
+                self.slot_list.append(this_slot)
+                this_slot.clicked.connect(lambda state=True, x=slot_count: self.switch_slot(x))
+                slot_count += 1
+
+        self.tableMode.setCurrentIndex(0)
+        
+        self.update_slot_buttons()
+
 
 # Edit wavetable recipe
 
     @Slot()
     def on_openBrowser_clicked(self):
         self.launch_browser()
+
+    @Slot()
+    def on_tableMode_activated(self):
+        self.update_slot_buttons()
         
 
 # Override set editor base class methods
+
+    def update_slot_buttons(self):
+        mode = self.tableMode.currentText()
+        for slot in self.slot_list:
+            if slot in self.slot_lists_per_mode[mode]:
+                slot.show()
+            else:
+                slot.hide()
+        active_slot = self.slot_lists_per_mode[mode][0]
+        active_slot.setChecked(True)
+        self.switch_slot(self.slot_list.index(active_slot))
+
 
     def launch_browser(self):
         self.browser = WavetableBrowser(self.table_file, self.slope_file, self.set.resources[self.active_idx].slug, self.size_limit_data['table_size'])
@@ -298,6 +337,7 @@ class WavetableEditor(ViaResourceEditor, WavetableViz):
         self.browser.setStyleSheet(self.style_text)
         self.browser.exec()
 
+    # TODO figure this out with like title and slug logic
     def swap_table(self):
         slug = self.browser.selectTable.currentText()
         self.set.replace_resource(slug, self.active_idx)
@@ -319,44 +359,37 @@ class WavetableEditor(ViaResourceEditor, WavetableViz):
 
 class ScannerWavetableEditor(WavetableEditor, Ui_wavetableSetEditor):
     def __init__(self, resource_dir='./', remote_resources = {}, slug='original', style_text="", table_file='./tables.json', slope_file='./slopes.json'):
-        x_slot_labels = []
-        y_slot_labels = []
-        for mode in range(1, 9):
-            x_slot_labels.append('X-%d' % mode)
-            y_slot_labels.append('Y-%d' % mode)
-        self.slot_labels = x_slot_labels + y_slot_labels 
+        self.table_modes = ['X', 'Y']
+        self.table_mode_sizes = {
+            'X': 8, 
+            'Y': 8
+        }
         self.size_limit_data = {'table_size': 5, 'memory_footprint': 160000}
         super().__init__(resource_dir, remote_resources, slug, style_text, table_file, slope_file) 
 
 class MetaWavetableEditor(WavetableEditor, Ui_wavetableSetEditor):
     def __init__(self, resource_dir='./', remote_resources = {}, slug='original', style_text="", table_file='./tables.json', slope_file='./slopes.json'):
-        a_slot_labels = []
-        e_slot_labels = []
-        s_slot_labels = []
-        for mode in range(1, 9):
-            a_slot_labels.append('A-%d' % mode)
-            e_slot_labels.append('E-%d' % mode)
-            s_slot_labels.append('S-%d' % mode)
-        self.slot_labels = a_slot_labels + e_slot_labels + e_slot_labels
-        self.slot_labels.append('Drum')
+        self.table_modes = ['Audio', 'Envelope', 'Sequence', 'Drum Envelope']
+        self.table_mode_sizes = {
+            'Audio': 8, 
+            'Envelope': 8, 
+            'Sequence': 8, 
+            'Drum Envelope': 1
+        }
         self.size_limit_data = {'table_size': 9, 'memory_footprint': 160000}
         super().__init__(resource_dir, remote_resources, slug, style_text, table_file, slope_file) 
 
 
 class SyncWavetableEditor(WavetableEditor, Ui_wavetableSetEditor):
     def __init__(self, resource_dir='./', remote_resources = {}, slug='original', style_text="", table_file='./tables.json', slope_file='./slopes.json'):
-        I_slot_labels = []
-        II_slot_labels = []
-        III_slot_labels = []
-        IV_slot_labels = []
-        G_slot_labels = []
-        for mode in range(1, 5):
-            I_slot_labels.append('I-%d' % mode)
-            II_slot_labels.append('II-%d' % mode)
-            III_slot_labels.append('III-%d' % mode)
-            IV_slot_labels.append('IV-%d' % mode)
-            G_slot_labels.append('G-%d' % mode)
-        self.slot_labels = I_slot_labels + II_slot_labels + III_slot_labels + IV_slot_labels + G_slot_labels
+        self.table_modes = ['Group 1', 'Group 2', 'Group 3', 'Group 4', 'Global']
+        self.table_mode_sizes = {
+            'Group 1': 4, 
+            'Group 2': 4, 
+            'Group 3': 4, 
+            'Group 4': 4, 
+            'Global': 4
+        }
         self.size_limit_data = {'table_size': 9, 'memory_footprint': 116000}
         super().__init__(resource_dir, remote_resources, slug, style_text, table_file, slope_file) 
 
