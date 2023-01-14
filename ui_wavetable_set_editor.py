@@ -15,10 +15,12 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QAbstractButton, QApplication, QButtonGroup, QComboBox,
-    QDialog, QDialogButtonBox, QHBoxLayout, QLabel,
-    QLayout, QPushButton, QSizePolicy, QSpacerItem,
-    QSpinBox, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QAbstractButton, QApplication, QComboBox, QDialog,
+    QDialogButtonBox, QGridLayout, QHBoxLayout, QLabel,
+    QLayout, QPushButton, QSizePolicy, QVBoxLayout,
+    QWidget)
+
+from wavetable_viz_panel import WavetableVizPanel
 
 class Ui_wavetableSetEditor(object):
     def setupUi(self, wavetableSetEditor):
@@ -125,24 +127,46 @@ class Ui_wavetableSetEditor(object):
 
         self.previewControls = QHBoxLayout()
         self.previewControls.setObjectName(u"previewControls")
-        self.displayType = QComboBox(self.layoutWidget)
-        self.displayType.setObjectName(u"displayType")
-
-        self.previewControls.addWidget(self.displayType)
-
-        self.tableIndex = QSpinBox(self.layoutWidget)
-        self.tableIndex.setObjectName(u"tableIndex")
-
-        self.previewControls.addWidget(self.tableIndex)
-
 
         self.verticalLayout.addLayout(self.previewControls)
 
         self.tableViz = QVBoxLayout()
         self.tableViz.setObjectName(u"tableViz")
-        self.vizSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.gridLayout = QGridLayout()
+        self.gridLayout.setObjectName(u"gridLayout")
+        self.viz1 = WavetableVizPanel(self.layoutWidget)
+        self.viz1.setObjectName(u"viz1")
+        sizePolicy3 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.viz1.sizePolicy().hasHeightForWidth())
+        self.viz1.setSizePolicy(sizePolicy3)
 
-        self.tableViz.addItem(self.vizSpacer)
+        self.gridLayout.addWidget(self.viz1, 0, 0, 1, 1)
+
+        self.viz2 = WavetableVizPanel(self.layoutWidget)
+        self.viz2.setObjectName(u"viz2")
+        sizePolicy3.setHeightForWidth(self.viz2.sizePolicy().hasHeightForWidth())
+        self.viz2.setSizePolicy(sizePolicy3)
+
+        self.gridLayout.addWidget(self.viz2, 0, 1, 1, 1)
+
+        self.viz3 = WavetableVizPanel(self.layoutWidget)
+        self.viz3.setObjectName(u"viz3")
+        sizePolicy3.setHeightForWidth(self.viz3.sizePolicy().hasHeightForWidth())
+        self.viz3.setSizePolicy(sizePolicy3)
+
+        self.gridLayout.addWidget(self.viz3, 1, 0, 1, 1)
+
+        self.viz4 = WavetableVizPanel(self.layoutWidget)
+        self.viz4.setObjectName(u"viz4")
+        sizePolicy3.setHeightForWidth(self.viz4.sizePolicy().hasHeightForWidth())
+        self.viz4.setSizePolicy(sizePolicy3)
+
+        self.gridLayout.addWidget(self.viz4, 1, 1, 1, 1)
+
+
+        self.tableViz.addLayout(self.gridLayout)
 
 
         self.verticalLayout.addLayout(self.tableViz)

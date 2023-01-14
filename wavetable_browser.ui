@@ -6,20 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>570</width>
-    <height>330</height>
+    <width>800</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>570</width>
-    <height>330</height>
+    <width>800</width>
+    <height>600</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>570</width>
-    <height>330</height>
+    <width>800</width>
+    <height>600</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -31,7 +31,7 @@
      <x>10</x>
      <y>10</y>
      <width>161</width>
-     <height>311</height>
+     <height>581</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -158,36 +158,43 @@
     </item>
    </layout>
   </widget>
-  <widget class="QWidget" name="horizontalLayoutWidget_3">
-   <property name="geometry">
-    <rect>
-     <x>180</x>
-     <y>10</y>
-     <width>381</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <layout class="QHBoxLayout" name="previewControls">
-    <item>
-     <widget class="QComboBox" name="displayType"/>
-    </item>
-    <item>
-     <widget class="QSpinBox" name="tableIndex"/>
-    </item>
-   </layout>
-  </widget>
   <widget class="QWidget" name="verticalLayoutWidget_2">
    <property name="geometry">
     <rect>
      <x>180</x>
-     <y>60</y>
-     <width>381</width>
-     <height>261</height>
+     <y>10</y>
+     <width>611</width>
+     <height>581</height>
     </rect>
    </property>
-   <layout class="QVBoxLayout" name="tableViz"/>
+   <layout class="QVBoxLayout" name="tableViz">
+    <item>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="1" column="0">
+       <widget class="WavetableVizPanel" name="viz3" native="true"/>
+      </item>
+      <item row="0" column="0">
+       <widget class="WavetableVizPanel" name="viz1" native="true"/>
+      </item>
+      <item row="0" column="1">
+       <widget class="WavetableVizPanel" name="viz2" native="true"/>
+      </item>
+      <item row="1" column="1">
+       <widget class="WavetableVizPanel" name="viz4" native="true"/>
+      </item>
+     </layout>
+    </item>
+   </layout>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>WavetableVizPanel</class>
+   <extends>QWidget</extends>
+   <header>wavetable_viz_panel.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
