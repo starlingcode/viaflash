@@ -569,6 +569,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             for resource in resources:
                 resource_url = (self.repo_url + '/%s/%s/%s.json' % (self.token, object_name + 's', resource)) # hacky pluralization of resource name
                 resource_path = self.firmware_dir + '%s/%s.json' % (object_name + 's', resource)
+                self.download_blocking(resource_url, resource_path)
                 self.remote_resources['resources'].append(resource)
         else:
             table_dir = self.app_path + '/wavetables/'
