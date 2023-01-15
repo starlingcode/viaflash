@@ -534,7 +534,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.titles_to_descriptions = {}
             self.firmware_dir = self.app_path + '/%s/' % self.token
             self.init_resource_sets()
-            print("Set editor initialized")
             self.init_resource_set_editor()
         else:
             self.update_ui_no_editor()

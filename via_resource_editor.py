@@ -16,12 +16,13 @@ class ViaResourceEditor(QDialog):
 
     @Slot()
     def on_saveResourceSet_clicked(self):
-        name = self.get_resource_set_name(self.set_slug)
+        name = self.get_resource_set_name(self.set.data['title'])
         if name == '':
             return
-        self.set.save_set(name)
+        description = self.get_description(self.set.data['description'])
+        self.set.save_set(name, description)
         self.update_resource_sets()
-        self.selectResourceSet.setCurrentIndex(self.selectResourceSet.findText(name))
+        self.selectResourceSet.setCurrentIndex(self.selectResourceSet.findText(self.resource_set_titles[name]))
         self.update_resource_ui()
 
     @Slot()
@@ -50,10 +51,11 @@ class ViaResourceEditor(QDialog):
             self.switch_slot(self.active_idx)
 
     def handle_save_resource(self):
-        name = self.get_resource_name(self.resource_slug)
+        name = self.get_resource_name(self.resource_slugs[self.resource_slug])
         if name == '':
             return
-        self.set.save_resource(name, self.active_idx)
+        description = self.get_description(self.resources[self.active_idx].data['description'])
+        self.set.save_resource(name, self.active_idx, description)
         self.update_resources()
         self.update_resource_selection(name)
         self.update_resource_ui()
@@ -103,24 +105,38 @@ class ViaResourceEditor(QDialog):
             return False
         # Ask user if they wish to save any unsaved changes
 
+    # Make sure this does not collide with existing resource in a case insensitive fashion
     def get_resource_name(self, default=''):
-        filename = QInputDialog.getText(self, 'Save Resource', 'Enter resource name:', text=default)[0]
-        print(filename)
-        while filename in self.remote_resources['resources']:
+        title = QInputDialog.getText(self, 'Save Resource', 'Enter resource name:', text=default)[0]
+        remote_titles = []
+        remote_slugs = []
+        for slug in self.remote_resources['resources']:
+            remote_titles.append(self.resource_slugs[slug].lower())
+            remote_slugs.append(slug.lower())
+        while title.lower() in remote_titles or title.lower() in remote_slugs:
             filename = QInputDialog.getText(self, 'Save Resource', 'Reserved name, enter new name:', text=default)[0]
-        if filename in self.resource_slugs:
+        if title in self.resource_slugs:
             if QMessageBox.question(self, 'Overwrite?', 'Name in use, overwrite?') == QMessageBox.No:
                 return
-        return filename
+        return title
 
+    # Make sure this does not collide with existing resource set in a case insensitive fashion
     def get_resource_set_name(self, default=''):
-        filename = QInputDialog.getText(self, 'Save Resource Set', 'Enter resource set name:', text=default)[0]
-        while filename in self.remote_resources['sets']:
-            filename = QInputDialog.getText(self, 'Save Resource Set', 'Reserved name, enter new name:', text=default)[0]
-            if filename in self.resource_set_slugs:
-                if QMessageBox.question(self, 'Overwrite?', 'Name in use, overwrite?') == QMessageBox.No:
-                    return
-        return filename
+        title = QInputDialog.getText(self, 'Save Resource Set', 'Enter resource set name:', text=default)[0]
+        remote_titles = []
+        remote_slugs = []
+        for slug in self.remote_resources['resources']:
+            remote_titles.append(self.resource_slugs[slug].lower())
+            remote_slugs.append(slug.lower())
+        while title.lower() in remote_titles or title.lower() in remote_slugs:
+            title = QInputDialog.getText(self, 'Save Resource Set', 'Reserved name, enter new name:', text=default)[0]
+        if title in self.resource_set_slugs:
+            if QMessageBox.question(self, 'Overwrite?', 'Name in use, overwrite?') == QMessageBox.No:
+                return
+        return title
+
+    def get_description(self, default=''):
+        return QInputDialog.getText(self, 'Enter Description', 'Enter a description if you want to :)', text='')[0]
 
     def keyPressEvent(self, evt):
         if evt.key() == Qt.Key_Enter or evt.key() == Qt.Key_Return:
