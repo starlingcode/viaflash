@@ -1,5 +1,6 @@
 NEXT!!!
 
+Fix save tAble sets
 Gateseq descriptions
 Show set description in set editor
 
