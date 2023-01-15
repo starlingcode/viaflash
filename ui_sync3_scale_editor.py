@@ -442,7 +442,7 @@ class Ui_sync3ScaleEditor(object):
         sync3ScaleEditor.setWindowTitle(QCoreApplication.translate("sync3ScaleEditor", u"SYNC3 Scale Set Editor", None))
         self.label_8.setText(QCoreApplication.translate("sync3ScaleEditor", u"Edit Scale Set", None))
         self.saveResourceSet.setText(QCoreApplication.translate("sync3ScaleEditor", u"Save Scale Set", None))
-        self.saveForRack.setText(QCoreApplication.translate("sync3ScaleEditor", u"Save for Rack", None))
+        self.saveForRack.setText(QCoreApplication.translate("sync3ScaleEditor", u"Save for VCV Rack", None))
         self.label_9.setText(QCoreApplication.translate("sync3ScaleEditor", u"Select scale for editing:", None))
         self.slot1.setText("")
         self.slot2.setText("")

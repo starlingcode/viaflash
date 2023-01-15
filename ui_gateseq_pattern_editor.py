@@ -563,7 +563,7 @@ class Ui_gateseqPatternEditor(object):
         gateseqPatternEditor.setWindowTitle(QCoreApplication.translate("gateseqPatternEditor", u"GATESEQ Pattern Editor", None))
         self.editPatternSetLabel.setText(QCoreApplication.translate("gateseqPatternEditor", u"Edit Pattern Set", None))
         self.saveResourceSet.setText(QCoreApplication.translate("gateseqPatternEditor", u"Save Pattern Set", None))
-        self.saveForRack.setText(QCoreApplication.translate("gateseqPatternEditor", u"Save for Rack", None))
+        self.saveForRack.setText(QCoreApplication.translate("gateseqPatternEditor", u"Save for VCV Rack", None))
         self.editPatternLabel_2.setText(QCoreApplication.translate("gateseqPatternEditor", u"Select pattern for editing:", None))
         self.label.setText(QCoreApplication.translate("gateseqPatternEditor", u"Seq I:", None))
         self.slot1.setText("")

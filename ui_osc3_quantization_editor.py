@@ -670,7 +670,7 @@ class Ui_osc3QuantizationEditor(object):
         osc3QuantizationEditor.setWindowTitle(QCoreApplication.translate("osc3QuantizationEditor", u"OSC3 Quantization Editor", None))
         self.label_8.setText(QCoreApplication.translate("osc3QuantizationEditor", u"Edit Quantization Set", None))
         self.saveResourceSet.setText(QCoreApplication.translate("osc3QuantizationEditor", u"Save Quantization Set", None))
-        self.saveForRack.setText(QCoreApplication.translate("osc3QuantizationEditor", u"Save for Rack", None))
+        self.saveForRack.setText(QCoreApplication.translate("osc3QuantizationEditor", u"Save for VCV Rack", None))
         self.editChordsLabel_3.setText(QCoreApplication.translate("osc3QuantizationEditor", u"Select quantization mode:", None))
         self.slot1.setText("")
         self.slot2.setText("")

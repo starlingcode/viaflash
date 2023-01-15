@@ -1,5 +1,18 @@
 NEXT!!!
 
+- Script to sync all interface files at once
+
+General app things:
+- I DONT THINK SAVE FUNCTION WORKS
+- Add descriptions to save logic (i think this means like be able to enter description/title when saving a resource)
+- Some semblence of when the state of the editor is dirty
+- Borders around the button, different button color, remove fusion style on home page
+- Check all window titles
+- Make a clean local resource script
+- Theres an issue with the UI when you close an editor
+- Shorthand for Default resources? Should default be a metadata item?
+
+
 Table editor:
 ! Fix table flashing for modules
 - Why does the browser have those weird lines
@@ -26,9 +39,6 @@ Main window:
 - Poll for connected via (probably not but lets keep it on)
 - Local firmware
 
-App utilities:
-- Add descriptions to save logic (i think this means like be able to enter description/title when saving a resource)
-
 OSC3 Editor:
 - Chord editor really sucks
 - Add keyboard popout
@@ -47,17 +57,5 @@ Viafirmware Repo:
 - Wavetables need a wizard to create titles and generally edit remote resources
 - Wavetable descriptions
 - Add real titles to wavetables
-
-Jason talk notes:
-
-- Save for Rack -> Save for VCV Rack
-- I DONT THINK SAVE FUNCTION WORKS
-- Some semblence of when the state of the editor is dirty
-- Borders around the button, different button color, remove fusion style on home page
-- Check all window titles
-- Make a clean local resource script
-- Theres an issue with the UI when you close an editor
-- Shorthand for Default resources? Should default be a metadata item?
-
 
 

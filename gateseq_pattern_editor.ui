@@ -60,7 +60,7 @@
       <item>
        <widget class="QPushButton" name="saveForRack">
         <property name="text">
-         <string>Save for Rack</string>
+         <string>Save for VCV Rack</string>
         </property>
        </widget>
       </item>

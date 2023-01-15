@@ -284,7 +284,7 @@ class Ui_wavetableSetEditor(object):
         wavetableSetEditor.setWindowTitle(QCoreApplication.translate("wavetableSetEditor", u"Wavetable Set Editor", None))
         self.windowTitle.setText(QCoreApplication.translate("wavetableSetEditor", u"Edit Wavetable Set", None))
         self.saveResourceSet.setText(QCoreApplication.translate("wavetableSetEditor", u"Save Set Data", None))
-        self.saveForRack.setText(QCoreApplication.translate("wavetableSetEditor", u"Save for Rack", None))
+        self.saveForRack.setText(QCoreApplication.translate("wavetableSetEditor", u"Save for VCV Rack", None))
         self.windowTitle_2.setText(QCoreApplication.translate("wavetableSetEditor", u"Select wavetable slot for editing:", None))
         self.tableName.setText(QCoreApplication.translate("wavetableSetEditor", u"TABLENAME", None))
         self.openBrowser.setText(QCoreApplication.translate("wavetableSetEditor", u"Browser", None))
