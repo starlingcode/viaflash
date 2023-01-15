@@ -30,9 +30,11 @@ class WavetableBrowser(QDialog, Ui_wavetableBrowser):
         self.update_size()
         self.tableSize.setCurrentIndex(self.tableSize.findText(str(self.table_size)))
         self.selectTable.setCurrentIndex(self.selectTable.findText(slug))
-        self.tableSizeWarning.setText('(the first %d will be used)' % max_table_size) 
-        self.init_viz(Wavetable(self.table_file, slug, self.slope_file, max_table_size)
-)
+        self.tableSizeWarning.setText('(the first %d will be used)' % max_table_size)
+        self.table = Wavetable(self.table_file, slug, self.slope_file, max_table_size)
+        self.tableIdx.setMaximum(len(self.table.expand()) - 1)
+        self.init_viz(self.table)
+        self.tableIdxLabel.setText("1")
 
     @Slot() 
     def on_slopePair_clicked(self):
@@ -55,17 +57,27 @@ class WavetableBrowser(QDialog, Ui_wavetableBrowser):
     @Slot()
     def on_selectTable_activated(self):
         self.table = Wavetable(self.table_file, self.selectTable.currentText(), self.slope_file, self.max_table_size)
-        self.switch_table()
+        self.table_idx = self.tableIdx.value()
+        self.tableIdx.setMaximum(len(self.table.expand()) - 1)
+        self.update_resource_ui()
+
+    @Slot()
+    def on_tableIdx_valueChanged(self):
+        self.table_idx = self.tableIdx.value()
+        self.tableIdxLabel.setText(str(self.table_idx + 1))
+        self.viz3.update_plot(self.table, self.table_idx)
+        self.viz4.update_plot(self.table, self.table_idx)
+
 
     def update_resource_ui(self):
-        self.viz1.update_resource_ui('wireframe', self.table)
-        self.viz2.update_resource_ui('contour', self.table)
-        self.viz3.update_resource_ui('waveform', self.table)
-        self.viz4.update_resource_ui('fft', self.table)
+        self.viz1.update_plot(self.table)
+        self.viz2.update_plot(self.table)
+        self.viz3.update_plot(self.table, self.table_idx)
+        self.viz4.update_plot(self.table, self.table_idx)
 
     def init_viz(self, table):
         self.viz1.init_viz('wireframe', table)
-        self.viz2.init_viz('contour', table)
+        self.viz2.init_viz('3dfft', table)
         self.viz3.init_viz('waveform', table)
         self.viz4.init_viz('fft', table)
 
@@ -110,6 +122,8 @@ class WavetableBrowser(QDialog, Ui_wavetableBrowser):
             self.selectTable.insertItem(-1, table)
 
 
+
+
 class WavetableEditor(ViaResourceEditor):
     def __init__(self, resource_dir='./', remote_resources = {}, slug='original', style_text="", table_file='./tables.json', slope_file='./slopes.json'):
         super().__init__() 
@@ -128,6 +142,7 @@ class WavetableEditor(ViaResourceEditor):
         self.update_resource_sets()
         self.init_viz(self.set.resources[0])
         self.update_resources()
+        self.tableIdxLabel.setText("1")
 
         self.slot_lists_per_mode = {}
         self.slot_list = []
@@ -169,18 +184,24 @@ class WavetableEditor(ViaResourceEditor):
     def on_tableMode_activated(self):
         self.update_slot_buttons()
         
+    @Slot()
+    def on_tableIdx_valueChanged(self):
+        self.table_idx = self.tableIdx.value()
+        self.tableIdxLabel.setText(str(self.table_idx + 1))
+        self.viz3.update_plot(self.table, self.table_idx)
+        self.viz4.update_plot(self.table, self.table_idx)
 
 # Override set editor base class methods
 
     def update_resource_ui(self):
-        self.viz1.update_resource_ui('wireframe', self.table)
-        self.viz2.update_resource_ui('contour', self.table)
-        self.viz3.update_resource_ui('waveform', self.table)
-        self.viz4.update_resource_ui('fft', self.table)
+        self.viz1.update_plot(self.table)
+        self.viz2.update_plot(self.table)
+        self.viz3.update_plot(self.table, self.table_idx)
+        self.viz4.update_plot(self.table, self.table_idx)
 
     def init_viz(self, table):
         self.viz1.init_viz('wireframe', table)
-        self.viz2.init_viz('contour', table)
+        self.viz2.init_viz('3dfft', table)
         self.viz3.init_viz('waveform', table)
         self.viz4.init_viz('fft', table)
 
@@ -216,7 +237,9 @@ class WavetableEditor(ViaResourceEditor):
  
     def update_resource_selection(self, slug):
         self.tableName.setText(slug)
-        self.table = Wavetable(self.table_file, slug, self.slope_file, self.size_limit_data['table_size']) 
+        self.table = Wavetable(self.table_file, slug, self.slope_file, self.size_limit_data['table_size'])
+        self.table_idx = self.tableIdx.value()
+        self.tableIdx.setMaximum(len(self.table.expand()) - 1)
         self.update_resource_ui()
         
     def update_resources(self):

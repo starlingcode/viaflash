@@ -10,7 +10,7 @@ class ViaResourceEditor(QDialog):
         self.resource_slugs = {}
         self.resource_set_slugs = {}
         self.resource_titles = {}
-        self.resource_set_titlesa = {}
+        self.resource_set_titles = {}
         
         # Base class must initialize self.set as ViaResourceSet derived class
 

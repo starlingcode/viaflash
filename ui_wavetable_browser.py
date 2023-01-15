@@ -15,9 +15,10 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QComboBox, QDialog, QGridLayout,
-    QGroupBox, QHBoxLayout, QLabel, QPushButton,
-    QRadioButton, QSizePolicy, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QComboBox, QDialog, QGroupBox,
+    QHBoxLayout, QLabel, QPushButton, QRadioButton,
+    QSizePolicy, QSlider, QSpacerItem, QVBoxLayout,
+    QWidget)
 
 from wavetable_viz_panel import WavetableVizPanel
 
@@ -25,12 +26,12 @@ class Ui_wavetableBrowser(object):
     def setupUi(self, wavetableBrowser):
         if not wavetableBrowser.objectName():
             wavetableBrowser.setObjectName(u"wavetableBrowser")
-        wavetableBrowser.resize(800, 600)
-        wavetableBrowser.setMinimumSize(QSize(800, 600))
-        wavetableBrowser.setMaximumSize(QSize(800, 600))
+        wavetableBrowser.resize(800, 625)
+        wavetableBrowser.setMinimumSize(QSize(800, 625))
+        wavetableBrowser.setMaximumSize(QSize(800, 625))
         self.layoutWidget = QWidget(wavetableBrowser)
         self.layoutWidget.setObjectName(u"layoutWidget")
-        self.layoutWidget.setGeometry(QRect(10, 10, 161, 581))
+        self.layoutWidget.setGeometry(QRect(10, 10, 161, 601))
         self.verticalLayout = QVBoxLayout(self.layoutWidget)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
@@ -121,36 +122,100 @@ class Ui_wavetableBrowser(object):
 
         self.verticalLayout.addWidget(self.close)
 
-        self.verticalLayoutWidget_2 = QWidget(wavetableBrowser)
-        self.verticalLayoutWidget_2.setObjectName(u"verticalLayoutWidget_2")
-        self.verticalLayoutWidget_2.setGeometry(QRect(180, 10, 611, 581))
-        self.tableViz = QVBoxLayout(self.verticalLayoutWidget_2)
-        self.tableViz.setObjectName(u"tableViz")
-        self.tableViz.setContentsMargins(0, 0, 0, 0)
-        self.gridLayout = QGridLayout()
-        self.gridLayout.setObjectName(u"gridLayout")
-        self.viz3 = WavetableVizPanel(self.verticalLayoutWidget_2)
-        self.viz3.setObjectName(u"viz3")
-
-        self.gridLayout.addWidget(self.viz3, 1, 0, 1, 1)
-
-        self.viz1 = WavetableVizPanel(self.verticalLayoutWidget_2)
+        self.widget = QWidget(wavetableBrowser)
+        self.widget.setObjectName(u"widget")
+        self.widget.setGeometry(QRect(181, 11, 611, 600))
+        self.tableViz_2 = QVBoxLayout(self.widget)
+        self.tableViz_2.setObjectName(u"tableViz_2")
+        self.tableViz_2.setContentsMargins(0, 0, 0, 0)
+        self.topViz = QHBoxLayout()
+        self.topViz.setObjectName(u"topViz")
+        self.viz1 = WavetableVizPanel(self.widget)
         self.viz1.setObjectName(u"viz1")
+        sizePolicy3 = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Minimum)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.viz1.sizePolicy().hasHeightForWidth())
+        self.viz1.setSizePolicy(sizePolicy3)
+        self.viz1.setMinimumSize(QSize(275, 275))
 
-        self.gridLayout.addWidget(self.viz1, 0, 0, 1, 1)
+        self.topViz.addWidget(self.viz1)
 
-        self.viz2 = WavetableVizPanel(self.verticalLayoutWidget_2)
+        self.viz2 = WavetableVizPanel(self.widget)
         self.viz2.setObjectName(u"viz2")
+        sizePolicy4 = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred)
+        sizePolicy4.setHorizontalStretch(0)
+        sizePolicy4.setVerticalStretch(0)
+        sizePolicy4.setHeightForWidth(self.viz2.sizePolicy().hasHeightForWidth())
+        self.viz2.setSizePolicy(sizePolicy4)
+        self.viz2.setMinimumSize(QSize(275, 275))
 
-        self.gridLayout.addWidget(self.viz2, 0, 1, 1, 1)
+        self.topViz.addWidget(self.viz2)
 
-        self.viz4 = WavetableVizPanel(self.verticalLayoutWidget_2)
+
+        self.tableViz_2.addLayout(self.topViz)
+
+        self.horizontalLayout_2 = QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_2.addItem(self.horizontalSpacer)
+
+        self.label_4 = QLabel(self.widget)
+        self.label_4.setObjectName(u"label_4")
+        sizePolicy.setHeightForWidth(self.label_4.sizePolicy().hasHeightForWidth())
+        self.label_4.setSizePolicy(sizePolicy)
+
+        self.horizontalLayout_2.addWidget(self.label_4)
+
+        self.tableIdx = QSlider(self.widget)
+        self.tableIdx.setObjectName(u"tableIdx")
+        sizePolicy5 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
+        sizePolicy5.setHorizontalStretch(0)
+        sizePolicy5.setVerticalStretch(0)
+        sizePolicy5.setHeightForWidth(self.tableIdx.sizePolicy().hasHeightForWidth())
+        self.tableIdx.setSizePolicy(sizePolicy5)
+        self.tableIdx.setOrientation(Qt.Horizontal)
+
+        self.horizontalLayout_2.addWidget(self.tableIdx)
+
+        self.tableIdxLabel = QLabel(self.widget)
+        self.tableIdxLabel.setObjectName(u"tableIdxLabel")
+        sizePolicy.setHeightForWidth(self.tableIdxLabel.sizePolicy().hasHeightForWidth())
+        self.tableIdxLabel.setSizePolicy(sizePolicy)
+
+        self.horizontalLayout_2.addWidget(self.tableIdxLabel)
+
+        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_2.addItem(self.horizontalSpacer_2)
+
+
+        self.tableViz_2.addLayout(self.horizontalLayout_2)
+
+        self.bottomViz = QHBoxLayout()
+        self.bottomViz.setObjectName(u"bottomViz")
+        self.viz3 = WavetableVizPanel(self.widget)
+        self.viz3.setObjectName(u"viz3")
+        sizePolicy6 = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        sizePolicy6.setHorizontalStretch(0)
+        sizePolicy6.setVerticalStretch(0)
+        sizePolicy6.setHeightForWidth(self.viz3.sizePolicy().hasHeightForWidth())
+        self.viz3.setSizePolicy(sizePolicy6)
+        self.viz3.setMinimumSize(QSize(275, 275))
+
+        self.bottomViz.addWidget(self.viz3)
+
+        self.viz4 = WavetableVizPanel(self.widget)
         self.viz4.setObjectName(u"viz4")
+        sizePolicy6.setHeightForWidth(self.viz4.sizePolicy().hasHeightForWidth())
+        self.viz4.setSizePolicy(sizePolicy6)
+        self.viz4.setMinimumSize(QSize(275, 275))
 
-        self.gridLayout.addWidget(self.viz4, 1, 1, 1, 1)
+        self.bottomViz.addWidget(self.viz4)
 
 
-        self.tableViz.addLayout(self.gridLayout)
+        self.tableViz_2.addLayout(self.bottomViz)
 
 
         self.retranslateUi(wavetableBrowser)
@@ -159,7 +224,7 @@ class Ui_wavetableBrowser(object):
     # setupUi
 
     def retranslateUi(self, wavetableBrowser):
-        wavetableBrowser.setWindowTitle(QCoreApplication.translate("wavetableBrowser", u"Ratio", None))
+        wavetableBrowser.setWindowTitle(QCoreApplication.translate("wavetableBrowser", u"Wavetable Browser", None))
         self.label_3.setText(QCoreApplication.translate("wavetableBrowser", u"Select Table Type:", None))
         self.groupBox.setTitle("")
         self.slopePair.setText(QCoreApplication.translate("wavetableBrowser", u"Slope Pair", None))
@@ -167,7 +232,9 @@ class Ui_wavetableBrowser(object):
         self.label.setText(QCoreApplication.translate("wavetableBrowser", u"Numer of Waveforms:", None))
         self.tableSizeWarning.setText(QCoreApplication.translate("wavetableBrowser", u"(the first N will be used)", None))
         self.label_2.setText(QCoreApplication.translate("wavetableBrowser", u"Select Table:", None))
-        self.swapTable.setText(QCoreApplication.translate("wavetableBrowser", u"Swap", None))
-        self.close.setText(QCoreApplication.translate("wavetableBrowser", u"Close", None))
+        self.swapTable.setText(QCoreApplication.translate("wavetableBrowser", u"Select", None))
+        self.close.setText(QCoreApplication.translate("wavetableBrowser", u"Cancel", None))
+        self.label_4.setText(QCoreApplication.translate("wavetableBrowser", u"Table Index:", None))
+        self.tableIdxLabel.setText(QCoreApplication.translate("wavetableBrowser", u"0", None))
     # retranslateUi
 
