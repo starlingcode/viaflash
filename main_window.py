@@ -190,9 +190,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @Slot()    
     def on_edit1Select_activated(self):
         self.resourceInfo.setText(self.titles_to_descriptions[self.edit1Select.currentText()])
+        self.set_slug = self.titles_to_slugs[self.edit1Select.currentText()]
 
     @Slot()
     def on_openEdit1_clicked(self):
+        self.set_slug = self.titles_to_slugs[self.edit1Select.currentText()]
+        self.editor1.update_set_slug(self.set_slug)
         self.editor1.show()
 
 
@@ -210,8 +213,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     @Slot()
     def get_slug_from_editor1(self):
-        selected_title = self.slugs_to_titles[self.editor1.set.slug]
+        selected_title = self.editor1.set.data['title']
         self.populate_edit1Select(self.remote_firmware_selection['token'], selected_title)
+        self.resourceInfo.setText(self.titles_to_descriptions[selected_title])
 
     # Stuff that basically just updates the main window widgets:
 

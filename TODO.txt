@@ -1,5 +1,8 @@
 NEXT!!!
 
+Gateseq descriptions
+Show set description in set editor
+
 General app things:
 - Wrong set is passed into editor set select combobox on init
 - Add descriptions to save logic (i think this means like be able to enter description/title when saving a resource)

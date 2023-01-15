@@ -40,7 +40,11 @@ class ViaResourceEditor(QDialog):
         self.set.pack_binary(bin_write_dir + '/')
 
 
-# Load/save resource 
+# Load/save resource
+
+    def update_set_slug(self, set_slug):
+        self.set_slug = set_slug
+        self.update_resource_sets()
 
     def handle_select_resource(self):
         #TODO check for unsaved changes
@@ -54,7 +58,10 @@ class ViaResourceEditor(QDialog):
         name = self.get_resource_name(self.resource_slugs[self.resource_slug])
         if name == '':
             return
-        description = self.get_description(self.resources[self.active_idx].data['description'])
+        default_description = ''
+        if 'description' in self.set.resources[self.active_idx].data:
+            default_description = self.set.resources[self.active_idx].data['description']
+        description = self.get_description(default_description)
         self.set.save_resource(name, self.active_idx, description)
         self.update_resources()
         self.update_resource_selection(name)
@@ -74,6 +81,7 @@ class ViaResourceEditor(QDialog):
         resource_titles = sorted(resource_titles, reverse=True)
         for resource_title in resource_titles:
              self.selectResourceSet.insertItem(-1, resource_title)
+        self.selectResourceSet.setCurrentIndex(self.selectResourceSet.findText(self.resource_set_slugs[self.set_slug]))
 
     
     def update_resources(self):
@@ -136,7 +144,7 @@ class ViaResourceEditor(QDialog):
         return title
 
     def get_description(self, default=''):
-        return QInputDialog.getText(self, 'Enter Description', 'Enter a description if you want to :)', text='')[0]
+        return QInputDialog.getText(self, 'Enter Description', 'Enter a description if you want to :)', text=default)[0]
 
     def keyPressEvent(self, evt):
         if evt.key() == Qt.Key_Enter or evt.key() == Qt.Key_Return:
