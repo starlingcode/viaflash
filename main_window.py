@@ -111,7 +111,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.app_path = os.path.dirname(os.path.abspath(__file__))
 
         # This is necessary to make the thing look somewhat like the qt designer template
-        self.setStyle(QStyleFactory.create("Fusion"))
+        # self.setStyle(QStyleFactory.create("Fusion"))
         # Read in the stylesheet, set it to things, store it to set to other windows we spawn
         with open(self.app_path + '/viatools.qss') as stylesheet:
             self.style_text = stylesheet.read()
@@ -374,7 +374,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                 % (self.via.serial, self.via.firmware.upper(), self.via.version))
                     #ugly hack to store as calibration
                     if self.via.serial not in self.stored_module_data: 
-                        print(self.stored_module_data)
                         self.dfu.store_eeprom_data(254, self.via.version, self.via.serial)
                     # TODO FIX THIS
                     self.firmwareSelect.setCurrentIndex(self.firmwareSelect.findText(self.via.firmware.upper()))

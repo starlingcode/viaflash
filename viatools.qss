@@ -1,6 +1,8 @@
-QRadioButton, QComboBox, QPushButton, QSpinBox, QStatusBar {
+QRadioButton, QComboBox, QPushButton, QSpinBox {
     color: white;
     background-color: #111111;
+    border-radius: 3px;
+    border: 1px solid #555555;
 }
 
 QProgressBar, QDialog, QMessageBox, QLabel, QMainWindow, QScrollArea, QScrollBar, QStatusBar {
@@ -20,9 +22,15 @@ QScrollArea QPushButton {
 
 QComboBox QAbstractItemView {
     background-color: black;
+    border-radius: 3px;
+    border: 1px solid #555555;
 }
 
 QRadioButton {
+}
+
+QPushButton {
+
 }
 
 QPushButton:checked {
