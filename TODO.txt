@@ -1,8 +1,10 @@
 NEXT!!!
 
-Fix save tAble sets
+Save for rack file should be title
+OSC3 does not save for rack correctly unless chord table is full
 Gateseq descriptions
 Show set description in set editor
+CV slider doesnt update value underneath
 
 General app things:
 - Wrong set is passed into editor set select combobox on init

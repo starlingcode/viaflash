@@ -93,10 +93,8 @@ class Osc3QuantizationEditor(ViaResourceEditor, Ui_osc3QuantizationEditor):
         for pitch in range(0, 12):
             if pitch in scale:
                 self.note_buttons[pitch].setChecked(True)
-                print('Setting button %d checked' % pitch)
             else:
                 self.note_buttons[pitch].setChecked(False)
-                print('Setting button %d unchecked' % pitch)
         scale_size = len(scale)
         self.osc2Pitch.setMinimum(-scale_size + 1)
         self.osc2Pitch.setMaximum(scale_size - 1)

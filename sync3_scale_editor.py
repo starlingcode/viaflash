@@ -194,7 +194,6 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
                 fixed_line = line.replace('\n', '')
                 fixed_line = fixed_line.replace(' ', '')
                 parse_try = fixed_line.split('/')
-                print(parse_try)
                 if len(parse_try) == 2:
                     if parse_try[0].isnumeric() and parse_try[1].isnumeric():
                         scala_ratios.append([int(parse_try[0]), int(parse_try[1])])

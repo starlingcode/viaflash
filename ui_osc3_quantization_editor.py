@@ -26,7 +26,7 @@ class Ui_osc3QuantizationEditor(object):
     def setupUi(self, osc3QuantizationEditor):
         if not osc3QuantizationEditor.objectName():
             osc3QuantizationEditor.setObjectName(u"osc3QuantizationEditor")
-        osc3QuantizationEditor.resize(530, 680)
+        osc3QuantizationEditor.resize(530, 800)
         sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)

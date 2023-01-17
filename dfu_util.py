@@ -53,7 +53,6 @@ class DfuUtil:
         arguments = '--device 0483:df11 -a 0 -s 0x08000000:force:unprotect:will-reset -D binaries/calibration.bin'
         dfu_process = self.run_process_blocking_print(arguments.split())
         result = dfu_process.stdout.decode('utf-8')
-        print(result)
 
     def store_eeprom_data(self, firmware_id, firmware_version, serial):
         arguments = '--device 0483:df11 -a 0 -s 0x0803F000:4096 -U '
@@ -98,7 +97,6 @@ class DfuUtil:
             return False
 
     def flash_eeprom(self, path):
-        print(path)
         arguments = '--device 0483:df11 -a 0 -s 0x0803F000:4096 -D %s -R' % path
         dfu_process = self.run_process_blocking(arguments.split())
         result = dfu_process.stdout.decode('utf-8')

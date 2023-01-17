@@ -38,6 +38,7 @@ class ViaResourceEditor(QDialog):
     def on_saveForRack_clicked(self):
         bin_write_dir = QFileDialog.getExistingDirectory(self, "Select save directory")
         self.set.pack_binary(bin_write_dir + '/')
+        self.update_resource_ui()
 
 
 # Load/save resource
