@@ -229,7 +229,9 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
 
     @Slot()
     def on_cvSlider_valueChanged(self):
-        self.preview_idx = self.cvSlider.value() + self.knob.value()    
+        self.preview_idx = int((self.cvSlider.value() + 50) * .15) + self.knob.value()
+        voltage = self.cvSlider.value() / 10
+        self.cvLabel.setText("CV: %1.1f V" % voltage)
         self.update_preview()
 
     @Slot()
@@ -254,12 +256,10 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
             self.set.resources[self.active_idx].add_data(self.reduce_ratio(ratio))
             self.update_resource_ui()
             self.unsaved_scale_changes = True
-            print('Added')
         else:
             self.set.resources[self.active_idx].add_data(self.reduce_ratio(ratio))
             self.update_resource_ui()
             self.unsaved_scale_changes = True
-            print('Added')
         self.ratio_add_dialog.accept()
 
     def handle_drop(self, destination_idx):
@@ -366,7 +366,6 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
 
         if not tile_ok:
             fill_method = 'expand'
-            print('Forcing expand because too many ratios')
 
         if fill_method == 'octave':
             self.fillOctave.setChecked(True)

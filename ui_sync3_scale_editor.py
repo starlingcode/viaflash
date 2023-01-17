@@ -18,8 +18,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 from PySide6.QtWidgets import (QAbstractButton, QApplication, QButtonGroup, QComboBox,
     QDial, QDialog, QDialogButtonBox, QFrame,
     QGridLayout, QHBoxLayout, QLabel, QLayout,
-    QPushButton, QSizePolicy, QSlider, QVBoxLayout,
-    QWidget)
+    QPushButton, QSizePolicy, QSlider, QSpacerItem,
+    QVBoxLayout, QWidget)
 
 from resourcesetbuttons import (Slot1Button, Slot2Button, Slot3Button, Slot4Button,
     Slot5Button, Slot6Button, Slot7Button, Slot8Button)
@@ -357,25 +357,39 @@ class Ui_sync3ScaleEditor(object):
         self.previewControls.setObjectName(u"previewControls")
         self.verticalLayout_7 = QVBoxLayout()
         self.verticalLayout_7.setObjectName(u"verticalLayout_7")
-        self.horizontalLayout_14 = QHBoxLayout()
-        self.horizontalLayout_14.setObjectName(u"horizontalLayout_14")
+        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.verticalLayout_7.addItem(self.verticalSpacer)
+
         self.cvSlider = QSlider(self.layoutWidget)
         self.cvSlider.setObjectName(u"cvSlider")
-        self.cvSlider.setMaximum(15)
-        self.cvSlider.setValue(8)
-        self.cvSlider.setSliderPosition(8)
-        self.cvSlider.setOrientation(Qt.Vertical)
+        sizePolicy2 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.cvSlider.sizePolicy().hasHeightForWidth())
+        self.cvSlider.setSizePolicy(sizePolicy2)
+        self.cvSlider.setMinimum(-50)
+        self.cvSlider.setMaximum(50)
+        self.cvSlider.setValue(0)
+        self.cvSlider.setSliderPosition(0)
+        self.cvSlider.setOrientation(Qt.Horizontal)
 
-        self.horizontalLayout_14.addWidget(self.cvSlider)
+        self.verticalLayout_7.addWidget(self.cvSlider)
 
+        self.cvLabel = QLabel(self.layoutWidget)
+        self.cvLabel.setObjectName(u"cvLabel")
+        sizePolicy3 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.cvLabel.sizePolicy().hasHeightForWidth())
+        self.cvLabel.setSizePolicy(sizePolicy3)
+        self.cvLabel.setAlignment(Qt.AlignCenter)
 
-        self.verticalLayout_7.addLayout(self.horizontalLayout_14)
+        self.verticalLayout_7.addWidget(self.cvLabel)
 
-        self.label_6 = QLabel(self.layoutWidget)
-        self.label_6.setObjectName(u"label_6")
-        self.label_6.setAlignment(Qt.AlignCenter)
+        self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
 
-        self.verticalLayout_7.addWidget(self.label_6)
+        self.verticalLayout_7.addItem(self.verticalSpacer_2)
 
 
         self.previewControls.addLayout(self.verticalLayout_7)
@@ -466,7 +480,7 @@ class Ui_sync3ScaleEditor(object):
         self.fillExpand.setText(QCoreApplication.translate("sync3ScaleEditor", u"Fill Expand", None))
         self.fillHelp.setText(QCoreApplication.translate("sync3ScaleEditor", u"Fill Labe", None))
         self.label_2.setText(QCoreApplication.translate("sync3ScaleEditor", u"Preview", None))
-        self.label_6.setText(QCoreApplication.translate("sync3ScaleEditor", u"CV: 0V", None))
+        self.cvLabel.setText(QCoreApplication.translate("sync3ScaleEditor", u"CV: 0V", None))
         self.label_5.setText(QCoreApplication.translate("sync3ScaleEditor", u"Knob Position", None))
     # retranslateUi
 
