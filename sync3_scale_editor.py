@@ -1,11 +1,4 @@
-import numpy as np
-import matplotlib
-matplotlib.use('Qt5Agg')
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
-from matplotlib.figure import Figure
-from matplotlib import pyplot as plt
-
-from PySide6.QtWidgets import QDialog, QPushButton, QSpacerItem, QSizePolicy, QMessageBox, QLabel, QFileDialog, QWidget, QGridLayout, QLayout
+from PySide6.QtWidgets import QDialog, QPushButton, QSpacerItem, QSizePolicy, QMessageBox, QLabel, QFileDialog, QWidget, QVBoxLayout, QLayout
 from PySide6.QtCore import Slot, QRect, Qt, QMimeData
 from PySide6.QtGui import QDrag
 
@@ -15,31 +8,13 @@ from ui_sync3_ratio_add import Ui_sync3RatioAdd
 from viatools.sync3_scales import Sync3ScaleSet
 from via_resource_editor import ViaResourceEditor
 
-
-class Sync3RatioXY(FigureCanvasQTAgg):
-    def __init__(self, numerator, denominator):
-        fig = Figure(figsize=(1,1), facecolor='black')
-        self.axes = fig.add_subplot(111)
-        self.axes.axis('off')
-        domain = np.linspace(0, 2 * np.pi * denominator, 256)
-        self.axes.plot(np.sin(domain), np.cos(domain * (numerator/denominator)), color='white')
-        super(Sync3RatioXY, self).__init__(fig)
-    
-    def update_plot(self, numerator, denominator):
-        self.axes.cla()
-        self.axes.set_facecolor('black')
-        domain = np.linspace(0, 2 * np.pi * denominator, 256)
-        self.axes.plot(np.sin(domain), np.cos(domain * (numerator/denominator)), color='white')
-        self.draw()
-
 class Sync3Ratio(QDialog, Ui_sync3Ratio):
     def __init__(self, numerator, denominator):
         super().__init__()
         self.setupUi(self)
-        self.decimalData.setText('%.4f' % (numerator/denominator))
-        self.semitonesData.setText('%.4f' % (np.log2(numerator/denominator) * 12))
-        self.xyLayout.addWidget(Sync3RatioXY(numerator,denominator))
+        self.ratioDisplay.update(numerator, denominator)
 
+# TODO refactor this to be a widget that can be reused by the preview
 class Sync3RatioAdd(QDialog, Ui_sync3RatioAdd):
     def __init__(self, parent_window):
         super().__init__()
@@ -47,27 +22,19 @@ class Sync3RatioAdd(QDialog, Ui_sync3RatioAdd):
         self.parent_window = parent_window
         numerator = int(self.numerator.value())
         denominator = int(self.denominator.value())
-        self.decimalData.setText('%.4f' % (numerator/denominator))
-        self.semitonesData.setText('%.4f' % (np.log2(numerator/denominator) * 12))
-        self.lissa_plot = Sync3RatioXY(numerator,denominator)
-        self.xyLayout.addWidget(self.lissa_plot)
-
-    def update(self, numerator, denominator):
-        self.decimalData.setText('%.4f' % (numerator/denominator))
-        self.semitonesData.setText('%.4f' % (np.log2(numerator/denominator) * 12))
-        self.lissa_plot.update_plot(numerator, denominator)
-
+        self.ratioDisplay.update(numerator, denominator)
+        
     @Slot()
     def on_numerator_valueChanged(self):
-        self.update(self.numerator.value(), self.denominator.value())
+        self.ratioDisplay.update(self.numerator.value(), self.denominator.value())
 
     @Slot()
     def on_denominator_valueChanged(self):
-        self.update(self.numerator.value(), self.denominator.value())
+        self.ratioDisplay.update(self.numerator.value(), self.denominator.value())
 
     @Slot()
     def on_addRatio_clicked(self):
-        self.parent_window.add_seed_ratio([self.numerator.value(), self.denominator.value()])     
+        self.parent_window.add_seed_ratio([self.numerator.value(), self.denominator.value()])    
 
 
 class RatioButton(QPushButton):
@@ -107,9 +74,9 @@ class RatioButton(QPushButton):
         if not self.parent_window.sorted_flag:
             self.parent_window.handle_drop(self.idx)
 
-class RatioGrid(QGridLayout):
-    def __init__(self):
-        super().__init__()
+# class RatioGrid(QGridLayout):
+#     def __init__(self):
+#         super().__init__()
 
 class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
     def __init__(self, resource_dir='./', remote_resources = {}, slug='original', style_text=''):
@@ -133,11 +100,9 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
         self.set = Sync3ScaleSet(resource_dir, slug)
         self.set_slug = slug
 
-        self.seedRatioGrid = RatioGrid()
-        self.seedRatioGrid.setObjectName(u"seedRatioGrid")
-        self.seedRatioGrid.setSizeConstraint(QLayout.SetMinAndMaxSize)
-
-        self.seedRatioHolder.addLayout(self.seedRatioGrid, 0, 0)
+        # self.seedRatioGrid = RatioGrid()
+        # self.seedRatioGrid.setObjectName(u"seedRatioGrid")
+        # self.seedRatioGrid.setSizeConstraint(QLayout.SetMinAndMaxSize)
 
         self.update_resource_sets()
         self.update_resources()
@@ -227,21 +192,19 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
 
 # Preview section slots
 
+    def update_preview_idx(self):
+        self.preview_idx = int((self.cvSlider.value() + 50) * .15) + self.knob.value()
+
     @Slot()
     def on_cvSlider_valueChanged(self):
-        self.preview_idx = int((self.cvSlider.value() + 50) * .15) + self.knob.value()
+        self.update_preview_idx()
         voltage = self.cvSlider.value() / 10
         self.cvLabel.setText("CV: %1.1f V" % voltage)
         self.update_preview()
 
     @Slot()
     def on_knob_valueChanged(self):
-        self.preview_idx = self.cvSlider.value() + self.knob.value()
-        self.update_preview()
-
-    @Slot()
-    def on_previewSelect_activated(self):
-        self.change_preview_display(self.previewSelect.currentText())
+        self.update_preview_idx()
         self.update_preview()
 
 # Seed ratio dispaly helpers
@@ -302,22 +265,26 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
 
     def create_seed_ratio_grid(self):
         self.seed_ratio_buttons = []
-        self.num_columns = 8
-        self.num_rows = 4
-        self.seedRatioGrid.setVerticalSpacing(20)
-        for row in range(0, self.num_rows):
-            for column in range(0, self.num_columns):
-                idx = row * self.num_columns + column
-                new_button = RatioButton(self)
-                new_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-                new_button.setFixedSize(80, 20)
-                sp = new_button.sizePolicy()
-                sp.setRetainSizeWhenHidden(True)
-                new_button.setSizePolicy(sp)
-                new_button.clicked.connect(lambda state=True, x=idx: self.seed_button_pushed(x))
-                new_button.idx = idx
-                self.seed_ratio_buttons.append(new_button)
-                self.seedRatioGrid.addWidget(new_button, row, column)    
+        self.seedRatioHolder = QWidget()
+        self.seedRatioGrid = QVBoxLayout()
+        # self.seedRatioGrid.setVerticalSpacing(5)
+
+        num_tables = 32
+        for column in range(0, num_tables):
+            idx = column
+            new_button = RatioButton(self)
+            new_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+            new_button.setFixedSize(80, 20)
+            sp = new_button.sizePolicy()
+            sp.setRetainSizeWhenHidden(True)
+            new_button.setSizePolicy(sp)
+            new_button.clicked.connect(lambda state=True, x=idx: self.seed_button_pushed(x))
+            new_button.idx = idx
+            self.seed_ratio_buttons.append(new_button)
+            self.seedRatioGrid.addWidget(new_button, column)
+
+        self.seedRatioHolder.setLayout(self.seedRatioGrid)
+        self.seedScrollArea.setWidget(self.seedRatioHolder)
 
 
     def update_resource_ui(self):
@@ -394,48 +361,44 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
         self.ratioPreview = QLabel()
         self.ratioPreview.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
         self.ratioPreview.setText('Value')
-        self.xyPreview = Sync3RatioXY(1, 1)
+        # self.xyPreview = Sync3RatioXY(1, 1)
         self.previewContainer.addWidget(self.ratioPreview)
         self.previewContainer.addWidget(self.decimalPreview)
         self.previewContainer.addWidget(self.semitonePreview)
-        self.previewContainer.addWidget(self.xyPreview) 
+        # self.previewContainer.addWidget(self.xyPreview) 
         self.decimalPreview.hide()
         self.semitonePreview.hide()
-        self.xyPreview.hide()
-        self.previewSelect.addItem('Ratio')
-        self.previewSelect.addItem('Decimal')
-        self.previewSelect.addItem('Semitone')
-        self.previewSelect.addItem('XY')
-        self.previewSelect.setCurrentIndex(0)
+        # self.xyPreview.hide()
+
 
     def change_preview_display(self, display_type):
         if display_type == 'Decimal':
             self.ratioPreview.hide()
             self.decimalPreview.show() 
             self.semitonePreview.hide() 
-            self.xyPreview.hide()      
+            # self.xyPreview.hide()      
         if display_type == 'Semitone':
             self.ratioPreview.hide()
             self.decimalPreview.hide() 
             self.semitonePreview.show() 
-            self.xyPreview.hide()      
+            # self.xyPreview.hide()      
         if display_type == 'XY':
             self.ratioPreview.hide()
             self.decimalPreview.hide() 
             self.semitonePreview.hide() 
-            self.xyPreview.show()      
+            # self.xyPreview.show()      
         if display_type == 'Ratio':
             self.ratioPreview.show()
             self.decimalPreview.hide() 
             self.semitonePreview.hide() 
-            self.xyPreview.hide()      
+            # self.xyPreview.hide()      
 
     def update_preview(self):
         self.set.bake()
         numerator = self.set.resources[self.active_idx].baked['numerators'][self.preview_idx]
         denominator = self.set.resources[self.active_idx].baked['denominators'][self.preview_idx]
-        self.decimalPreview.setText('%.4f' % (numerator/denominator))
-        self.semitonePreview.setText('%.4f' % (np.log2(numerator/denominator) * 12))
-        self.ratioPreview.setText('%d/%d' % (numerator, denominator)) 
-        self.xyPreview.update_plot(numerator, denominator)       
+        # self.decimalPreview.setText('%.4f' % (numerator/denominator))
+        # self.semitonePreview.setText('%.4f' % (np.log2(numerator/denominator) * 12))
+        # self.ratioPreview.setText('%d/%d' % (numerator, denominator)) 
+        # self.xyPreview.update_plot(numerator, denominator)       
 
