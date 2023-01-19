@@ -21,6 +21,7 @@ from PySide6.QtWidgets import (QAbstractButton, QApplication, QButtonGroup, QCom
     QScrollArea, QSizePolicy, QSlider, QSpacerItem,
     QVBoxLayout, QWidget)
 
+from ratio_display import RatioDisplay
 from resourcesetbuttons import (Slot1Button, Slot2Button, Slot3Button, Slot4Button,
     Slot5Button, Slot6Button, Slot7Button, Slot8Button)
 
@@ -28,12 +29,12 @@ class Ui_sync3ScaleEditor(object):
     def setupUi(self, sync3ScaleEditor):
         if not sync3ScaleEditor.objectName():
             sync3ScaleEditor.setObjectName(u"sync3ScaleEditor")
-        sync3ScaleEditor.resize(700, 760)
-        sync3ScaleEditor.setMinimumSize(QSize(700, 760))
-        sync3ScaleEditor.setMaximumSize(QSize(700, 760))
+        sync3ScaleEditor.resize(720, 760)
+        sync3ScaleEditor.setMinimumSize(QSize(720, 760))
+        sync3ScaleEditor.setMaximumSize(QSize(720, 760))
         self.layoutWidget = QWidget(sync3ScaleEditor)
         self.layoutWidget.setObjectName(u"layoutWidget")
-        self.layoutWidget.setGeometry(QRect(10, 10, 681, 741))
+        self.layoutWidget.setGeometry(QRect(10, 10, 701, 741))
         self.verticalLayout_8 = QVBoxLayout(self.layoutWidget)
         self.verticalLayout_8.setObjectName(u"verticalLayout_8")
         self.verticalLayout_8.setContentsMargins(0, 0, 0, 0)
@@ -248,12 +249,43 @@ class Ui_sync3ScaleEditor(object):
 
         self.seedEditor.addLayout(self.horizontalLayout_15)
 
+        self.horizontalLayout = QHBoxLayout()
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.horizontalSpacer_2 = QSpacerItem(10, 20, QSizePolicy.Fixed, QSizePolicy.Minimum)
+
+        self.horizontalLayout.addItem(self.horizontalSpacer_2)
+
+        self.label_4 = QLabel(self.layoutWidget)
+        self.label_4.setObjectName(u"label_4")
+        self.label_4.setAlignment(Qt.AlignCenter)
+
+        self.horizontalLayout.addWidget(self.label_4)
+
+        self.label_3 = QLabel(self.layoutWidget)
+        self.label_3.setObjectName(u"label_3")
+        self.label_3.setAlignment(Qt.AlignCenter)
+
+        self.horizontalLayout.addWidget(self.label_3)
+
+        self.label = QLabel(self.layoutWidget)
+        self.label.setObjectName(u"label")
+        self.label.setAlignment(Qt.AlignCenter)
+
+        self.horizontalLayout.addWidget(self.label)
+
+        self.horizontalSpacer = QSpacerItem(10, 20, QSizePolicy.Fixed, QSizePolicy.Minimum)
+
+        self.horizontalLayout.addItem(self.horizontalSpacer)
+
+
+        self.seedEditor.addLayout(self.horizontalLayout)
+
         self.seedScrollArea = QScrollArea(self.layoutWidget)
         self.seedScrollArea.setObjectName(u"seedScrollArea")
         self.seedScrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 317, 358))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 327, 326))
         self.seedScrollArea.setWidget(self.scrollAreaWidgetContents)
 
         self.seedEditor.addWidget(self.seedScrollArea)
@@ -307,15 +339,15 @@ class Ui_sync3ScaleEditor(object):
 
         self.tilingAndPreview.addWidget(self.label_2)
 
-        self.previewLayout = QVBoxLayout()
-        self.previewLayout.setObjectName(u"previewLayout")
-        self.previewContainer = QHBoxLayout()
-        self.previewContainer.setObjectName(u"previewContainer")
+        self.ratioPreview = RatioDisplay(self.layoutWidget)
+        self.ratioPreview.setObjectName(u"ratioPreview")
+        sizePolicy3 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.ratioPreview.sizePolicy().hasHeightForWidth())
+        self.ratioPreview.setSizePolicy(sizePolicy3)
 
-        self.previewLayout.addLayout(self.previewContainer)
-
-
-        self.tilingAndPreview.addLayout(self.previewLayout)
+        self.tilingAndPreview.addWidget(self.ratioPreview)
 
         self.knobCV = QHBoxLayout()
         self.knobCV.setObjectName(u"knobCV")
@@ -323,11 +355,11 @@ class Ui_sync3ScaleEditor(object):
         self.knobLayout.setObjectName(u"knobLayout")
         self.knob = QDial(self.layoutWidget)
         self.knob.setObjectName(u"knob")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
-        sizePolicy3.setHorizontalStretch(0)
-        sizePolicy3.setVerticalStretch(0)
-        sizePolicy3.setHeightForWidth(self.knob.sizePolicy().hasHeightForWidth())
-        self.knob.setSizePolicy(sizePolicy3)
+        sizePolicy4 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
+        sizePolicy4.setHorizontalStretch(0)
+        sizePolicy4.setVerticalStretch(0)
+        sizePolicy4.setHeightForWidth(self.knob.sizePolicy().hasHeightForWidth())
+        self.knob.setSizePolicy(sizePolicy4)
         self.knob.setMaximum(16)
         self.knob.setPageStep(8)
         self.knob.setSliderPosition(8)
@@ -345,11 +377,11 @@ class Ui_sync3ScaleEditor(object):
 
         self.cvSlider = QSlider(self.layoutWidget)
         self.cvSlider.setObjectName(u"cvSlider")
-        sizePolicy4 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum)
-        sizePolicy4.setHorizontalStretch(0)
-        sizePolicy4.setVerticalStretch(0)
-        sizePolicy4.setHeightForWidth(self.cvSlider.sizePolicy().hasHeightForWidth())
-        self.cvSlider.setSizePolicy(sizePolicy4)
+        sizePolicy5 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum)
+        sizePolicy5.setHorizontalStretch(0)
+        sizePolicy5.setVerticalStretch(0)
+        sizePolicy5.setHeightForWidth(self.cvSlider.sizePolicy().hasHeightForWidth())
+        self.cvSlider.setSizePolicy(sizePolicy5)
         self.cvSlider.setMinimum(-50)
         self.cvSlider.setMaximum(50)
         self.cvSlider.setValue(0)
@@ -360,8 +392,8 @@ class Ui_sync3ScaleEditor(object):
 
         self.cvLabel = QLabel(self.layoutWidget)
         self.cvLabel.setObjectName(u"cvLabel")
-        sizePolicy3.setHeightForWidth(self.cvLabel.sizePolicy().hasHeightForWidth())
-        self.cvLabel.setSizePolicy(sizePolicy3)
+        sizePolicy4.setHeightForWidth(self.cvLabel.sizePolicy().hasHeightForWidth())
+        self.cvLabel.setSizePolicy(sizePolicy4)
         self.cvLabel.setAlignment(Qt.AlignCenter)
 
         self.cvSliderLayout.addWidget(self.cvLabel)
@@ -454,8 +486,11 @@ class Ui_sync3ScaleEditor(object):
         self.scaleDescription.setText(QCoreApplication.translate("sync3ScaleEditor", u"Fill Labe", None))
         self.label_7.setText(QCoreApplication.translate("sync3ScaleEditor", u"Edit Scale", None))
         self.addSeedRatio.setText(QCoreApplication.translate("sync3ScaleEditor", u"Add Ratio", None))
-        self.addFromScala.setText(QCoreApplication.translate("sync3ScaleEditor", u"Import From Scala", None))
+        self.addFromScala.setText(QCoreApplication.translate("sync3ScaleEditor", u"Scala Import", None))
         self.clearSeedRatios.setText(QCoreApplication.translate("sync3ScaleEditor", u"Clear", None))
+        self.label_4.setText(QCoreApplication.translate("sync3ScaleEditor", u"Ratio", None))
+        self.label_3.setText(QCoreApplication.translate("sync3ScaleEditor", u"Decimal", None))
+        self.label.setText(QCoreApplication.translate("sync3ScaleEditor", u"Semitone", None))
         self.sorted.setText(QCoreApplication.translate("sync3ScaleEditor", u"Sorted", None))
         self.unsorted.setText(QCoreApplication.translate("sync3ScaleEditor", u"Unsorted", None))
         self.sortedHelp.setText(QCoreApplication.translate("sync3ScaleEditor", u"Fill Labe", None))

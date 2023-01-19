@@ -1,5 +1,5 @@
-from PySide6.QtWidgets import QDialog, QPushButton, QSpacerItem, QSizePolicy, QMessageBox, QLabel, QFileDialog, QWidget, QVBoxLayout, QLayout
-from PySide6.QtCore import Slot, QRect, Qt, QMimeData
+from PySide6.QtWidgets import QDialog, QPushButton, QSpacerItem, QSizePolicy, QMessageBox, QLabel, QFileDialog, QWidget, QVBoxLayout, QHBoxLayout, QLayout
+from PySide6.QtCore import Slot, QRect, Qt, QMimeData, QSize
 from PySide6.QtGui import QDrag
 
 from ui_sync3_scale_editor import Ui_sync3ScaleEditor
@@ -7,6 +7,8 @@ from ui_sync3_ratio import Ui_sync3Ratio
 from ui_sync3_ratio_add import Ui_sync3RatioAdd
 from viatools.sync3_scales import Sync3ScaleSet
 from via_resource_editor import ViaResourceEditor
+
+import numpy as np
 
 class Sync3Ratio(QDialog, Ui_sync3Ratio):
     def __init__(self, numerator, denominator):
@@ -37,12 +39,26 @@ class Sync3RatioAdd(QDialog, Ui_sync3RatioAdd):
         self.parent_window.add_seed_ratio([self.numerator.value(), self.denominator.value()])    
 
 
-class RatioButton(QPushButton):
+class RatioButton(QWidget):
     def __init__(self, parent_window):
         super().__init__()
         self.setAcceptDrops(True)
+        self.button = QPushButton()
+        self.decimal = QLabel()
+        self.decimal.setAlignment(Qt.AlignHCenter)
+        self.semitones = QLabel()
+        self.semitones.setAlignment(Qt.AlignHCenter)
+        self.layout = QHBoxLayout(self)
+        policy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum)
+        self.button.setSizePolicy(policy)
+        self.decimal.setSizePolicy(policy)
+        self.semitones.setSizePolicy(policy)
+        self.layout.addWidget(self.button)
+        self.layout.addWidget(self.decimal)
+        self.layout.addWidget(self.semitones)
         self.idx = 0
         self.parent_window = parent_window
+        self.setContentsMargins(0, 0, 0, 0)
 
     def mouseMoveEvent(self, e):
 
@@ -74,9 +90,11 @@ class RatioButton(QPushButton):
         if not self.parent_window.sorted_flag:
             self.parent_window.handle_drop(self.idx)
 
-# class RatioGrid(QGridLayout):
-#     def __init__(self):
-#         super().__init__()
+    def update_ratio(self, numerator, denominator):
+        self.button.setText('%s/%s' % (numerator, denominator))
+        self.decimal.setText('%.4f' % (numerator/denominator))
+        self.semitones.setText('%.4f' % (np.log2(numerator/denominator) * 12))
+
 
 class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
     def __init__(self, resource_dir='./', remote_resources = {}, slug='original', style_text=''):
@@ -110,8 +128,8 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
         self.active_ratio_idx = 0
         self.create_seed_ratio_grid()
 
-        self.preview_idx = 16
-        self.init_preview_display()
+        self.update_preview_idx()
+        self.update_preview()
 
         for slot_num in range(0, 8):
             eval('self.slot%d' % (slot_num+1)).clicked.connect(lambda state=True, x=slot_num: self.switch_slot(x))
@@ -267,21 +285,17 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
         self.seed_ratio_buttons = []
         self.seedRatioHolder = QWidget()
         self.seedRatioGrid = QVBoxLayout()
-        # self.seedRatioGrid.setVerticalSpacing(5)
+        self.seedRatioGrid.setSpacing(0)
+        self.seedRatioGrid.setContentsMargins(0,0,0,0)
 
         num_tables = 32
-        for column in range(0, num_tables):
-            idx = column
+        for row in range(0, num_tables):
+            idx = row
             new_button = RatioButton(self)
-            new_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-            new_button.setFixedSize(80, 20)
-            sp = new_button.sizePolicy()
-            sp.setRetainSizeWhenHidden(True)
-            new_button.setSizePolicy(sp)
-            new_button.clicked.connect(lambda state=True, x=idx: self.seed_button_pushed(x))
+            new_button.button.clicked.connect(lambda state=True, x=idx: self.seed_button_pushed(x))
             new_button.idx = idx
             self.seed_ratio_buttons.append(new_button)
-            self.seedRatioGrid.addWidget(new_button, column)
+            self.seedRatioGrid.addWidget(new_button, row)
 
         self.seedRatioHolder.setLayout(self.seedRatioGrid)
         self.seedScrollArea.setWidget(self.seedRatioHolder)
@@ -306,7 +320,7 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
         idx = -1
         for idx, ratio in enumerate(seed_ratios):
             self.seed_ratio_buttons[idx].show()
-            self.seed_ratio_buttons[idx].setText('%s/%s' % (ratio[0], ratio[1]))
+            self.seed_ratio_buttons[idx].update_ratio(ratio[0], ratio[1])
         for i in range(idx+1, 32):
             self.seed_ratio_buttons[i].hide()
         self.update_fill_method(self.set.resources[self.active_idx].data['fill_method'])
@@ -351,54 +365,9 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
 
 # Preview helpers
 
-    def init_preview_display(self):
-        self.decimalPreview = QLabel()
-        self.decimalPreview.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-        self.decimalPreview.setText('Value')
-        self.semitonePreview = QLabel()
-        self.semitonePreview.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-        self.semitonePreview.setText('Value')
-        self.ratioPreview = QLabel()
-        self.ratioPreview.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-        self.ratioPreview.setText('Value')
-        # self.xyPreview = Sync3RatioXY(1, 1)
-        self.previewContainer.addWidget(self.ratioPreview)
-        self.previewContainer.addWidget(self.decimalPreview)
-        self.previewContainer.addWidget(self.semitonePreview)
-        # self.previewContainer.addWidget(self.xyPreview) 
-        self.decimalPreview.hide()
-        self.semitonePreview.hide()
-        # self.xyPreview.hide()
-
-
-    def change_preview_display(self, display_type):
-        if display_type == 'Decimal':
-            self.ratioPreview.hide()
-            self.decimalPreview.show() 
-            self.semitonePreview.hide() 
-            # self.xyPreview.hide()      
-        if display_type == 'Semitone':
-            self.ratioPreview.hide()
-            self.decimalPreview.hide() 
-            self.semitonePreview.show() 
-            # self.xyPreview.hide()      
-        if display_type == 'XY':
-            self.ratioPreview.hide()
-            self.decimalPreview.hide() 
-            self.semitonePreview.hide() 
-            # self.xyPreview.show()      
-        if display_type == 'Ratio':
-            self.ratioPreview.show()
-            self.decimalPreview.hide() 
-            self.semitonePreview.hide() 
-            # self.xyPreview.hide()      
-
     def update_preview(self):
         self.set.bake()
         numerator = self.set.resources[self.active_idx].baked['numerators'][self.preview_idx]
         denominator = self.set.resources[self.active_idx].baked['denominators'][self.preview_idx]
-        # self.decimalPreview.setText('%.4f' % (numerator/denominator))
-        # self.semitonePreview.setText('%.4f' % (np.log2(numerator/denominator) * 12))
-        # self.ratioPreview.setText('%d/%d' % (numerator, denominator)) 
-        # self.xyPreview.update_plot(numerator, denominator)       
+        self.ratioPreview.update(numerator, denominator)       
 

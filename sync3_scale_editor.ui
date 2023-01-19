@@ -6,19 +6,19 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>700</width>
+    <width>720</width>
     <height>760</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>700</width>
+    <width>720</width>
     <height>760</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>700</width>
+    <width>720</width>
     <height>760</height>
    </size>
   </property>
@@ -30,7 +30,7 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>681</width>
+     <width>701</width>
      <height>741</height>
     </rect>
    </property>
@@ -418,7 +418,7 @@
           <item>
            <widget class="QPushButton" name="addFromScala">
             <property name="text">
-             <string>Import From Scala</string>
+             <string>Scala Import</string>
             </property>
            </widget>
           </item>
@@ -432,6 +432,72 @@
          </layout>
         </item>
         <item>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <spacer name="horizontalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Fixed</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>10</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_4">
+            <property name="text">
+             <string>Ratio</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>Decimal</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>Semitone</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Fixed</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>10</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <item>
          <widget class="QScrollArea" name="seedScrollArea">
           <property name="widgetResizable">
            <bool>true</bool>
@@ -441,8 +507,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>317</width>
-             <height>358</height>
+             <width>327</width>
+             <height>326</height>
             </rect>
            </property>
           </widget>
@@ -524,11 +590,14 @@
          </widget>
         </item>
         <item>
-         <layout class="QVBoxLayout" name="previewLayout">
-          <item>
-           <layout class="QHBoxLayout" name="previewContainer"/>
-          </item>
-         </layout>
+         <widget class="RatioDisplay" name="ratioPreview" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
         </item>
         <item>
          <layout class="QHBoxLayout" name="knobCV">
@@ -761,6 +830,12 @@
    <class>Slot8Button</class>
    <extends>QPushButton</extends>
    <header>resourcesetbuttons.h</header>
+  </customwidget>
+  <customwidget>
+   <class>RatioDisplay</class>
+   <extends>QWidget</extends>
+   <header>ratio_display.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

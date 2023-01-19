@@ -29,11 +29,11 @@ class RatioDisplay(QWidget, Ui_ratioDisplay):
     
     def __init__(self, parent):
         super(RatioDisplay, self).__init__(parent)
+        self.setupUi(self)
         self.lissa_plot = Sync3RatioXY(1,1)
         self.xyLayout.addWidget(self.lissa_plot)
-        self.update(numerator, denominator)
 
-    def update(self):
+    def update(self, numerator, denominator):
         self.decimalData.setText('%.4f' % (numerator/denominator))
         self.semitonesData.setText('%.4f' % (np.log2(numerator/denominator) * 12))
         self.lissa_plot.update_plot(numerator, denominator)
