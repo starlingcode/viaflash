@@ -147,6 +147,14 @@ class Ui_wavetableSetEditor(object):
 
         self.verticalLayout.addLayout(self.resourceSaveLoad)
 
+        self.resourceDescription = QLabel(self.layoutWidget)
+        self.resourceDescription.setObjectName(u"resourceDescription")
+        self.resourceDescription.setFont(font)
+        self.resourceDescription.setAlignment(Qt.AlignCenter)
+        self.resourceDescription.setWordWrap(True)
+
+        self.verticalLayout.addWidget(self.resourceDescription)
+
         self.line = QFrame(self.layoutWidget)
         self.line.setObjectName(u"line")
         self.line.setFrameShape(QFrame.HLine)
@@ -299,6 +307,7 @@ class Ui_wavetableSetEditor(object):
         self.windowTitle_2.setText(QCoreApplication.translate("wavetableSetEditor", u"Select wavetable slot for editing:", None))
         self.tableName.setText(QCoreApplication.translate("wavetableSetEditor", u"TABLENAME", None))
         self.openBrowser.setText(QCoreApplication.translate("wavetableSetEditor", u"Browser", None))
+        self.resourceDescription.setText(QCoreApplication.translate("wavetableSetEditor", u"TextLabel", None))
         self.label_2.setText(QCoreApplication.translate("wavetableSetEditor", u"Table Index:", None))
         self.tableIdxLabel.setText(QCoreApplication.translate("wavetableSetEditor", u"0", None))
         self.label.setText(QCoreApplication.translate("wavetableSetEditor", u"Waveform", None))

@@ -83,11 +83,26 @@ class Ui_gateseqPatternEditor(object):
 
         self.verticalLayout_9.addWidget(self.line)
 
+        self.resourceSaveLoad = QHBoxLayout()
+        self.resourceSaveLoad.setObjectName(u"resourceSaveLoad")
         self.editPatternLabel_2 = QLabel(self.layoutWidget)
         self.editPatternLabel_2.setObjectName(u"editPatternLabel_2")
         self.editPatternLabel_2.setAlignment(Qt.AlignCenter)
 
-        self.verticalLayout_9.addWidget(self.editPatternLabel_2)
+        self.resourceSaveLoad.addWidget(self.editPatternLabel_2)
+
+        self.selectResource = QComboBox(self.layoutWidget)
+        self.selectResource.setObjectName(u"selectResource")
+
+        self.resourceSaveLoad.addWidget(self.selectResource)
+
+        self.saveResource = QPushButton(self.layoutWidget)
+        self.saveResource.setObjectName(u"saveResource")
+
+        self.resourceSaveLoad.addWidget(self.saveResource)
+
+
+        self.verticalLayout_9.addLayout(self.resourceSaveLoad)
 
         self.slotGroup1 = QHBoxLayout()
         self.slotGroup1.setObjectName(u"slotGroup1")
@@ -210,20 +225,20 @@ class Ui_gateseqPatternEditor(object):
 
         self.verticalLayout_9.addLayout(self.slotGroup1)
 
-        self.resourceSaveLoad = QHBoxLayout()
-        self.resourceSaveLoad.setObjectName(u"resourceSaveLoad")
-        self.selectResource = QComboBox(self.layoutWidget)
-        self.selectResource.setObjectName(u"selectResource")
+        self.resourceDescription = QLabel(self.layoutWidget)
+        self.resourceDescription.setObjectName(u"resourceDescription")
+        self.resourceDescription.setFont(font)
+        self.resourceDescription.setAlignment(Qt.AlignCenter)
+        self.resourceDescription.setWordWrap(True)
 
-        self.resourceSaveLoad.addWidget(self.selectResource)
+        self.verticalLayout_9.addWidget(self.resourceDescription)
 
-        self.saveResource = QPushButton(self.layoutWidget)
-        self.saveResource.setObjectName(u"saveResource")
+        self.line_2 = QFrame(self.layoutWidget)
+        self.line_2.setObjectName(u"line_2")
+        self.line_2.setFrameShape(QFrame.HLine)
+        self.line_2.setFrameShadow(QFrame.Sunken)
 
-        self.resourceSaveLoad.addWidget(self.saveResource)
-
-
-        self.verticalLayout_9.addLayout(self.resourceSaveLoad)
+        self.verticalLayout_9.addWidget(self.line_2)
 
         self.editPatternLabel = QLabel(self.layoutWidget)
         self.editPatternLabel.setObjectName(u"editPatternLabel")
@@ -588,6 +603,7 @@ class Ui_gateseqPatternEditor(object):
         self.saveForRack.setText(QCoreApplication.translate("gateseqPatternEditor", u"Save for VCV Rack", None))
         self.setDescription.setText(QCoreApplication.translate("gateseqPatternEditor", u"TextLabel", None))
         self.editPatternLabel_2.setText(QCoreApplication.translate("gateseqPatternEditor", u"Select pattern for editing:", None))
+        self.saveResource.setText(QCoreApplication.translate("gateseqPatternEditor", u"Save Pattern", None))
         self.label.setText(QCoreApplication.translate("gateseqPatternEditor", u"Seq I:", None))
         self.slot1.setText("")
         self.slot2.setText("")
@@ -598,7 +614,7 @@ class Ui_gateseqPatternEditor(object):
         self.slot6.setText("")
         self.slot7.setText("")
         self.slot8.setText("")
-        self.saveResource.setText(QCoreApplication.translate("gateseqPatternEditor", u"Save Pattern", None))
+        self.resourceDescription.setText(QCoreApplication.translate("gateseqPatternEditor", u"TextLabel", None))
         self.editPatternLabel.setText(QCoreApplication.translate("gateseqPatternEditor", u"Edit Pattern", None))
         self.addEuclidean.setText(QCoreApplication.translate("gateseqPatternEditor", u"Add Euclidean", None))
         self.label_7.setText(QCoreApplication.translate("gateseqPatternEditor", u"Steps", None))

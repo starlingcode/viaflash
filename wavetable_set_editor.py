@@ -194,6 +194,7 @@ class WavetableEditor(ViaResourceEditor):
 # Override set editor base class methods
 
     def update_resource_ui(self):
+        self.resourceDescription.setText(self.set.resources[self.active_idx].data['description'])
         self.viz1.update_plot(self.table)
         self.viz2.update_plot(self.table)
         self.viz3.update_plot(self.table, self.table_idx)

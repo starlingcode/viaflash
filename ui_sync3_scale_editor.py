@@ -29,12 +29,12 @@ class Ui_sync3ScaleEditor(object):
     def setupUi(self, sync3ScaleEditor):
         if not sync3ScaleEditor.objectName():
             sync3ScaleEditor.setObjectName(u"sync3ScaleEditor")
-        sync3ScaleEditor.resize(720, 760)
-        sync3ScaleEditor.setMinimumSize(QSize(720, 760))
-        sync3ScaleEditor.setMaximumSize(QSize(720, 760))
+        sync3ScaleEditor.resize(630, 760)
+        sync3ScaleEditor.setMinimumSize(QSize(0, 760))
+        sync3ScaleEditor.setMaximumSize(QSize(10000, 760))
         self.layoutWidget = QWidget(sync3ScaleEditor)
         self.layoutWidget.setObjectName(u"layoutWidget")
-        self.layoutWidget.setGeometry(QRect(10, 10, 701, 741))
+        self.layoutWidget.setGeometry(QRect(10, 10, 611, 741))
         self.verticalLayout_8 = QVBoxLayout(self.layoutWidget)
         self.verticalLayout_8.setObjectName(u"verticalLayout_8")
         self.verticalLayout_8.setContentsMargins(0, 0, 0, 0)
@@ -212,15 +212,15 @@ class Ui_sync3ScaleEditor(object):
 
         self.verticalLayout_8.addLayout(self.slotGroup1)
 
-        self.scaleDescription = QLabel(self.layoutWidget)
-        self.scaleDescription.setObjectName(u"scaleDescription")
-        sizePolicy1.setHeightForWidth(self.scaleDescription.sizePolicy().hasHeightForWidth())
-        self.scaleDescription.setSizePolicy(sizePolicy1)
-        self.scaleDescription.setFont(font)
-        self.scaleDescription.setAlignment(Qt.AlignCenter)
-        self.scaleDescription.setWordWrap(True)
+        self.resourceDescription = QLabel(self.layoutWidget)
+        self.resourceDescription.setObjectName(u"resourceDescription")
+        sizePolicy1.setHeightForWidth(self.resourceDescription.sizePolicy().hasHeightForWidth())
+        self.resourceDescription.setSizePolicy(sizePolicy1)
+        self.resourceDescription.setFont(font)
+        self.resourceDescription.setAlignment(Qt.AlignCenter)
+        self.resourceDescription.setWordWrap(True)
 
-        self.verticalLayout_8.addWidget(self.scaleDescription)
+        self.verticalLayout_8.addWidget(self.resourceDescription)
 
         self.line_3 = QFrame(self.layoutWidget)
         self.line_3.setObjectName(u"line_3")
@@ -283,7 +283,7 @@ class Ui_sync3ScaleEditor(object):
 
         self.horizontalLayout.addWidget(self.label)
 
-        self.horizontalSpacer = QSpacerItem(10, 20, QSizePolicy.Fixed, QSizePolicy.Minimum)
+        self.horizontalSpacer = QSpacerItem(20, 20, QSizePolicy.Fixed, QSizePolicy.Minimum)
 
         self.horizontalLayout.addItem(self.horizontalSpacer)
 
@@ -295,7 +295,7 @@ class Ui_sync3ScaleEditor(object):
         self.seedScrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 327, 303))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 282, 303))
         self.seedScrollArea.setWidget(self.scrollAreaWidgetContents)
 
         self.seedEditor.addWidget(self.seedScrollArea)
@@ -345,7 +345,7 @@ class Ui_sync3ScaleEditor(object):
         self.tilingAndPreview.setObjectName(u"tilingAndPreview")
         self.ratioPreview = RatioDisplay(self.layoutWidget)
         self.ratioPreview.setObjectName(u"ratioPreview")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        sizePolicy3 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
         sizePolicy3.setHorizontalStretch(0)
         sizePolicy3.setVerticalStretch(0)
         sizePolicy3.setHeightForWidth(self.ratioPreview.sizePolicy().hasHeightForWidth())
@@ -387,11 +387,8 @@ class Ui_sync3ScaleEditor(object):
 
         self.cvSlider = QSlider(self.layoutWidget)
         self.cvSlider.setObjectName(u"cvSlider")
-        sizePolicy5 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum)
-        sizePolicy5.setHorizontalStretch(0)
-        sizePolicy5.setVerticalStretch(0)
-        sizePolicy5.setHeightForWidth(self.cvSlider.sizePolicy().hasHeightForWidth())
-        self.cvSlider.setSizePolicy(sizePolicy5)
+        sizePolicy4.setHeightForWidth(self.cvSlider.sizePolicy().hasHeightForWidth())
+        self.cvSlider.setSizePolicy(sizePolicy4)
         self.cvSlider.setMinimum(-50)
         self.cvSlider.setMaximum(50)
         self.cvSlider.setValue(0)
@@ -425,6 +422,11 @@ class Ui_sync3ScaleEditor(object):
         self.buttonGroup_2.setObjectName(u"buttonGroup_2")
         self.buttonGroup_2.addButton(self.fillOctave)
         self.fillOctave.setObjectName(u"fillOctave")
+        sizePolicy5 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+        sizePolicy5.setHorizontalStretch(0)
+        sizePolicy5.setVerticalStretch(0)
+        sizePolicy5.setHeightForWidth(self.fillOctave.sizePolicy().hasHeightForWidth())
+        self.fillOctave.setSizePolicy(sizePolicy5)
         self.fillOctave.setCheckable(True)
 
         self.fillButtonLayout.addWidget(self.fillOctave)
@@ -432,6 +434,8 @@ class Ui_sync3ScaleEditor(object):
         self.fillTritave = QPushButton(self.layoutWidget)
         self.buttonGroup_2.addButton(self.fillTritave)
         self.fillTritave.setObjectName(u"fillTritave")
+        sizePolicy5.setHeightForWidth(self.fillTritave.sizePolicy().hasHeightForWidth())
+        self.fillTritave.setSizePolicy(sizePolicy5)
         self.fillTritave.setCheckable(True)
 
         self.fillButtonLayout.addWidget(self.fillTritave)
@@ -439,6 +443,8 @@ class Ui_sync3ScaleEditor(object):
         self.fillExpand = QPushButton(self.layoutWidget)
         self.buttonGroup_2.addButton(self.fillExpand)
         self.fillExpand.setObjectName(u"fillExpand")
+        sizePolicy5.setHeightForWidth(self.fillExpand.sizePolicy().hasHeightForWidth())
+        self.fillExpand.setSizePolicy(sizePolicy5)
         self.fillExpand.setCheckable(True)
 
         self.fillButtonLayout.addWidget(self.fillExpand)
@@ -494,7 +500,7 @@ class Ui_sync3ScaleEditor(object):
         self.slot6.setText("")
         self.slot7.setText("")
         self.slot8.setText("")
-        self.scaleDescription.setText(QCoreApplication.translate("sync3ScaleEditor", u"Fill Labe", None))
+        self.resourceDescription.setText(QCoreApplication.translate("sync3ScaleEditor", u"Fill Labe", None))
         self.label_7.setText(QCoreApplication.translate("sync3ScaleEditor", u"Edit Scale", None))
         self.addSeedRatio.setText(QCoreApplication.translate("sync3ScaleEditor", u"Add Ratio", None))
         self.addFromScala.setText(QCoreApplication.translate("sync3ScaleEditor", u"Scala Import", None))

@@ -37,7 +37,7 @@ class Ui_osc3QuantizationEditor(object):
         osc3QuantizationEditor.setMaximumSize(QSize(610, 780))
         self.layoutWidget = QWidget(osc3QuantizationEditor)
         self.layoutWidget.setObjectName(u"layoutWidget")
-        self.layoutWidget.setGeometry(QRect(10, 10, 591, 796))
+        self.layoutWidget.setGeometry(QRect(10, 10, 591, 807))
         self.verticalLayout_3 = QVBoxLayout(self.layoutWidget)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
@@ -89,11 +89,26 @@ class Ui_osc3QuantizationEditor(object):
 
         self.verticalLayout_3.addWidget(self.line)
 
+        self.saveLoadScale = QHBoxLayout()
+        self.saveLoadScale.setObjectName(u"saveLoadScale")
         self.editChordsLabel_3 = QLabel(self.layoutWidget)
         self.editChordsLabel_3.setObjectName(u"editChordsLabel_3")
         self.editChordsLabel_3.setAlignment(Qt.AlignCenter)
 
-        self.verticalLayout_3.addWidget(self.editChordsLabel_3)
+        self.saveLoadScale.addWidget(self.editChordsLabel_3)
+
+        self.selectResource = QComboBox(self.layoutWidget)
+        self.selectResource.setObjectName(u"selectResource")
+
+        self.saveLoadScale.addWidget(self.selectResource)
+
+        self.saveResource = QPushButton(self.layoutWidget)
+        self.saveResource.setObjectName(u"saveResource")
+
+        self.saveLoadScale.addWidget(self.saveResource)
+
+
+        self.verticalLayout_3.addLayout(self.saveLoadScale)
 
         self.slotGroup1 = QHBoxLayout()
         self.slotGroup1.setObjectName(u"slotGroup1")
@@ -140,20 +155,20 @@ class Ui_osc3QuantizationEditor(object):
 
         self.verticalLayout_3.addLayout(self.slotGroup1)
 
-        self.saveLoadScale = QHBoxLayout()
-        self.saveLoadScale.setObjectName(u"saveLoadScale")
-        self.selectResource = QComboBox(self.layoutWidget)
-        self.selectResource.setObjectName(u"selectResource")
+        self.resourceDescription = QLabel(self.layoutWidget)
+        self.resourceDescription.setObjectName(u"resourceDescription")
+        self.resourceDescription.setFont(font)
+        self.resourceDescription.setAlignment(Qt.AlignCenter)
+        self.resourceDescription.setWordWrap(True)
 
-        self.saveLoadScale.addWidget(self.selectResource)
+        self.verticalLayout_3.addWidget(self.resourceDescription)
 
-        self.saveResource = QPushButton(self.layoutWidget)
-        self.saveResource.setObjectName(u"saveResource")
+        self.line_2 = QFrame(self.layoutWidget)
+        self.line_2.setObjectName(u"line_2")
+        self.line_2.setFrameShape(QFrame.HLine)
+        self.line_2.setFrameShadow(QFrame.Sunken)
 
-        self.saveLoadScale.addWidget(self.saveResource)
-
-
-        self.verticalLayout_3.addLayout(self.saveLoadScale)
+        self.verticalLayout_3.addWidget(self.line_2)
 
         self.editChordsLabel_2 = QLabel(self.layoutWidget)
         self.editChordsLabel_2.setObjectName(u"editChordsLabel_2")
@@ -695,11 +710,12 @@ class Ui_osc3QuantizationEditor(object):
         self.saveResourceSet.setText(QCoreApplication.translate("osc3QuantizationEditor", u"Save Set", None))
         self.saveForRack.setText(QCoreApplication.translate("osc3QuantizationEditor", u"Save for VCV Rack", None))
         self.setDescription.setText(QCoreApplication.translate("osc3QuantizationEditor", u"TextLabel", None))
-        self.editChordsLabel_3.setText(QCoreApplication.translate("osc3QuantizationEditor", u"Select quantization mode:", None))
+        self.editChordsLabel_3.setText(QCoreApplication.translate("osc3QuantizationEditor", u"Select quantization:", None))
+        self.saveResource.setText(QCoreApplication.translate("osc3QuantizationEditor", u"Save Quantization", None))
         self.slot1.setText("")
         self.slot2.setText("")
         self.slot3.setText("")
-        self.saveResource.setText(QCoreApplication.translate("osc3QuantizationEditor", u"Save Quantization", None))
+        self.resourceDescription.setText(QCoreApplication.translate("osc3QuantizationEditor", u"TextLabel", None))
         self.editChordsLabel_2.setText(QCoreApplication.translate("osc3QuantizationEditor", u"Edit Quantization", None))
         self.editChordsLabel_4.setText(QCoreApplication.translate("osc3QuantizationEditor", u"Select pitches in scale when root is C:", None))
         self.note2.setText(QCoreApplication.translate("osc3QuantizationEditor", u"C#", None))

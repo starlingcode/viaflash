@@ -89,6 +89,7 @@ class Osc3QuantizationEditor(ViaResourceEditor, Ui_osc3QuantizationEditor):
         self.update_resource_ui()
 
     def update_resource_ui(self):
+        self.resourceDescription.setText(self.set.resources[self.active_idx].data['description'])
         scale = self.set.resources[self.active_idx].data['notes']
         for pitch in range(0, 12):
             if pitch in scale:

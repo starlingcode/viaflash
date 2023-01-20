@@ -90,6 +90,7 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
         self.update_resource_ui()
 
     def update_resource_ui(self):
+        self.resourceDescription.setText(self.set.resources[self.active_idx].data['description'])
         sequences = self.set.resources[self.active_idx].data['data']
         idx = -1
         for idx, sequence in enumerate(sequences):

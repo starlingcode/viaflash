@@ -11,7 +11,6 @@ Resource descriptions (needs work in viafirmware):
 	- Tables
 
 General app things:
-- Some semblence of when the state of the editor is dirty
 - Theres sometimes an exception when you close an editor and select a new module, trying to stop timer from another thread?
 - Shorthand for Default resources? Should default be a metadata item?
 

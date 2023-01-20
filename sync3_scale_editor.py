@@ -426,7 +426,7 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
 
     def update_resource_ui(self):
 
-        self.scaleDescription.setText(self.set.resources[self.active_idx].data['description'])
+        self.resourceDescription.setText(self.set.resources[self.active_idx].data['description'])
 
         self.sorted.setChecked(True)
         if 'sorted' in self.set.resources[self.active_idx].data:
