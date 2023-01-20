@@ -20,6 +20,7 @@ from PySide6.QtWidgets import (QApplication, QComboBox, QDialog, QGroupBox,
     QSizePolicy, QSlider, QSpacerItem, QVBoxLayout,
     QWidget)
 
+from superqt import QLabeledRangeSlider
 from wavetable_viz_panel import WavetableVizPanel
 
 class Ui_wavetableBrowser(object):
@@ -88,8 +89,9 @@ class Ui_wavetableBrowser(object):
 
         self.verticalLayout.addWidget(self.label)
 
-        self.tableSize = QComboBox(self.layoutWidget)
+        self.tableSize = QLabeledRangeSlider(self.layoutWidget)
         self.tableSize.setObjectName(u"tableSize")
+        self.tableSize.setOrientation(Qt.Horizontal)
 
         self.verticalLayout.addWidget(self.tableSize)
 
@@ -122,15 +124,15 @@ class Ui_wavetableBrowser(object):
 
         self.verticalLayout.addWidget(self.close)
 
-        self.widget = QWidget(wavetableBrowser)
-        self.widget.setObjectName(u"widget")
-        self.widget.setGeometry(QRect(181, 11, 611, 600))
-        self.tableViz_2 = QVBoxLayout(self.widget)
+        self.layoutWidgetNO = QWidget(wavetableBrowser)
+        self.layoutWidgetNO.setObjectName(u"layoutWidgetNO")
+        self.layoutWidgetNO.setGeometry(QRect(181, 11, 611, 600))
+        self.tableViz_2 = QVBoxLayout(self.layoutWidgetNO)
         self.tableViz_2.setObjectName(u"tableViz_2")
         self.tableViz_2.setContentsMargins(0, 0, 0, 0)
         self.topViz = QHBoxLayout()
         self.topViz.setObjectName(u"topViz")
-        self.viz1 = WavetableVizPanel(self.widget)
+        self.viz1 = WavetableVizPanel(self.layoutWidgetNO)
         self.viz1.setObjectName(u"viz1")
         sizePolicy3 = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Minimum)
         sizePolicy3.setHorizontalStretch(0)
@@ -141,7 +143,7 @@ class Ui_wavetableBrowser(object):
 
         self.topViz.addWidget(self.viz1)
 
-        self.viz2 = WavetableVizPanel(self.widget)
+        self.viz2 = WavetableVizPanel(self.layoutWidgetNO)
         self.viz2.setObjectName(u"viz2")
         sizePolicy4 = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred)
         sizePolicy4.setHorizontalStretch(0)
@@ -161,14 +163,14 @@ class Ui_wavetableBrowser(object):
 
         self.horizontalLayout_2.addItem(self.horizontalSpacer)
 
-        self.label_4 = QLabel(self.widget)
+        self.label_4 = QLabel(self.layoutWidgetNO)
         self.label_4.setObjectName(u"label_4")
         sizePolicy.setHeightForWidth(self.label_4.sizePolicy().hasHeightForWidth())
         self.label_4.setSizePolicy(sizePolicy)
 
         self.horizontalLayout_2.addWidget(self.label_4)
 
-        self.tableIdx = QSlider(self.widget)
+        self.tableIdx = QSlider(self.layoutWidgetNO)
         self.tableIdx.setObjectName(u"tableIdx")
         sizePolicy5 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
         sizePolicy5.setHorizontalStretch(0)
@@ -179,7 +181,7 @@ class Ui_wavetableBrowser(object):
 
         self.horizontalLayout_2.addWidget(self.tableIdx)
 
-        self.tableIdxLabel = QLabel(self.widget)
+        self.tableIdxLabel = QLabel(self.layoutWidgetNO)
         self.tableIdxLabel.setObjectName(u"tableIdxLabel")
         sizePolicy.setHeightForWidth(self.tableIdxLabel.sizePolicy().hasHeightForWidth())
         self.tableIdxLabel.setSizePolicy(sizePolicy)
@@ -195,7 +197,7 @@ class Ui_wavetableBrowser(object):
 
         self.bottomViz = QHBoxLayout()
         self.bottomViz.setObjectName(u"bottomViz")
-        self.viz3 = WavetableVizPanel(self.widget)
+        self.viz3 = WavetableVizPanel(self.layoutWidgetNO)
         self.viz3.setObjectName(u"viz3")
         sizePolicy6 = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         sizePolicy6.setHorizontalStretch(0)
@@ -206,7 +208,7 @@ class Ui_wavetableBrowser(object):
 
         self.bottomViz.addWidget(self.viz3)
 
-        self.viz4 = WavetableVizPanel(self.widget)
+        self.viz4 = WavetableVizPanel(self.layoutWidgetNO)
         self.viz4.setObjectName(u"viz4")
         sizePolicy6.setHeightForWidth(self.viz4.sizePolicy().hasHeightForWidth())
         self.viz4.setSizePolicy(sizePolicy6)

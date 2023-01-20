@@ -19,16 +19,19 @@ class WavetableBrowser(QDialog, Ui_wavetableBrowser):
         self.table_file = table_file
         self.slope_file = slope_file
         self.max_table_size = max_table_size
-        if self.table_dict[slug]['type'] == 'slope_pair':
-            self.slopePair.setChecked(True)
-            self.type = 'slope_pair'
-        else:
-            self.cycle.setChecked(True)
-            self.type = 'cycle'
-        self.update_type()
-        self.table_size = self.table_dict[slug]['size']
-        self.update_size()
-        self.tableSize.setCurrentIndex(self.tableSize.findText(str(self.table_size)))
+        # if self.table_dict[slug]['type'] == 'slope_pair':
+        #     self.slopePair.setChecked(True)
+        #     self.selected_tags = ['slope_pair']
+        # else:
+        #     self.cycle.setChecked(True)
+        #     self.selected_tags = ['cycle']
+        self.selected_tags = ['slope_pair', 'cycle']
+        self.tableSize.setMinimum(1)
+        self.tableSize.setMaximum(33)
+        self.tableSize.setValue([1, 33])
+        self.min_size = int(1)
+        self.max_size = int(33)
+        self.update_filter()
         self.selectTable.setCurrentIndex(self.selectTable.findText(slug))
         self.tableSizeWarning.setText('(the first %d will be used)' % max_table_size)
         self.table = Wavetable(self.table_file, slug, self.slope_file, max_table_size)
@@ -38,21 +41,20 @@ class WavetableBrowser(QDialog, Ui_wavetableBrowser):
 
     @Slot() 
     def on_slopePair_clicked(self):
-        self.type = 'slope_pair'
-        self.update_type()
+        self.selected_tags = ['slope_pair']
+        self.update_filter()
 
     @Slot() 
     def on_cycle_clicked(self):
-        self.type = 'cycle'
-        self.update_type()
+        self.selected_tags = ['cycle']
+        self.update_filter()
 
     @Slot() 
-    def on_tableSize_activated(self):
-        try: 
-            self.table_size = int(self.tableSize.currentText())
-            self.update_size()
-        except:
-            pass
+    def on_tableSize_valueChanged(self):
+        self.table_min = int(self.tableSize.value()[0])
+        self.table_max = int(self.tableSize.value()[1])
+        self.update_filter()
+
 
     @Slot()
     def on_selectTable_activated(self):
@@ -92,36 +94,22 @@ class WavetableBrowser(QDialog, Ui_wavetableBrowser):
                 attack_samples = raw_slopes[raw_tables[table]['slopes'][0]]['samples']
                 self.table_dict[table]['size'] = len(attack_samples)
                 if attack_samples[0][0] == 0 and attack_samples[0][-1] == 32767:
-                    self.table_dict[table]['type'] = 'slope_pair'
+                    self.table_dict[table]['tags'] = 'slope_pair'
                 else:
-                    self.table_dict[table]['type'] = 'cycle'
+                    self.table_dict[table]['tags'] = 'cycle'
                 
-    def update_type(self):
+    def update_filter(self):
         self.selectTable.clear()
-        self.tableSize.clear()
-        valid_sizes = set()
-        valid_tables = []
+        valid_tables = set()
+        print("Updating filter")
         for table, properties in self.table_dict.items():
-            if properties['type'] == self.type:
-                valid_sizes.add(properties['size'])
-                valid_tables.append(table)
-        valid_size_list = sorted(valid_sizes)
-        for size in valid_size_list:
-            self.tableSize.insertItem(-1, str(size))
-            self.table_size = size
+            if properties['size'] >= self.min_size and properties['size'] <= self.max_size:
+                for tag in self.selected_tags:
+                    if tag in properties['tags']:
+                        valid_tables.add(table)
+
         for table in valid_tables:
             self.selectTable.insertItem(-1, table)
-            
-    def update_size(self):
-        self.selectTable.clear()
-        valid_tables = []
-        for table, properties in self.table_dict.items():
-            if properties['type'] == self.type and properties['size'] == self.table_size:
-                valid_tables.append(table)
-        for table in valid_tables:
-            self.selectTable.insertItem(-1, table)
-
-
 
 
 class WavetableEditor(ViaResourceEditor):

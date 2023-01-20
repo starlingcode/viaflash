@@ -111,7 +111,11 @@
      </widget>
     </item>
     <item>
-     <widget class="QComboBox" name="tableSize"/>
+     <widget class="QLabeledRangeSlider" name="tableSize">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
     </item>
     <item>
      <widget class="QLabel" name="tableSizeWarning">
@@ -158,7 +162,7 @@
     </item>
    </layout>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidgetNO">
    <property name="geometry">
     <rect>
      <x>181</x>
@@ -318,6 +322,11 @@
    <extends>QWidget</extends>
    <header>wavetable_viz_panel.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QLabeledRangeSlider</class>
+   <extends>QSlider</extends>
+   <header>superqt.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

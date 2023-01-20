@@ -5,10 +5,6 @@ Indicate dirty state for resource
 
 Save for rack file should be title
 QSpinBox has no arrows!
-Resource descriptions (needs work in viafirmware):
-	- Gateseq
-	- OSC3
-	- Tables
 
 General app things:
 - Theres sometimes an exception when you close an editor and select a new module, trying to stop timer from another thread?
@@ -18,7 +14,6 @@ Table editor:
 ! Fix table flashing for modules
 	- Augment the buttons for the wavetable modules to help with size management
 - Why does the browser have those weird lines
-- Description for wavetables
 * Redo filtering
 	- Minmax filter for number of table filterings (two handle slider is best)
 	- Redo slope pair/cycle concept as tag system that encompasses that idea, default to all on, add button to clear filter. Tags get collected and added to view by editor.
@@ -34,20 +29,17 @@ Main window:
 - Local firmware
 
 OSC3 Editor:
-- Chord editor really sucks
+(Big Project) Chord editor really sucks
 - Add keyboard popout
 - Make pad to fill implicit
-- Quantization descriptions?
-- Add more quantizations to stock from the start
 
 GATESEQ Editor:
 - Gateseq preview?
-- Gateseq editor as stack of rows with piano roll
+(Big Project) Gateseq editor as stack of rows with piano roll
 
 Viafirmware Repo:
-- Fix Default Mode 2 title in sync3 scales in viafirmware
 - Wavetables need to get filterable tags in general including default usage
-- Wavetables need a wizard to create titles and generally edit remote resources
+- Add real descriptions to wavetables
 - Add real titles to wavetables
 
 
