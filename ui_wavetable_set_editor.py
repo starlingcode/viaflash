@@ -35,48 +35,61 @@ class Ui_wavetableSetEditor(object):
         self.verticalLayout = QVBoxLayout(self.layoutWidget)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.resourceSetSaveLoad = QHBoxLayout()
+#ifndef Q_OS_MAC
+        self.resourceSetSaveLoad.setSpacing(-1)
+#endif
+        self.resourceSetSaveLoad.setObjectName(u"resourceSetSaveLoad")
         self.windowTitle = QLabel(self.layoutWidget)
         self.windowTitle.setObjectName(u"windowTitle")
-        sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
+        sizePolicy = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.windowTitle.sizePolicy().hasHeightForWidth())
         self.windowTitle.setSizePolicy(sizePolicy)
         self.windowTitle.setAlignment(Qt.AlignCenter)
 
-        self.verticalLayout.addWidget(self.windowTitle)
+        self.resourceSetSaveLoad.addWidget(self.windowTitle)
 
-        self.resourceSetSaveLoad = QHBoxLayout()
-#ifndef Q_OS_MAC
-        self.resourceSetSaveLoad.setSpacing(-1)
-#endif
-        self.resourceSetSaveLoad.setObjectName(u"resourceSetSaveLoad")
         self.selectResourceSet = QComboBox(self.layoutWidget)
         self.selectResourceSet.setObjectName(u"selectResourceSet")
-        sizePolicy.setHeightForWidth(self.selectResourceSet.sizePolicy().hasHeightForWidth())
-        self.selectResourceSet.setSizePolicy(sizePolicy)
+        sizePolicy1 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.selectResourceSet.sizePolicy().hasHeightForWidth())
+        self.selectResourceSet.setSizePolicy(sizePolicy1)
 
         self.resourceSetSaveLoad.addWidget(self.selectResourceSet)
 
         self.saveResourceSet = QPushButton(self.layoutWidget)
         self.saveResourceSet.setObjectName(u"saveResourceSet")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum)
-        sizePolicy1.setHorizontalStretch(0)
-        sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.saveResourceSet.sizePolicy().hasHeightForWidth())
-        self.saveResourceSet.setSizePolicy(sizePolicy1)
+        sizePolicy2 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.saveResourceSet.sizePolicy().hasHeightForWidth())
+        self.saveResourceSet.setSizePolicy(sizePolicy2)
 
         self.resourceSetSaveLoad.addWidget(self.saveResourceSet)
 
         self.saveForRack = QPushButton(self.layoutWidget)
         self.saveForRack.setObjectName(u"saveForRack")
-        sizePolicy1.setHeightForWidth(self.saveForRack.sizePolicy().hasHeightForWidth())
-        self.saveForRack.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.saveForRack.sizePolicy().hasHeightForWidth())
+        self.saveForRack.setSizePolicy(sizePolicy2)
 
         self.resourceSetSaveLoad.addWidget(self.saveForRack)
 
 
         self.verticalLayout.addLayout(self.resourceSetSaveLoad)
+
+        self.setDescription = QLabel(self.layoutWidget)
+        self.setDescription.setObjectName(u"setDescription")
+        font = QFont()
+        font.setPointSize(11)
+        self.setDescription.setFont(font)
+        self.setDescription.setAlignment(Qt.AlignCenter)
+        self.setDescription.setWordWrap(True)
+
+        self.verticalLayout.addWidget(self.setDescription)
 
         self.line_2 = QFrame(self.layoutWidget)
         self.line_2.setObjectName(u"line_2")
@@ -89,11 +102,8 @@ class Ui_wavetableSetEditor(object):
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.windowTitle_2 = QLabel(self.layoutWidget)
         self.windowTitle_2.setObjectName(u"windowTitle_2")
-        sizePolicy2 = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-        sizePolicy2.setHorizontalStretch(0)
-        sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(self.windowTitle_2.sizePolicy().hasHeightForWidth())
-        self.windowTitle_2.setSizePolicy(sizePolicy2)
+        sizePolicy.setHeightForWidth(self.windowTitle_2.sizePolicy().hasHeightForWidth())
+        self.windowTitle_2.setSizePolicy(sizePolicy)
         self.windowTitle_2.setAlignment(Qt.AlignCenter)
 
         self.horizontalLayout_2.addWidget(self.windowTitle_2)
@@ -123,8 +133,8 @@ class Ui_wavetableSetEditor(object):
         self.resourceSaveLoad.setObjectName(u"resourceSaveLoad")
         self.tableName = QLabel(self.layoutWidget)
         self.tableName.setObjectName(u"tableName")
-        sizePolicy.setHeightForWidth(self.tableName.sizePolicy().hasHeightForWidth())
-        self.tableName.setSizePolicy(sizePolicy)
+        sizePolicy1.setHeightForWidth(self.tableName.sizePolicy().hasHeightForWidth())
+        self.tableName.setSizePolicy(sizePolicy1)
         self.tableName.setAlignment(Qt.AlignCenter)
 
         self.resourceSaveLoad.addWidget(self.tableName)
@@ -181,8 +191,8 @@ class Ui_wavetableSetEditor(object):
 
         self.label_2 = QLabel(self.layoutWidget)
         self.label_2.setObjectName(u"label_2")
-        sizePolicy.setHeightForWidth(self.label_2.sizePolicy().hasHeightForWidth())
-        self.label_2.setSizePolicy(sizePolicy)
+        sizePolicy1.setHeightForWidth(self.label_2.sizePolicy().hasHeightForWidth())
+        self.label_2.setSizePolicy(sizePolicy1)
 
         self.horizontalLayout.addWidget(self.label_2)
 
@@ -199,8 +209,8 @@ class Ui_wavetableSetEditor(object):
 
         self.tableIdxLabel = QLabel(self.layoutWidget)
         self.tableIdxLabel.setObjectName(u"tableIdxLabel")
-        sizePolicy.setHeightForWidth(self.tableIdxLabel.sizePolicy().hasHeightForWidth())
-        self.tableIdxLabel.setSizePolicy(sizePolicy)
+        sizePolicy1.setHeightForWidth(self.tableIdxLabel.sizePolicy().hasHeightForWidth())
+        self.tableIdxLabel.setSizePolicy(sizePolicy1)
 
         self.horizontalLayout.addWidget(self.tableIdxLabel)
 
@@ -282,9 +292,10 @@ class Ui_wavetableSetEditor(object):
 
     def retranslateUi(self, wavetableSetEditor):
         wavetableSetEditor.setWindowTitle(QCoreApplication.translate("wavetableSetEditor", u"Wavetable Set Editor", None))
-        self.windowTitle.setText(QCoreApplication.translate("wavetableSetEditor", u"Edit Wavetable Set", None))
-        self.saveResourceSet.setText(QCoreApplication.translate("wavetableSetEditor", u"Save Set Data", None))
+        self.windowTitle.setText(QCoreApplication.translate("wavetableSetEditor", u"Edit Wavetable Set:", None))
+        self.saveResourceSet.setText(QCoreApplication.translate("wavetableSetEditor", u"Save Set", None))
         self.saveForRack.setText(QCoreApplication.translate("wavetableSetEditor", u"Save for VCV Rack", None))
+        self.setDescription.setText(QCoreApplication.translate("wavetableSetEditor", u"TextLabel", None))
         self.windowTitle_2.setText(QCoreApplication.translate("wavetableSetEditor", u"Select wavetable slot for editing:", None))
         self.tableName.setText(QCoreApplication.translate("wavetableSetEditor", u"TABLENAME", None))
         self.openBrowser.setText(QCoreApplication.translate("wavetableSetEditor", u"Browser", None))

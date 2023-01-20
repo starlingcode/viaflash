@@ -23,7 +23,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Ratio</string>
+   <string>Add Ratio</string>
   </property>
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">

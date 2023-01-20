@@ -28,10 +28,11 @@ class ViaResourceEditor(QDialog):
     @Slot()
     def on_selectResourceSet_activated(self):
         #TODO check for unsaved changes
-        slug = self.selectResourceSet.currentText()
+        slug = self.resource_set_titles[self.selectResourceSet.currentText()]
         if slug in self.resource_set_slugs:
             self.set_slug = slug
             self.set.load_set(slug)
+            self.setDescription.setText(self.set.data['description'])
             self.switch_slot(self.active_idx)
 
     @Slot() 
@@ -46,6 +47,7 @@ class ViaResourceEditor(QDialog):
     def update_set_slug(self, set_slug):
         self.set_slug = set_slug
         self.update_resource_sets()
+        self.on_selectResourceSet_activated()
 
     def handle_select_resource(self):
         #TODO check for unsaved changes

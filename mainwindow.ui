@@ -37,7 +37,7 @@
    <bool>false</bool>
   </property>
   <property name="windowTitle">
-   <string>VIA Flash Utility</string>
+   <string>Viaflash</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QWidget" name="verticalLayoutWidget">

@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QDialog, QPushButton, QSpacerItem, QSizePolicy, QMessageBox, QLabel, QFileDialog, QWidget, QVBoxLayout, QHBoxLayout, QLayout
 from PySide6.QtCore import Slot, QRect, Qt, QMimeData, QSize
-from PySide6.QtGui import QDrag
+from PySide6.QtGui import QDrag, QUndoStack, QUndoCommand, QKeySequence
 
 from ui_sync3_scale_editor import Ui_sync3ScaleEditor
 from ui_sync3_ratio import Ui_sync3Ratio
@@ -10,14 +10,17 @@ from via_resource_editor import ViaResourceEditor
 
 import numpy as np
 
+
 class Sync3Ratio(QDialog, Ui_sync3Ratio):
+
     def __init__(self, numerator, denominator):
         super().__init__()
         self.setupUi(self)
         self.ratioDisplay.update(numerator, denominator)
 
-# TODO refactor this to be a widget that can be reused by the preview
+
 class Sync3RatioAdd(QDialog, Ui_sync3RatioAdd):
+
     def __init__(self, parent_window):
         super().__init__()
         self.setupUi(self)
@@ -25,14 +28,17 @@ class Sync3RatioAdd(QDialog, Ui_sync3RatioAdd):
         numerator = int(self.numerator.value())
         denominator = int(self.denominator.value())
         self.ratioDisplay.update(numerator, denominator)
+
         
     @Slot()
     def on_numerator_valueChanged(self):
         self.ratioDisplay.update(self.numerator.value(), self.denominator.value())
 
+
     @Slot()
     def on_denominator_valueChanged(self):
         self.ratioDisplay.update(self.numerator.value(), self.denominator.value())
+
 
     @Slot()
     def on_addRatio_clicked(self):
@@ -40,6 +46,7 @@ class Sync3RatioAdd(QDialog, Ui_sync3RatioAdd):
 
 
 class RatioButton(QWidget):
+
     def __init__(self, parent_window):
         super().__init__()
         self.setAcceptDrops(True)
@@ -60,8 +67,8 @@ class RatioButton(QWidget):
         self.parent_window = parent_window
         self.setContentsMargins(0, 0, 0, 0)
 
-    def mouseMoveEvent(self, e):
 
+    def mouseMoveEvent(self, e):
         if e.buttons() != Qt.RightButton:
             return
 
@@ -77,13 +84,13 @@ class RatioButton(QWidget):
 
 
     def mousePressEvent(self, e):
-      
         if e.button() == Qt.LeftButton:
             QPushButton.mousePressEvent(self, e)
 
+
     def dragEnterEvent(self, e):
-      
         e.accept()
+
 
     def dropEvent(self, e):
 
@@ -96,31 +103,168 @@ class RatioButton(QWidget):
         self.semitones.setText('%.4f' % (np.log2(numerator/denominator) * 12))
 
 
+# Data controller functions
+
+class AddRatioCommand(QUndoCommand):
+    
+    def __init__(self, scale, numerator, denominator, ui_callback):
+        super().__init__()
+        self.setText('Add %d/%d' % (numerator, denominator))
+        self.scale = scale
+        self.numerator = numerator
+        self.denominator = denominator
+        self.ui_callback = ui_callback
+        self.old_fill = None
+
+
+    def redo(self):
+        self.idx = self.scale.add_data([self.numerator, self.denominator])
+        can_fill = self.set.resources[self.active_idx].check_fill_ok()
+        if not can_fill and self.get_fill() != "expand":
+            self.old_fill = self.set_fill('expand')
+        self.ui_callback()
+
+
+    def undo(self):
+        self.scale.remove_data(self.idx)
+        if self.old_fill:
+            self.set_fill(self.old_fill)
+        self.ui_callback()
+
+
+class RemoveRatioCommand(QUndoCommand):
+
+    def __init__(self, scale, idx, ui_callback):
+        super().__init__()
+        self.setText('Remove index %d' % (idx))
+        self.scale = scale
+        self.idx = idx
+        self.ui_callback = ui_callback
+
+
+    def redo(self):
+        self.ratio = self.scale.remove_data(self.idx)
+        self.ui_callback()
+
+
+    def undo(self):
+        self.idx = self.scale.add_data(self.ratio)
+        self.ui_callback()
+
+
+class ClearRatiosCommand(QUndoCommand):
+
+    def __init__(self, scale, ui_callback):
+        super().__init__()
+        # self.setText('Remove index %d' % (idx))
+        self.scale = scale
+        self.ui_callback = ui_callback
+
+
+    def redo(self):
+        self.old_order = self.scale.clear_data()
+        self.ui_callback()
+
+
+    def undo(self):
+        self.scale.reload_data(self.old_order)
+        self.ui_callback()
+
+
+class ReorderScaleCommand(QUndoCommand):
+    
+    def __init__(self, scale, idx_to_move, destination, ui_callback):
+        super().__init__()
+        # self.setText('Remove index %d' % (idx))
+        self.scale = scale
+        self.idx_to_move = idx_to_move
+        self.destination = destination
+        self.ui_callback = ui_callback
+
+
+    def redo(self):
+        self.scale.reorder_data(self.idx_to_move, self.destination)
+        self.redo_destination = self.idx_to_move
+        self.redo_idx_to_move = self.destination
+        self.ui_callback()
+
+
+    def undo(self):
+        self.scale.reorder_data(self.redo_idx_to_move, self.redo_destination)
+        self.ui_callback()
+
+
+class UpdateSortedCommand(QUndoCommand):
+    
+    def __init__(self, scale, is_sorted, ui_callback):
+        super().__init__()
+        # self.setText('Remove index %d' % (idx))
+        self.scale = scale
+        self.is_sorted = is_sorted
+        self.ui_callback = ui_callback
+
+
+    def redo(self):
+        if self.is_sorted:
+            self.old_order = self.scale.update_sorted(True)
+            self.ui_callback()
+        else:
+            self.old_order = self.scale.update_sorted(False)
+            if self.old_order:
+                self.scale.reload_data(self.old_order)
+            self.ui_callback()
+
+
+    def undo(self):
+        if not self.is_sorted:
+            self.old_order = self.scale.update_sorted(True)
+            self.ui_callback()
+        else:
+            self.scale.update_sorted(False)
+            self.scale.reload_data(self.old_order)
+            self.ui_callback()
+
+
+class UpdateFillCommand(QUndoCommand):
+    
+    def __init__(self, scale, fill_method, ui_callback):
+        super().__init__()
+        # self.setText('Remove index %d' % (idx))
+        self.scale = scale
+        self.fill_method = fill_method
+        self.ui_callback = ui_callback
+
+
+    def redo(self):
+        self.old_fill_method = self.scale.set_fill(self.fill_method)
+        self.ui_callback()
+
+
+    def undo(self):
+        self.scale.set_fill(self.old_fill_method)
+        self.ui_callback()
+
+
 class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
+    
     def __init__(self, resource_dir='./', remote_resources = {}, slug='original', style_text=''):
         super().__init__() 
         self.setupUi(self)
         self.setStyleSheet(style_text)
         self.style_text = style_text
 
-        self.expand_help = "The ratios in the grid will be spread evenly across the full knob/CV range."
-        self.octave_help = "The ratios in the grid will be spread across the knob/CV range by transposing by the total range in octaves. Use this for specifying a scale or arpeggio using a small number of ratios. You can specify a maximum of 8 ratios greater than 1/1 and 8 less than."
-        self.tritave_help = "The ratios in the grid will be spread across the knob/CV range by transposing by the total range in tritaves. Use this for Bohlen Peirce experiments. You can specify a maximum of 8 ratios greater than 1/1 and 8 less than."
+        self.fill_help = {}
+        self.fill_help["expand"] = "The ratios in the grid will be spread evenly across the full knob/CV range."
+        self.fill_help["octave"] = "The ratios in the grid will be spread across the control range by transposing by the total range in octaves"
+        self.fill_help["tritave"] = "The ratios in the grid will be spread across the control range by transposing by the total range in tritaves. Works great with ratios using odd numbers."
+        
         self.sorted_help = "The ratios in the grid are being automatically sorted and loaded in ascending order."
         self.unsorted_help = "Right click a ratio and drag it to the desired grid position to reorder."
 
-        #TODO pass through to resources through constructors
-        self.scale_size = 32
-
         self.remote_resources = remote_resources
-        # TODO check if new remote resource or set collides with existing local slug
 
         self.set = Sync3ScaleSet(resource_dir, slug)
         self.set_slug = slug
-
-        # self.seedRatioGrid = RatioGrid()
-        # self.seedRatioGrid.setObjectName(u"seedRatioGrid")
-        # self.seedRatioGrid.setSizeConstraint(QLayout.SetMinAndMaxSize)
 
         self.update_resource_sets()
         self.update_resources()
@@ -136,29 +280,37 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
         self.selectResource.activated.connect(self.handle_select_resource)
         self.saveResource.clicked.connect(lambda state=True: self.handle_save_resource())
 
+        self.unsorted_data = None
+
         self.slot1.setChecked(True)
         self.switch_slot(0)
 
         self.update_resource_ui()
 
+        self.create_undo_stack()
+
+            
+
 # Edit scale recipe
 
     @Slot()
     def on_sorted_clicked(self):
-        if QMessageBox.question(self, 'Discard order?', 'Any custom ratio ordering will be lost, continue?') == QMessageBox.No:
-            self.unsorted.setChecked(True)
-            return
-        self.set.resources[self.active_idx].update_sorted(True)
+        self.unsorted_data = self.set.resources[self.active_idx].get_data()
+        sorted_command = UpdateSortedCommand(self.set.resources[self.active_idx], True, self.update_resource_ui)
+        self.resource_undo_stack.push(sorted_command)
         self.sortedHelp.setText(self.sorted_help)
         self.sorted_flag = True
-        self.update_resource_ui()
+
 
     @Slot()
     def on_unsorted_clicked(self):
-        self.set.resources[self.active_idx].update_sorted(False)
+        if self.unsorted_data:
+            self.set.resources[self.active_idx].reload_data(self.unsorted_data)
+        sorted_command = UpdateSortedCommand(self.set.resources[self.active_idx], False, self.update_resource_ui)
+        self.resource_undo_stack.push(sorted_command)
         self.sortedHelp.setText(self.unsorted_help)
         self.sorted_flag = False
-        self.update_resource_ui()
+
 
     @Slot()
     def on_addSeedRatio_clicked(self):
@@ -167,6 +319,7 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
         self.ratio_add_dialog.setStyleSheet(self.style_text)
         self.ratio_add_dialog.close.clicked.connect(self.ratio_add_dialog.accept)
         self.ratio_add_dialog.exec()
+
 
     @Slot()
     def on_addFromScala_clicked(self):
@@ -186,32 +339,38 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
 
     @Slot()
     def on_clearSeedRatios_clicked(self):
-        if QMessageBox.question(self, 'Clear Ratios', 'Clear all ratios?') == QMessageBox.Yes: 
-            self.set.resources[self.active_idx].data['seed_ratios'] = []
-            self.update_resource_ui()
+        clear_command = ClearRatiosCommand(self.set.resources[self.active_idx], self.update_resource_ui)
+        self.resource_undo_stack.push(clear_command)
+        
 
 # Tiling method selection
 
     @Slot()
     def on_fillExpand_clicked(self):
         self.update_fill_method('expand')
-        self.fillHelp.setText(self.expand_help)
+
 
     @Slot()
     def on_fillOctave_clicked(self):
         self.update_fill_method('octave')
-        self.fillHelp.setText(self.octave_help)
+
 
     @Slot()
     def on_fillTritave_clicked(self):
         self.update_fill_method('tritave')
-        self.fillHelp.setText(self.tritave_help)
+
+
+    def update_fill_method(self, fill_method):
+        change_fill = UpdateFillCommand(self.set.resources[self.active_idx], fill_method, self.update_resource_ui)
+        self.resource_undo_stack.push(change_fill)
 
 
 # Preview section slots
 
+
     def update_preview_idx(self):
         self.preview_idx = int((self.cvSlider.value() + 50) * .15) + self.knob.value()
+
 
     @Slot()
     def on_cvSlider_valueChanged(self):
@@ -220,10 +379,12 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
         self.cvLabel.setText("CV: %1.1f V" % voltage)
         self.update_preview()
 
+
     @Slot()
     def on_knob_valueChanged(self):
         self.update_preview_idx()
         self.update_preview()
+
 
 # Seed ratio dispaly helpers
 
@@ -234,36 +395,15 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
             if QMessageBox.question(self, 'Add duplicate?', warning_string) == QMessageBox.No:
                 self.ratio_add_dialog.accept()
                 return
-            self.set.resources[self.active_idx].add_data(self.reduce_ratio(ratio))
-            self.update_resource_ui()
-            self.unsaved_scale_changes = True
-        else:
-            self.set.resources[self.active_idx].add_data(self.reduce_ratio(ratio))
-            self.update_resource_ui()
-            self.unsaved_scale_changes = True
+        add_ratio = AddRatioCommand(self.set.resources[self.active_idx], ratio[0], ratio[1], self.update_resource_ui)
+        self.resource_undo_stack.push(add_ratio)
         self.ratio_add_dialog.accept()
 
-    def handle_drop(self, destination_idx):
-        self.set.resources[self.active_idx].reorder_data(self.dragged_idx, destination_idx)
-        self.update_resource_ui()
-    
-    def check_data(self, ratio):
-        if 'sorted' in self.set.resources[self.active_idx].data:
-            if self.set.resources[self.active_idx].data['sorted'] is False:
-                return True
-        reduced_ratio = self.reduce_ratio(ratio)
-        if reduced_ratio in self.set.resources[self.active_idx].data['seed_ratios']:
-            #TODO prompt to override
-            return False
-        else:
-            return True
 
-    def reduce_ratio(self, ratio):
-        gcd = np.gcd(ratio[0], ratio[1])
-        reduced_ratio = [1, 1]
-        reduced_ratio[0] = int(ratio[0]/gcd)
-        reduced_ratio[1] = int(ratio[1]/gcd)
-        return reduced_ratio
+    def handle_drop(self, destination_idx):
+        reorder = ReorderScaleCommand(self.set.resources[self.active_idx], self.dragged_idx, destination_idx, self.update_resource_ui)
+        self.resource_undo_stack.push(reorder)
+
 
     def seed_button_pushed(self, idx):
         ratio = self.set.resources[self.active_idx].data['seed_ratios'][idx]
@@ -275,11 +415,91 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
         self.active_ratio_idx = idx
         self.ratio_dialog.exec()
 
+
     def remove_ratio(self):
-        self.set.resources[self.active_idx].remove_data(self.active_ratio_idx)
-        self.update_resource_ui()
-        self.unsaved_scale_changes = True
+        remove_ratio = RemoveRatioCommand(self.set.resources[self.active_idx], self.active_ratio_idx, self.update_resource_ui)
+        self.resource_undo_stack.push(remove_ratio)
         self.ratio_dialog.accept()
+
+
+# Kinda like the data view
+
+    def update_resource_ui(self):
+
+        self.scaleDescription.setText(self.set.resources[self.active_idx].data['description'])
+
+        self.sorted.setChecked(True)
+        if 'sorted' in self.set.resources[self.active_idx].data:
+            if self.set.resources[self.active_idx].data['sorted'] is False:
+                self.unsorted.setChecked(True)
+                self.sortedHelp.setText(self.unsorted_help)
+                self.sorted_flag = False
+            else:
+                self.sortedHelp.setText(self.sorted_help)
+                self.sorted_flag = True
+        else:
+            self.sortedHelp.setText(self.sorted_help)
+            self.sorted_flag = True
+
+        seed_ratios = self.set.resources[self.active_idx].data['seed_ratios']
+        idx = -1
+        for idx, ratio in enumerate(seed_ratios):
+            self.seed_ratio_buttons[idx].show()
+            self.seed_ratio_buttons[idx].update_ratio(ratio[0], ratio[1])
+        for i in range(idx+1, 32):
+            self.seed_ratio_buttons[i].hide()
+
+        if not self.set.resources[self.active_idx].check_fill_ok():
+            self.fillOctave.setEnabled(False)
+            self.fillTritave.setEnabled(False)
+        else:
+            self.fillOctave.setEnabled(True)
+            self.fillTritave.setEnabled(True)
+        fill_mode = self.set.resources[self.active_idx].get_fill()
+        if fill_mode == "expand":
+            self.fillExpand.setChecked(True)
+        elif fill_mode == "octave":
+            self.fillOctave.setChecked(True)
+        else:
+            self.fillTritave.setChecked(True)
+        self.fillHelp.setText(self.fill_help[fill_mode])
+
+        self.update_preview()
+
+    def update_preview(self):
+        self.set.bake()
+        numerator = self.set.resources[self.active_idx].baked['numerators'][self.preview_idx]
+        denominator = self.set.resources[self.active_idx].baked['denominators'][self.preview_idx]
+        self.previewLabel.setText("%d/%d" % (numerator, denominator))
+        self.ratioPreview.update(numerator, denominator)
+
+# General helper functions
+
+    def check_data(self, ratio):
+        if 'sorted' in self.set.resources[self.active_idx].data:
+            if self.set.resources[self.active_idx].data['sorted'] is False:
+                return True
+        reduced_ratio = self.reduce_ratio(ratio)
+        if reduced_ratio in self.set.resources[self.active_idx].data['seed_ratios']:
+            return False
+        else:
+            return True
+
+    def reduce_ratio(self, ratio):
+        gcd = np.gcd(ratio[0], ratio[1])
+        reduced_ratio = [1, 1]
+        reduced_ratio[0] = int(ratio[0]/gcd)
+        reduced_ratio[1] = int(ratio[1]/gcd)
+        return reduced_ratio
+
+    def create_undo_stack(self):
+        self.resource_undo_stack = QUndoStack()
+        self.undo_action = self.resource_undo_stack.createUndoAction(self, "Undo")
+        self.undo_action.setShortcuts(QKeySequence.Undo)
+        self.redo_action = self.resource_undo_stack.createRedoAction(self, "Redo")
+        self.redo_action.setShortcuts(QKeySequence.Redo)
+        self.addAction(self.undo_action)
+        self.addAction(self.redo_action)
 
     def create_seed_ratio_grid(self):
         self.seed_ratio_buttons = []
@@ -301,73 +521,7 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
         self.seedScrollArea.setWidget(self.seedRatioHolder)
 
 
-    def update_resource_ui(self):
-        self.scaleDescription.setText(self.set.resources[self.active_idx].data['description'])
-        self.sorted.setChecked(True)
-        if 'sorted' in self.set.resources[self.active_idx].data:
-            if self.set.resources[self.active_idx].data['sorted'] is False:
-                self.unsorted.setChecked(True)
-                self.sortedHelp.setText(self.unsorted_help)
-                self.sorted_flag = False
-            else:
-                self.sortedHelp.setText(self.sorted_help)
-                self.sorted_flag = True
-        else:
-            self.sortedHelp.setText(self.sorted_help)
-            self.sorted_flag = True
 
-        seed_ratios = self.set.resources[self.active_idx].data['seed_ratios']
-        idx = -1
-        for idx, ratio in enumerate(seed_ratios):
-            self.seed_ratio_buttons[idx].show()
-            self.seed_ratio_buttons[idx].update_ratio(ratio[0], ratio[1])
-        for i in range(idx+1, 32):
-            self.seed_ratio_buttons[i].hide()
-        self.update_fill_method(self.set.resources[self.active_idx].data['fill_method'])
 
-# Fill method helpers
 
-    def update_fill_method(self, fill_method):
-        seed_ratios = self.set.resources[self.active_idx].data['seed_ratios']
-        #TODO make this into a function somewhere
-        lt_1 = []
-        gt_1 = []
-        for ratio in seed_ratios:
-            if ratio[0]/ratio[1] < 1:
-                lt_1.append(ratio)
-            elif ratio[0]/ratio[1] > 1:
-                gt_1.append(ratio)
-        if len(lt_1) > self.scale_size/4 or len(gt_1) > self.scale_size/4:
-            tile_ok = False
-        else:
-            tile_ok = True
-            
-        if self.set.resources[self.active_idx].data['fill_method'] != fill_method:
-            self.unsaved_scale_changes = True
-
-        if not tile_ok:
-            fill_method = 'expand'
-
-        if fill_method == 'octave':
-            self.fillOctave.setChecked(True)
-            self.set.resources[self.active_idx].data['fill_method'] = fill_method
-            self.fillHelp.setText(self.octave_help)
-        elif fill_method == 'tritave': 
-            self.fillTritave.setChecked(True)
-            self.set.resources[self.active_idx].data['fill_method'] = fill_method
-            self.fillHelp.setText(self.tritave_help)
-        elif fill_method == 'expand':       
-            self.fillExpand.setChecked(True)
-            self.set.resources[self.active_idx].data['fill_method'] = fill_method
-            self.fillHelp.setText(self.expand_help)
-        self.set.bake()
-        self.update_preview()
-
-# Preview helpers
-
-    def update_preview(self):
-        self.set.bake()
-        numerator = self.set.resources[self.active_idx].baked['numerators'][self.preview_idx]
-        denominator = self.set.resources[self.active_idx].baked['denominators'][self.preview_idx]
-        self.ratioPreview.update(numerator, denominator)       
 

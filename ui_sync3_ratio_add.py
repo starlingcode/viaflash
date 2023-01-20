@@ -69,7 +69,7 @@ class Ui_sync3RatioAdd(object):
     # setupUi
 
     def retranslateUi(self, sync3RatioAdd):
-        sync3RatioAdd.setWindowTitle(QCoreApplication.translate("sync3RatioAdd", u"Ratio", None))
+        sync3RatioAdd.setWindowTitle(QCoreApplication.translate("sync3RatioAdd", u"Add Ratio", None))
         self.addRatio.setText(QCoreApplication.translate("sync3RatioAdd", u"Add", None))
         self.close.setText(QCoreApplication.translate("sync3RatioAdd", u"Close", None))
     # retranslateUi

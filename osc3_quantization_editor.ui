@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>530</width>
-    <height>800</height>
+    <width>610</width>
+    <height>780</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,14 +18,14 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>530</width>
-    <height>680</height>
+    <width>610</width>
+    <height>780</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>530</width>
-    <height>16777215</height>
+    <width>610</width>
+    <height>780</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -36,30 +36,36 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>508</width>
-     <height>779</height>
+     <width>591</width>
+     <height>796</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_3">
     <item>
-     <widget class="QLabel" name="label_8">
-      <property name="text">
-       <string>Edit Quantization Set</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item>
      <layout class="QHBoxLayout" name="scalesSetButtons">
+      <item>
+       <widget class="QLabel" name="label_8">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Edit Quantization Set:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
       <item>
        <widget class="QComboBox" name="selectResourceSet"/>
       </item>
       <item>
        <widget class="QPushButton" name="saveResourceSet">
         <property name="text">
-         <string>Save Quantization Set</string>
+         <string>Save Set</string>
         </property>
        </widget>
       </item>
@@ -71,6 +77,31 @@
        </widget>
       </item>
      </layout>
+    </item>
+    <item>
+     <widget class="QLabel" name="setDescription">
+      <property name="font">
+       <font>
+        <pointsize>11</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>TextLabel</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="Line" name="line">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
     </item>
     <item>
      <widget class="QLabel" name="editChordsLabel_3">

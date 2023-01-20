@@ -16,9 +16,10 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QAbstractButton, QApplication, QButtonGroup, QComboBox,
-    QDialog, QDialogButtonBox, QGridLayout, QHBoxLayout,
-    QLabel, QLayout, QPushButton, QSizePolicy,
-    QSpacerItem, QSpinBox, QVBoxLayout, QWidget)
+    QDialog, QDialogButtonBox, QFrame, QGridLayout,
+    QHBoxLayout, QLabel, QLayout, QPushButton,
+    QSizePolicy, QSpacerItem, QSpinBox, QVBoxLayout,
+    QWidget)
 
 from resourcesetbuttons import (Slot2Button, Slot3Button, Slot4Button)
 
@@ -26,28 +27,33 @@ class Ui_osc3QuantizationEditor(object):
     def setupUi(self, osc3QuantizationEditor):
         if not osc3QuantizationEditor.objectName():
             osc3QuantizationEditor.setObjectName(u"osc3QuantizationEditor")
-        osc3QuantizationEditor.resize(530, 800)
+        osc3QuantizationEditor.resize(610, 780)
         sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(osc3QuantizationEditor.sizePolicy().hasHeightForWidth())
         osc3QuantizationEditor.setSizePolicy(sizePolicy)
-        osc3QuantizationEditor.setMinimumSize(QSize(530, 680))
-        osc3QuantizationEditor.setMaximumSize(QSize(530, 16777215))
+        osc3QuantizationEditor.setMinimumSize(QSize(610, 780))
+        osc3QuantizationEditor.setMaximumSize(QSize(610, 780))
         self.layoutWidget = QWidget(osc3QuantizationEditor)
         self.layoutWidget.setObjectName(u"layoutWidget")
-        self.layoutWidget.setGeometry(QRect(10, 10, 508, 779))
+        self.layoutWidget.setGeometry(QRect(10, 10, 591, 796))
         self.verticalLayout_3 = QVBoxLayout(self.layoutWidget)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
-        self.label_8 = QLabel(self.layoutWidget)
-        self.label_8.setObjectName(u"label_8")
-        self.label_8.setAlignment(Qt.AlignCenter)
-
-        self.verticalLayout_3.addWidget(self.label_8)
-
         self.scalesSetButtons = QHBoxLayout()
         self.scalesSetButtons.setObjectName(u"scalesSetButtons")
+        self.label_8 = QLabel(self.layoutWidget)
+        self.label_8.setObjectName(u"label_8")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.label_8.sizePolicy().hasHeightForWidth())
+        self.label_8.setSizePolicy(sizePolicy1)
+        self.label_8.setAlignment(Qt.AlignCenter)
+
+        self.scalesSetButtons.addWidget(self.label_8)
+
         self.selectResourceSet = QComboBox(self.layoutWidget)
         self.selectResourceSet.setObjectName(u"selectResourceSet")
 
@@ -65,6 +71,23 @@ class Ui_osc3QuantizationEditor(object):
 
 
         self.verticalLayout_3.addLayout(self.scalesSetButtons)
+
+        self.setDescription = QLabel(self.layoutWidget)
+        self.setDescription.setObjectName(u"setDescription")
+        font = QFont()
+        font.setPointSize(11)
+        self.setDescription.setFont(font)
+        self.setDescription.setAlignment(Qt.AlignCenter)
+        self.setDescription.setWordWrap(True)
+
+        self.verticalLayout_3.addWidget(self.setDescription)
+
+        self.line = QFrame(self.layoutWidget)
+        self.line.setObjectName(u"line")
+        self.line.setFrameShape(QFrame.HLine)
+        self.line.setFrameShadow(QFrame.Sunken)
+
+        self.verticalLayout_3.addWidget(self.line)
 
         self.editChordsLabel_3 = QLabel(self.layoutWidget)
         self.editChordsLabel_3.setObjectName(u"editChordsLabel_3")
@@ -92,11 +115,11 @@ class Ui_osc3QuantizationEditor(object):
         self.slot2 = Slot3Button(self.layoutWidget)
         self.buttonGroup.addButton(self.slot2)
         self.slot2.setObjectName(u"slot2")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Fixed)
-        sizePolicy1.setHorizontalStretch(0)
-        sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.slot2.sizePolicy().hasHeightForWidth())
-        self.slot2.setSizePolicy(sizePolicy1)
+        sizePolicy2 = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Fixed)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.slot2.sizePolicy().hasHeightForWidth())
+        self.slot2.setSizePolicy(sizePolicy2)
         self.slot2.setMinimumSize(QSize(50, 50))
         self.slot2.setMaximumSize(QSize(50, 50))
         self.slot2.setCheckable(True)
@@ -106,8 +129,8 @@ class Ui_osc3QuantizationEditor(object):
         self.slot3 = Slot4Button(self.layoutWidget)
         self.buttonGroup.addButton(self.slot3)
         self.slot3.setObjectName(u"slot3")
-        sizePolicy1.setHeightForWidth(self.slot3.sizePolicy().hasHeightForWidth())
-        self.slot3.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.slot3.sizePolicy().hasHeightForWidth())
+        self.slot3.setSizePolicy(sizePolicy2)
         self.slot3.setMinimumSize(QSize(50, 50))
         self.slot3.setMaximumSize(QSize(50, 50))
         self.slot3.setCheckable(True)
@@ -154,8 +177,8 @@ class Ui_osc3QuantizationEditor(object):
 
         self.note2 = QPushButton(self.layoutWidget)
         self.note2.setObjectName(u"note2")
-        sizePolicy1.setHeightForWidth(self.note2.sizePolicy().hasHeightForWidth())
-        self.note2.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.note2.sizePolicy().hasHeightForWidth())
+        self.note2.setSizePolicy(sizePolicy2)
         self.note2.setMinimumSize(QSize(25, 0))
         self.note2.setCheckable(True)
 
@@ -167,8 +190,8 @@ class Ui_osc3QuantizationEditor(object):
 
         self.note4 = QPushButton(self.layoutWidget)
         self.note4.setObjectName(u"note4")
-        sizePolicy1.setHeightForWidth(self.note4.sizePolicy().hasHeightForWidth())
-        self.note4.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.note4.sizePolicy().hasHeightForWidth())
+        self.note4.setSizePolicy(sizePolicy2)
         self.note4.setMinimumSize(QSize(25, 0))
         self.note4.setCheckable(True)
 
@@ -184,8 +207,8 @@ class Ui_osc3QuantizationEditor(object):
 
         self.note7 = QPushButton(self.layoutWidget)
         self.note7.setObjectName(u"note7")
-        sizePolicy1.setHeightForWidth(self.note7.sizePolicy().hasHeightForWidth())
-        self.note7.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.note7.sizePolicy().hasHeightForWidth())
+        self.note7.setSizePolicy(sizePolicy2)
         self.note7.setMinimumSize(QSize(25, 0))
         self.note7.setCheckable(True)
 
@@ -197,8 +220,8 @@ class Ui_osc3QuantizationEditor(object):
 
         self.note9 = QPushButton(self.layoutWidget)
         self.note9.setObjectName(u"note9")
-        sizePolicy1.setHeightForWidth(self.note9.sizePolicy().hasHeightForWidth())
-        self.note9.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.note9.sizePolicy().hasHeightForWidth())
+        self.note9.setSizePolicy(sizePolicy2)
         self.note9.setMinimumSize(QSize(25, 0))
         self.note9.setCheckable(True)
 
@@ -210,8 +233,8 @@ class Ui_osc3QuantizationEditor(object):
 
         self.note11 = QPushButton(self.layoutWidget)
         self.note11.setObjectName(u"note11")
-        sizePolicy1.setHeightForWidth(self.note11.sizePolicy().hasHeightForWidth())
-        self.note11.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.note11.sizePolicy().hasHeightForWidth())
+        self.note11.setSizePolicy(sizePolicy2)
         self.note11.setMinimumSize(QSize(25, 0))
         self.note11.setCheckable(True)
 
@@ -228,8 +251,8 @@ class Ui_osc3QuantizationEditor(object):
         self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
         self.note1 = QPushButton(self.layoutWidget)
         self.note1.setObjectName(u"note1")
-        sizePolicy1.setHeightForWidth(self.note1.sizePolicy().hasHeightForWidth())
-        self.note1.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.note1.sizePolicy().hasHeightForWidth())
+        self.note1.setSizePolicy(sizePolicy2)
         self.note1.setMinimumSize(QSize(25, 0))
         self.note1.setCheckable(True)
 
@@ -241,8 +264,8 @@ class Ui_osc3QuantizationEditor(object):
 
         self.note3 = QPushButton(self.layoutWidget)
         self.note3.setObjectName(u"note3")
-        sizePolicy1.setHeightForWidth(self.note3.sizePolicy().hasHeightForWidth())
-        self.note3.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.note3.sizePolicy().hasHeightForWidth())
+        self.note3.setSizePolicy(sizePolicy2)
         self.note3.setMinimumSize(QSize(25, 0))
         self.note3.setCheckable(True)
 
@@ -254,8 +277,8 @@ class Ui_osc3QuantizationEditor(object):
 
         self.note5 = QPushButton(self.layoutWidget)
         self.note5.setObjectName(u"note5")
-        sizePolicy1.setHeightForWidth(self.note5.sizePolicy().hasHeightForWidth())
-        self.note5.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.note5.sizePolicy().hasHeightForWidth())
+        self.note5.setSizePolicy(sizePolicy2)
         self.note5.setMinimumSize(QSize(25, 0))
         self.note5.setCheckable(True)
 
@@ -263,8 +286,8 @@ class Ui_osc3QuantizationEditor(object):
 
         self.note6 = QPushButton(self.layoutWidget)
         self.note6.setObjectName(u"note6")
-        sizePolicy1.setHeightForWidth(self.note6.sizePolicy().hasHeightForWidth())
-        self.note6.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.note6.sizePolicy().hasHeightForWidth())
+        self.note6.setSizePolicy(sizePolicy2)
         self.note6.setMinimumSize(QSize(25, 0))
         self.note6.setCheckable(True)
 
@@ -276,8 +299,8 @@ class Ui_osc3QuantizationEditor(object):
 
         self.note8 = QPushButton(self.layoutWidget)
         self.note8.setObjectName(u"note8")
-        sizePolicy1.setHeightForWidth(self.note8.sizePolicy().hasHeightForWidth())
-        self.note8.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.note8.sizePolicy().hasHeightForWidth())
+        self.note8.setSizePolicy(sizePolicy2)
         self.note8.setMinimumSize(QSize(25, 0))
         self.note8.setCheckable(True)
 
@@ -289,8 +312,8 @@ class Ui_osc3QuantizationEditor(object):
 
         self.note10 = QPushButton(self.layoutWidget)
         self.note10.setObjectName(u"note10")
-        sizePolicy1.setHeightForWidth(self.note10.sizePolicy().hasHeightForWidth())
-        self.note10.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.note10.sizePolicy().hasHeightForWidth())
+        self.note10.setSizePolicy(sizePolicy2)
         self.note10.setMinimumSize(QSize(25, 0))
         self.note10.setCheckable(True)
 
@@ -302,8 +325,8 @@ class Ui_osc3QuantizationEditor(object):
 
         self.note12 = QPushButton(self.layoutWidget)
         self.note12.setObjectName(u"note12")
-        sizePolicy1.setHeightForWidth(self.note12.sizePolicy().hasHeightForWidth())
-        self.note12.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.note12.sizePolicy().hasHeightForWidth())
+        self.note12.setSizePolicy(sizePolicy2)
         self.note12.setMinimumSize(QSize(25, 0))
         self.note12.setCheckable(True)
 
@@ -340,11 +363,11 @@ class Ui_osc3QuantizationEditor(object):
 
         self.osc3Pitch = QSpinBox(self.layoutWidget)
         self.osc3Pitch.setObjectName(u"osc3Pitch")
-        sizePolicy2 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
-        sizePolicy2.setHorizontalStretch(0)
-        sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(self.osc3Pitch.sizePolicy().hasHeightForWidth())
-        self.osc3Pitch.setSizePolicy(sizePolicy2)
+        sizePolicy3 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.osc3Pitch.sizePolicy().hasHeightForWidth())
+        self.osc3Pitch.setSizePolicy(sizePolicy3)
         self.osc3Pitch.setMinimumSize(QSize(79, 26))
         self.osc3Pitch.setMinimum(1)
         self.osc3Pitch.setMaximum(64)
@@ -668,9 +691,10 @@ class Ui_osc3QuantizationEditor(object):
 
     def retranslateUi(self, osc3QuantizationEditor):
         osc3QuantizationEditor.setWindowTitle(QCoreApplication.translate("osc3QuantizationEditor", u"OSC3 Quantization Editor", None))
-        self.label_8.setText(QCoreApplication.translate("osc3QuantizationEditor", u"Edit Quantization Set", None))
-        self.saveResourceSet.setText(QCoreApplication.translate("osc3QuantizationEditor", u"Save Quantization Set", None))
+        self.label_8.setText(QCoreApplication.translate("osc3QuantizationEditor", u"Edit Quantization Set:", None))
+        self.saveResourceSet.setText(QCoreApplication.translate("osc3QuantizationEditor", u"Save Set", None))
         self.saveForRack.setText(QCoreApplication.translate("osc3QuantizationEditor", u"Save for VCV Rack", None))
+        self.setDescription.setText(QCoreApplication.translate("osc3QuantizationEditor", u"TextLabel", None))
         self.editChordsLabel_3.setText(QCoreApplication.translate("osc3QuantizationEditor", u"Select quantization mode:", None))
         self.slot1.setText("")
         self.slot2.setText("")

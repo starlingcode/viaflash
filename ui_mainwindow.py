@@ -199,7 +199,7 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"VIA Flash Utility", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"Viaflash", None))
         self.editResources.setText(QCoreApplication.translate("MainWindow", u"Edit Resources", None))
         self.firmwareSelectLabel.setText(QCoreApplication.translate("MainWindow", u"Select Firmware:", None))
         self.firmwareInfo.setText(QCoreApplication.translate("MainWindow", u"Tons of amazing text its so good how much text is in here", None))

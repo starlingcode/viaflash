@@ -1,16 +1,19 @@
 NEXT!!!
 
+SYNC3 ratio display list should push stuff to the top of the layout
+Indicate dirty state for resource
+
 Save for rack file should be title
-Show set description in set editor
+QSpinBox has no arrows!
+Resource descriptions (needs work in viafirmware):
+	- Gateseq
+	- OSC3
+	- Tables
 
 General app things:
-- Wrong set is passed into editor set select combobox on init
 - Some semblence of when the state of the editor is dirty
-- Check all window titles
-- Theres an issue with the UI when you close an editor
+- Theres sometimes an exception when you close an editor and select a new module, trying to stop timer from another thread?
 - Shorthand for Default resources? Should default be a metadata item?
-- All the buttons are like too big
-
 
 Table editor:
 ! Fix table flashing for modules
@@ -25,13 +28,10 @@ Table editor:
 
 SYNC3 Editor:
 - Filter open dialog for scala suffix on import to correct extension
-- Sync3 ratio display horizontal fancy buttons
-- OR! List style augmented on the left 2/3 of bottom of screen with other controls on right side
-- Fix drag and drop
+- Can we make the margins a little lower for the ratio list
 
 Main window:
-- Progress bar covers up percentage complete text (this might be fucked to fix)can you get rid of the percetnage
-- Poll for connected via (probably not but lets keep it on)
+- Poll for connected via (probably not but lets keep it on here)
 - Local firmware
 
 OSC3 Editor:
@@ -41,9 +41,7 @@ OSC3 Editor:
 - Quantization descriptions?
 - Add more quantizations to stock from the start
 
-
 GATESEQ Editor:
-- Pattern descriptions
 - Gateseq preview?
 - Gateseq editor as stack of rows with piano roll
 
@@ -51,9 +49,7 @@ Viafirmware Repo:
 - Fix Default Mode 2 title in sync3 scales in viafirmware
 - Wavetables need to get filterable tags in general including default usage
 - Wavetables need a wizard to create titles and generally edit remote resources
-- Wavetable descriptions
 - Add real titles to wavetables
-- Gateseq pattern descriptions
 
 
 
