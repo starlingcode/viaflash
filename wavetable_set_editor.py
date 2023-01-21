@@ -1,5 +1,7 @@
-from PySide6.QtWidgets import QDialog, QButtonGroup
+from PySide6.QtWidgets import QDialog, QButtonGroup, QAbstractItemView
 from PySide6.QtCore import Slot
+
+from superqt import QLabeledRangeSlider
 
 from ui_wavetable_set_editor import Ui_wavetableSetEditor
 from ui_wavetable_browser import Ui_wavetableBrowser
@@ -19,18 +21,9 @@ class WavetableBrowser(QDialog, Ui_wavetableBrowser):
         self.table_file = table_file
         self.slope_file = slope_file
         self.max_table_size = max_table_size
-        # if self.table_dict[slug]['type'] == 'slope_pair':
-        #     self.slopePair.setChecked(True)
-        #     self.selected_tags = ['slope_pair']
-        # else:
-        #     self.cycle.setChecked(True)
-        #     self.selected_tags = ['cycle']
-        self.selected_tags = ['slope_pair', 'cycle']
-        self.tableSize.setMinimum(1)
-        self.tableSize.setMaximum(33)
-        self.tableSize.setValue([1, 33])
-        self.min_size = int(1)
-        self.max_size = int(33)
+        self.selected_tags = []
+        self.init_size_select()
+        self.init_tag_list()
         self.update_filter()
         self.selectTable.setCurrentIndex(self.selectTable.findText(slug))
         self.tableSizeWarning.setText('(the first %d will be used)' % max_table_size)
@@ -40,21 +33,10 @@ class WavetableBrowser(QDialog, Ui_wavetableBrowser):
         self.tableIdxLabel.setText("1")
 
     @Slot() 
-    def on_slopePair_clicked(self):
-        self.selected_tags = ['slope_pair']
+    def updateTableSize(self, value_tuple):
+        self.min_size = int(self.tableSize.sliderPosition()[0])
+        self.max_size = int(self.tableSize.sliderPosition()[1])
         self.update_filter()
-
-    @Slot() 
-    def on_cycle_clicked(self):
-        self.selected_tags = ['cycle']
-        self.update_filter()
-
-    @Slot() 
-    def on_tableSize_valueChanged(self):
-        self.table_min = int(self.tableSize.value()[0])
-        self.table_max = int(self.tableSize.value()[1])
-        self.update_filter()
-
 
     @Slot()
     def on_selectTable_activated(self):
@@ -70,6 +52,16 @@ class WavetableBrowser(QDialog, Ui_wavetableBrowser):
         self.viz3.update_plot(self.table, self.table_idx)
         self.viz4.update_plot(self.table, self.table_idx)
 
+    @Slot()
+    def on_tagList_itemSelectionChanged(self):
+        self.selected_tags = []
+        for item in self.tagList.selectedItems():
+            self.selected_tags.append(item.text())
+        self.update_filter()
+
+    @Slot()
+    def on_clearTags_clicked(self):
+        self.tagList.clearSelection()
 
     def update_resource_ui(self):
         self.viz1.update_plot(self.table)
@@ -85,6 +77,7 @@ class WavetableBrowser(QDialog, Ui_wavetableBrowser):
 
     def init_table_dict(self, table_file, slope_file):
         self.table_dict = {}
+        self.tag_set = set()
         with open(slope_file) as infile:
             raw_slopes = json.load(infile)
         with open(table_file) as infile:
@@ -93,15 +86,28 @@ class WavetableBrowser(QDialog, Ui_wavetableBrowser):
                 self.table_dict[table] = {}
                 attack_samples = raw_slopes[raw_tables[table]['slopes'][0]]['samples']
                 self.table_dict[table]['size'] = len(attack_samples)
-                if attack_samples[0][0] == 0 and attack_samples[0][-1] == 32767:
-                    self.table_dict[table]['tags'] = 'slope_pair'
-                else:
-                    self.table_dict[table]['tags'] = 'cycle'
+                self.table_dict[table]['tags'] = []
+                for tag in raw_tables[table]['tags']:
+                    self.tag_set.add(tag)
+                    self.table_dict[table]['tags'].append(tag)
+
+    def init_size_select(self):
+        self.tableSize.setRange(1, 33)
+        self.tableSize.setValue([1, 33])
+        self.min_size = int(1)
+        self.max_size = int(33)
+        self.tableSize.valueChanged.connect(self.updateTableSize)
+
+    def init_tag_list(self):
+        for tag in self.tag_set:
+            self.tagList.addItem(tag)
+            self.selected_tags.append(tag)
+        self.tagList.setSelectionMode(QAbstractItemView.MultiSelection)
+
                 
     def update_filter(self):
         self.selectTable.clear()
         valid_tables = set()
-        print("Updating filter")
         for table, properties in self.table_dict.items():
             if properties['size'] >= self.min_size and properties['size'] <= self.max_size:
                 for tag in self.selected_tags:
