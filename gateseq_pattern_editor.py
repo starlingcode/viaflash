@@ -56,9 +56,11 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
 # Pattern recipe dispaly helpers
 
     def create_pattern_grid(self):
+        self.sequence_editors = []
         for i in range(0, 16):
-            self.sequenceEditTest = GateseqSequenceEdit()
-            self.sequenceEditLayout.addWidget(self.sequenceEditTest)
+            seq_edit = GateseqSequenceEdit()
+            self.sequence_editors.append(seq_edit)
+            self.sequenceEditLayout.addWidget(seq_edit)
 
         self.sequenceEditLayout.setContentsMargins(0,0,0,0)
 
@@ -81,10 +83,15 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
         self.resourceDescription.setText(self.set.resources[self.active_idx].data['description'])
         sequences = self.set.resources[self.active_idx].data['data']
         idx = -1
-        # for idx, sequence in enumerate(sequences):
-        #     self.sequence_buttons[idx].show()
-        #     #TODO display non euclidean recipes
-        #     self.sequence_buttons[idx].setText('%s/%s' % (sequence[0], sequence[1]))
-        # for i in range(idx+1, 16):
-        #     self.sequence_buttons[i].hide()
+        for idx, sequence in enumerate(sequences):
+            for button in self.sequence_editors[idx].step_buttons:
+                button.setChecked(False)
+            self.sequence_editors[idx].show()
+            self.sequence_editors[idx].label.setText('%s/%s' % (sequence[0], sequence[1]))
+            baked = self.set.resources[self.active_idx].expand_sequence(sequence)
+            for i in range(0,64):
+                if baked[i % len(baked)] == 1:
+                    self.sequence_editors[idx].step_buttons[i].setChecked(True)
+        for i in range(idx+1, 16):
+            self.sequence_buttons[i].hide()
 

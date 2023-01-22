@@ -1,4 +1,4 @@
-QRadioButton, QComboBox, QPushButton, QSpinBox {
+QRadioButton, QComboBox, QPushButton, QSpinBox, QSpinBox::up-button, QSpinBox::down-button {
     color: white;
     background-color: #111111;
     border-radius: 3px;
@@ -26,11 +26,12 @@ QComboBox QAbstractItemView {
     border: 1px solid #555555;
 }
 
-QRadioButton {
+QSpinBox::up-arrow{
+    image: url(ui_resources/uparrow.png);
 }
 
-QPushButton {
-
+QSpinBox::down-arrow{
+    image: url(ui_resources/downarrow.png);
 }
 
 QPushButton:checked {
