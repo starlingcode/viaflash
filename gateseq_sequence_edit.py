@@ -12,7 +12,6 @@ class GateseqStepButton(QPushButton):
 		self.setMaximumSize(button_size)
 		self.setCheckable(True)
 
-
 class GateseqSequenceEdit(QWidget):
 
 	def __init__(self):

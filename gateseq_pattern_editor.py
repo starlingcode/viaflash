@@ -92,6 +92,9 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
             for i in range(0,64):
                 if baked[i % len(baked)] == 1:
                     self.sequence_editors[idx].step_buttons[i].setChecked(True)
+                self.sequence_editors[idx].step_buttons[i].setEnabled(True)
+            for i in range(len(baked), 64):
+                self.sequence_editors[idx].step_buttons[i].setEnabled(False)
         for i in range(idx+1, 16):
             self.sequence_buttons[i].hide()
 

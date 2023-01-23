@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QDialog, QButtonGroup, QAbstractItemView
-from PySide6.QtCore import Slot
+from PySide6.QtCore import Slot, Qt
 
 from superqt import QLabeledRangeSlider
 
@@ -25,12 +25,13 @@ class WavetableBrowser(QDialog, Ui_wavetableBrowser):
         self.init_size_select()
         self.init_tag_list()
         self.update_filter()
-        self.selectTable.setCurrentIndex(self.selectTable.findText(slug))
-        self.tableSizeWarning.setText('(the first %d will be used)' % max_table_size)
         self.table = Wavetable(self.table_file, slug, self.slope_file, max_table_size)
         self.tableIdx.setMaximum(len(self.table.expand()) - 1)
         self.init_viz(self.table)
         self.tableIdxLabel.setText("1")
+        self.tableList.setCurrentItem(self.tableList.findItems(slug, Qt.MatchExactly)[0])
+        # self.tableList.horizontalScrollBar.setEnabled(False)
+        self.tableSizeWarning.setText('(the first %d will be used)' % max_table_size)
 
     @Slot() 
     def updateTableSize(self, value_tuple):
@@ -39,8 +40,9 @@ class WavetableBrowser(QDialog, Ui_wavetableBrowser):
         self.update_filter()
 
     @Slot()
-    def on_selectTable_activated(self):
-        self.table = Wavetable(self.table_file, self.selectTable.currentText(), self.slope_file, self.max_table_size)
+    def on_tableList_itemSelectionChanged(self):
+        #TODO title to slug
+        self.table = Wavetable(self.table_file, self.tableList.currentItem().text(), self.slope_file, self.max_table_size)
         self.table_idx = self.tableIdx.value()
         self.tableIdx.setMaximum(len(self.table.expand()) - 1)
         self.update_resource_ui()
@@ -62,6 +64,20 @@ class WavetableBrowser(QDialog, Ui_wavetableBrowser):
     @Slot()
     def on_clearTags_clicked(self):
         self.tagList.clearSelection()
+        self.select_mode = 'or'
+        self.orButton.setChecked(True)
+        for tag in self.tag_set:
+            self.selected_tags.append(tag)
+
+    @Slot()
+    def on_orButton_clicked(self):
+        self.select_mode = 'or'
+        self.update_filter()
+
+    @Slot()
+    def on_andButton_clicked(self):
+        self.select_mode = 'and'
+        self.update_filter()
 
     def update_resource_ui(self):
         self.viz1.update_plot(self.table)
@@ -103,19 +119,28 @@ class WavetableBrowser(QDialog, Ui_wavetableBrowser):
             self.tagList.addItem(tag)
             self.selected_tags.append(tag)
         self.tagList.setSelectionMode(QAbstractItemView.MultiSelection)
+        self.select_mode = 'or'
+        self.orButton.setChecked(True)
 
                 
     def update_filter(self):
-        self.selectTable.clear()
+        self.tableList.clear()
         valid_tables = set()
         for table, properties in self.table_dict.items():
             if properties['size'] >= self.min_size and properties['size'] <= self.max_size:
-                for tag in self.selected_tags:
-                    if tag in properties['tags']:
+                if self.select_mode == 'or':
+                    for tag in self.selected_tags:
+                        if tag in properties['tags']:
+                            valid_tables.add(table)
+                elif self.select_mode == 'and':
+                    is_ok = True
+                    for tag in self.selected_tags:
+                        if tag not in properties['tags']:
+                            is_ok = False
+                    if is_ok:
                         valid_tables.add(table)
-
         for table in valid_tables:
-            self.selectTable.insertItem(-1, table)
+            self.tableList.addItem(table)
 
 
 class WavetableEditor(ViaResourceEditor):
@@ -221,7 +246,7 @@ class WavetableEditor(ViaResourceEditor):
 
     # TODO figure this out with like title and slug logic
     def swap_table(self):
-        slug = self.browser.selectTable.currentText()
+        slug = self.browser.tableList.currentItem().text()
         self.set.replace_resource(slug, self.active_idx)
         self.switch_slot(self.active_idx)
         self.browser.accept()

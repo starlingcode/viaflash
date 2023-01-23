@@ -81,3 +81,16 @@ Slot8Button {
     background-image: url(ui_resources/viamode8.png);
     background-position: center; 
 }
+
+GateseqStepButton:checked {
+    background-color: #cccccc;
+}
+
+GateseqStepButton:disabled {
+    background-color: #333333;
+}
+
+GateseqStepButton:disabled:checked {
+    background-color: #666666;
+}
+

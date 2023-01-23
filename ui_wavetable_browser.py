@@ -15,10 +15,10 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QComboBox, QDialog, QHBoxLayout,
+from PySide6.QtWidgets import (QApplication, QButtonGroup, QDialog, QHBoxLayout,
     QLabel, QListWidget, QListWidgetItem, QPushButton,
-    QSizePolicy, QSlider, QSpacerItem, QVBoxLayout,
-    QWidget)
+    QRadioButton, QSizePolicy, QSlider, QSpacerItem,
+    QVBoxLayout, QWidget)
 
 from superqt import QLabeledRangeSlider
 from wavetable_viz_panel import WavetableVizPanel
@@ -27,66 +27,29 @@ class Ui_wavetableBrowser(object):
     def setupUi(self, wavetableBrowser):
         if not wavetableBrowser.objectName():
             wavetableBrowser.setObjectName(u"wavetableBrowser")
-        wavetableBrowser.resize(800, 625)
-        wavetableBrowser.setMinimumSize(QSize(800, 625))
-        wavetableBrowser.setMaximumSize(QSize(800, 625))
+        wavetableBrowser.resize(970, 616)
+        wavetableBrowser.setMinimumSize(QSize(0, 0))
+        wavetableBrowser.setMaximumSize(QSize(10000, 10000))
         self.layoutWidget = QWidget(wavetableBrowser)
         self.layoutWidget.setObjectName(u"layoutWidget")
-        self.layoutWidget.setGeometry(QRect(10, 10, 161, 601))
+        self.layoutWidget.setGeometry(QRect(160, 10, 191, 601))
         self.verticalLayout = QVBoxLayout(self.layoutWidget)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
-        self.label_3 = QLabel(self.layoutWidget)
-        self.label_3.setObjectName(u"label_3")
+        self.label_2 = QLabel(self.layoutWidget)
+        self.label_2.setObjectName(u"label_2")
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_3.sizePolicy().hasHeightForWidth())
-        self.label_3.setSizePolicy(sizePolicy)
-
-        self.verticalLayout.addWidget(self.label_3)
-
-        self.tagList = QListWidget(self.layoutWidget)
-        self.tagList.setObjectName(u"tagList")
-
-        self.verticalLayout.addWidget(self.tagList)
-
-        self.clearTags = QPushButton(self.layoutWidget)
-        self.clearTags.setObjectName(u"clearTags")
-
-        self.verticalLayout.addWidget(self.clearTags)
-
-        self.label = QLabel(self.layoutWidget)
-        self.label.setObjectName(u"label")
-        sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
-        self.label.setSizePolicy(sizePolicy)
-
-        self.verticalLayout.addWidget(self.label)
-
-        self.tableSize = QLabeledRangeSlider(self.layoutWidget)
-        self.tableSize.setObjectName(u"tableSize")
-        self.tableSize.setOrientation(Qt.Horizontal)
-
-        self.verticalLayout.addWidget(self.tableSize)
-
-        self.tableSizeWarning = QLabel(self.layoutWidget)
-        self.tableSizeWarning.setObjectName(u"tableSizeWarning")
-        sizePolicy.setHeightForWidth(self.tableSizeWarning.sizePolicy().hasHeightForWidth())
-        self.tableSizeWarning.setSizePolicy(sizePolicy)
-
-        self.verticalLayout.addWidget(self.tableSizeWarning)
-
-        self.label_2 = QLabel(self.layoutWidget)
-        self.label_2.setObjectName(u"label_2")
         sizePolicy.setHeightForWidth(self.label_2.sizePolicy().hasHeightForWidth())
         self.label_2.setSizePolicy(sizePolicy)
 
         self.verticalLayout.addWidget(self.label_2)
 
-        self.selectTable = QComboBox(self.layoutWidget)
-        self.selectTable.setObjectName(u"selectTable")
+        self.tableList = QListWidget(self.layoutWidget)
+        self.tableList.setObjectName(u"tableList")
 
-        self.verticalLayout.addWidget(self.selectTable)
+        self.verticalLayout.addWidget(self.tableList)
 
         self.swapTable = QPushButton(self.layoutWidget)
         self.swapTable.setObjectName(u"swapTable")
@@ -100,7 +63,7 @@ class Ui_wavetableBrowser(object):
 
         self.layoutWidgetNO = QWidget(wavetableBrowser)
         self.layoutWidgetNO.setObjectName(u"layoutWidgetNO")
-        self.layoutWidgetNO.setGeometry(QRect(181, 11, 611, 600))
+        self.layoutWidgetNO.setGeometry(QRect(350, 10, 611, 600))
         self.tableViz_2 = QVBoxLayout(self.layoutWidgetNO)
         self.tableViz_2.setObjectName(u"tableViz_2")
         self.tableViz_2.setContentsMargins(0, 0, 0, 0)
@@ -193,6 +156,73 @@ class Ui_wavetableBrowser(object):
 
         self.tableViz_2.addLayout(self.bottomViz)
 
+        self.layoutWidget_2 = QWidget(wavetableBrowser)
+        self.layoutWidget_2.setObjectName(u"layoutWidget_2")
+        self.layoutWidget_2.setGeometry(QRect(10, 10, 151, 601))
+        self.verticalLayout_3 = QVBoxLayout(self.layoutWidget_2)
+        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
+        self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
+        self.label_8 = QLabel(self.layoutWidget_2)
+        self.label_8.setObjectName(u"label_8")
+        sizePolicy.setHeightForWidth(self.label_8.sizePolicy().hasHeightForWidth())
+        self.label_8.setSizePolicy(sizePolicy)
+
+        self.verticalLayout_3.addWidget(self.label_8)
+
+        self.tagList = QListWidget(self.layoutWidget_2)
+        self.tagList.setObjectName(u"tagList")
+
+        self.verticalLayout_3.addWidget(self.tagList)
+
+        self.label = QLabel(self.layoutWidget_2)
+        self.label.setObjectName(u"label")
+
+        self.verticalLayout_3.addWidget(self.label)
+
+        self.horizontalLayout = QHBoxLayout()
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.orButton = QRadioButton(self.layoutWidget_2)
+        self.buttonGroup = QButtonGroup(wavetableBrowser)
+        self.buttonGroup.setObjectName(u"buttonGroup")
+        self.buttonGroup.addButton(self.orButton)
+        self.orButton.setObjectName(u"orButton")
+
+        self.horizontalLayout.addWidget(self.orButton)
+
+        self.andButton = QRadioButton(self.layoutWidget_2)
+        self.buttonGroup.addButton(self.andButton)
+        self.andButton.setObjectName(u"andButton")
+
+        self.horizontalLayout.addWidget(self.andButton)
+
+
+        self.verticalLayout_3.addLayout(self.horizontalLayout)
+
+        self.clearTags = QPushButton(self.layoutWidget_2)
+        self.clearTags.setObjectName(u"clearTags")
+
+        self.verticalLayout_3.addWidget(self.clearTags)
+
+        self.label_9 = QLabel(self.layoutWidget_2)
+        self.label_9.setObjectName(u"label_9")
+        sizePolicy.setHeightForWidth(self.label_9.sizePolicy().hasHeightForWidth())
+        self.label_9.setSizePolicy(sizePolicy)
+
+        self.verticalLayout_3.addWidget(self.label_9)
+
+        self.tableSize = QLabeledRangeSlider(self.layoutWidget_2)
+        self.tableSize.setObjectName(u"tableSize")
+        self.tableSize.setOrientation(Qt.Horizontal)
+
+        self.verticalLayout_3.addWidget(self.tableSize)
+
+        self.tableSizeWarning = QLabel(self.layoutWidget_2)
+        self.tableSizeWarning.setObjectName(u"tableSizeWarning")
+        sizePolicy.setHeightForWidth(self.tableSizeWarning.sizePolicy().hasHeightForWidth())
+        self.tableSizeWarning.setSizePolicy(sizePolicy)
+
+        self.verticalLayout_3.addWidget(self.tableSizeWarning)
+
 
         self.retranslateUi(wavetableBrowser)
 
@@ -201,14 +231,17 @@ class Ui_wavetableBrowser(object):
 
     def retranslateUi(self, wavetableBrowser):
         wavetableBrowser.setWindowTitle(QCoreApplication.translate("wavetableBrowser", u"Wavetable Browser", None))
-        self.label_3.setText(QCoreApplication.translate("wavetableBrowser", u"Filter by Tag:", None))
-        self.clearTags.setText(QCoreApplication.translate("wavetableBrowser", u"Clear Tag Filter", None))
-        self.label.setText(QCoreApplication.translate("wavetableBrowser", u"Numer of Waveforms:", None))
-        self.tableSizeWarning.setText(QCoreApplication.translate("wavetableBrowser", u"(the first N will be used)", None))
         self.label_2.setText(QCoreApplication.translate("wavetableBrowser", u"Select Table:", None))
         self.swapTable.setText(QCoreApplication.translate("wavetableBrowser", u"Select", None))
         self.close.setText(QCoreApplication.translate("wavetableBrowser", u"Cancel", None))
         self.label_4.setText(QCoreApplication.translate("wavetableBrowser", u"Table Index:", None))
         self.tableIdxLabel.setText(QCoreApplication.translate("wavetableBrowser", u"0", None))
+        self.label_8.setText(QCoreApplication.translate("wavetableBrowser", u"Filter by Tag:", None))
+        self.label.setText(QCoreApplication.translate("wavetableBrowser", u"Tag combination mode:", None))
+        self.orButton.setText(QCoreApplication.translate("wavetableBrowser", u"Or", None))
+        self.andButton.setText(QCoreApplication.translate("wavetableBrowser", u"And", None))
+        self.clearTags.setText(QCoreApplication.translate("wavetableBrowser", u"Clear Tag Filter", None))
+        self.label_9.setText(QCoreApplication.translate("wavetableBrowser", u"Numer of Waveforms:", None))
+        self.tableSizeWarning.setText(QCoreApplication.translate("wavetableBrowser", u"(the first N will be used)", None))
     # retranslateUi
 

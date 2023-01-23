@@ -102,7 +102,8 @@ class WavetableVizPanel(QWidget):
     def __init__(self, parent):
         super(WavetableVizPanel, self).__init__(parent)
         self.layout = QVBoxLayout(self)
-        self.viz_methods = {'3dfft': '3d', 'contour': '3d', 'wireframe': '3d', 'waveform': '2d', 'fft': '2d'}    
+        self.viz_methods = {'3dfft': '3d', 'contour': '3d', 'wireframe': '3d', 'waveform': '2d', 'fft': '2d'}
+        self.is2d = False    
     
     def init_viz(self, method, table):
         self.d2viz = None
