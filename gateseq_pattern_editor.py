@@ -59,24 +59,30 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
         self.sequence_editors = []
         for i in range(0, 16):
             seq_edit = GateseqSequenceEdit()
+            seq_edit.remove.clicked.connect(lambda state=True, x=i: self.remove_button_pushed(x))
+            for j in range(0, 64):
+                seq_edit.step_buttons[j].clicked.connect(lambda state=True, x=i, y=j : self.step_button_pushed(x, y))
+            # seq_edit.length_entry.valueChanged.connect(lambda state=True, x=i : self.update_sequence_length(x))
             self.sequence_editors.append(seq_edit)
             self.sequenceEditLayout.addWidget(seq_edit)
 
-        self.sequenceEditLayout.setContentsMargins(0,0,0,0)
-
-
-        # self.sequence_buttons = [ \
-        #     self.sequence1, self.sequence2, self.sequence3, self.sequence4,\
-        #     self.sequence5, self.sequence6, self.sequence7, self.sequence8,\
-        #     self.sequence9, self.sequence10, self.sequence11, self.sequence12,\
-        #     self.sequence13, self.sequence14, self.sequence15, self.sequence16,\
-        # ]
-        # for idx, button in enumerate(self.sequence_buttons):
-        #     button.clicked.connect(lambda state=True, x=idx: self.seed_button_pushed(x))
+        self.sequenceEditLayout.setContentsMargins(0,0,0,0)            
         self.update_resource_ui()
 
-    def seed_button_pushed(self, idx):
+    def remove_button_pushed(self, idx):
         self.set.resources[self.active_idx].remove_data(idx)
+        self.update_resource_ui()
+
+    def step_button_pushed(self, seq_idx, step_idx):
+        if self.sequence_editors[seq_idx].step_buttons[step_idx].isChecked():
+            self.set.resources[self.active_idx].update_step(seq_idx, step_idx, True)
+        else:
+            self.set.resources[self.active_idx].update_step(seq_idx, step_idx, False)
+        self.update_resource_ui()
+
+    def update_sequence_length(self, seq_idx):
+        length = self.sequence_editors[seq_idx].length_entry.value()
+        self.set.resources[self.active_idx].update_length(seq_idx, length)
         self.update_resource_ui()
 
     def update_resource_ui(self):
@@ -95,6 +101,7 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
                 self.sequence_editors[idx].step_buttons[i].setEnabled(True)
             for i in range(len(baked), 64):
                 self.sequence_editors[idx].step_buttons[i].setEnabled(False)
+            self.sequence_editors[idx].length_entry.setValue(len(baked))
         for i in range(idx+1, 16):
-            self.sequence_buttons[i].hide()
+            self.sequence_editors[i].hide()
 
