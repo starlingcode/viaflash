@@ -150,7 +150,7 @@ class RemoveRatioCommand(QUndoCommand):
 
 
     def undo(self):
-        self.idx = self.scale.add_data(self.ratio)
+        self.idx = self.scale.add_data(self.ratio, self.idx)
         self.ui_callback()
 
 

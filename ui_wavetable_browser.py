@@ -158,7 +158,7 @@ class Ui_wavetableBrowser(object):
 
         self.layoutWidget_2 = QWidget(wavetableBrowser)
         self.layoutWidget_2.setObjectName(u"layoutWidget_2")
-        self.layoutWidget_2.setGeometry(QRect(10, 10, 151, 601))
+        self.layoutWidget_2.setGeometry(QRect(10, 10, 141, 601))
         self.verticalLayout_3 = QVBoxLayout(self.layoutWidget_2)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
@@ -237,11 +237,11 @@ class Ui_wavetableBrowser(object):
         self.label_4.setText(QCoreApplication.translate("wavetableBrowser", u"Table Index:", None))
         self.tableIdxLabel.setText(QCoreApplication.translate("wavetableBrowser", u"0", None))
         self.label_8.setText(QCoreApplication.translate("wavetableBrowser", u"Filter by Tag:", None))
-        self.label.setText(QCoreApplication.translate("wavetableBrowser", u"Tag combination mode:", None))
+        self.label.setText(QCoreApplication.translate("wavetableBrowser", u"Tag combine mode:", None))
         self.orButton.setText(QCoreApplication.translate("wavetableBrowser", u"Or", None))
         self.andButton.setText(QCoreApplication.translate("wavetableBrowser", u"And", None))
         self.clearTags.setText(QCoreApplication.translate("wavetableBrowser", u"Clear Tag Filter", None))
         self.label_9.setText(QCoreApplication.translate("wavetableBrowser", u"Numer of Waveforms:", None))
-        self.tableSizeWarning.setText(QCoreApplication.translate("wavetableBrowser", u"(the first N will be used)", None))
+        self.tableSizeWarning.setText(QCoreApplication.translate("wavetableBrowser", u"(first N will be used)", None))
     # retranslateUi
 

@@ -283,7 +283,7 @@ class Ui_sync3ScaleEditor(object):
 
         self.horizontalLayout.addWidget(self.label)
 
-        self.horizontalSpacer = QSpacerItem(20, 20, QSizePolicy.Fixed, QSizePolicy.Minimum)
+        self.horizontalSpacer = QSpacerItem(10, 20, QSizePolicy.Fixed, QSizePolicy.Minimum)
 
         self.horizontalLayout.addItem(self.horizontalSpacer)
 
