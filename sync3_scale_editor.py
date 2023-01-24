@@ -56,7 +56,7 @@ class RatioButton(QWidget):
         self.semitones = QLabel()
         self.semitones.setAlignment(Qt.AlignHCenter)
         self.layout = QHBoxLayout(self)
-        policy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum)
+        policy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
         self.button.setSizePolicy(policy)
         self.decimal.setSizePolicy(policy)
         self.semitones.setSizePolicy(policy)
@@ -65,7 +65,9 @@ class RatioButton(QWidget):
         self.layout.addWidget(self.semitones)
         self.idx = 0
         self.parent_window = parent_window
-        self.setContentsMargins(0, 0, 0, 0)
+        self.layout.setContentsMargins(0, 0, 0, 0)
+        self.setSizePolicy(policy)
+        # self.layout.setSpacing(0)
 
 
     def mouseMoveEvent(self, e):
@@ -505,8 +507,6 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
         self.seed_ratio_buttons = []
         self.seedRatioHolder = QWidget()
         self.seedRatioGrid = QVBoxLayout()
-        self.seedRatioGrid.setSpacing(0)
-        self.seedRatioGrid.setContentsMargins(0,0,0,0)
 
         num_tables = 32
         for row in range(0, num_tables):
@@ -516,6 +516,11 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
             new_button.idx = idx
             self.seed_ratio_buttons.append(new_button)
             self.seedRatioGrid.addWidget(new_button, row)
+
+        self.seedRatioGrid.insertStretch(-1)
+
+        self.seedRatioGrid.setSpacing(0)
+        # self.seedRatioGrid.setContentsMargins(0,0,0,0)
 
         self.seedRatioHolder.setLayout(self.seedRatioGrid)
         self.seedScrollArea.setWidget(self.seedRatioHolder)

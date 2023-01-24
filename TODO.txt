@@ -2,8 +2,6 @@ NEXT!!!
 
 GATESEQ Editor:
 - Make pad to fill implicit
-- Wake up the pattern length combo box
-- Re-sort after edit to start
 - Adjustable steps per ruler line?
 - Enumerate sequence slots with a leftmost column even when empty?
 - Sorted unsorted (maybe do this when you are figuring out the sorting for osc3 and sync3 so there is a consistent drag and drop control scheme)?
@@ -32,8 +30,6 @@ Table editor:
 (Reach) Scanner preview
 
 SYNC3 Editor:
-- SYNC3 ratio display list should push stuff to the top of the layout
-- Can we make the margins a little lower for the ratio list
 - Filter open dialog for scala suffix on import to correct extension
 
 Main window:
