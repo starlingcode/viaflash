@@ -59,7 +59,7 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
             seq_edit.remove.clicked.connect(lambda state=True, x=i: self.remove_button_pushed(x))
             for j in range(0, 64):
                 seq_edit.step_buttons[j].clicked.connect(lambda state=True, x=i, y=j : self.step_button_pushed(x, y))
-            # seq_edit.length_entry.valueChanged.connect(lambda state=True, x=i : self.update_sequence_length(x))
+            seq_edit.length_entry.valueChanged.connect(lambda state=True, x=i : self.update_sequence_length(x))
             self.sequence_editors.append(seq_edit)
             self.sequenceEditLayout.addWidget(seq_edit)
 
@@ -78,11 +78,14 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
         self.update_resource_ui()
 
     def update_sequence_length(self, seq_idx):
+        # Stopping an infinte loop ... ewwwwiiieeee!
+        old_length = self.set.resources[self.active_idx].get_length(seq_idx)
         length = self.sequence_editors[seq_idx].length_entry.value()
-        self.set.resources[self.active_idx].update_length(seq_idx, length)
-        self.update_resource_ui()
+        if old_length != length:
+            self.set.resources[self.active_idx].update_length(seq_idx, length)
+            self.update_resource_ui()
 
-    def update_resource_ui(self):
+    def update_resource_ui(self, do_length=True):
         self.resourceDescription.setText(self.set.resources[self.active_idx].data['description'])
         sequences = self.set.resources[self.active_idx].data['data']
         idx = -1
