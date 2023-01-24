@@ -40,12 +40,9 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
 
     @Slot()
     def on_addEuclidean_clicked(self):
-        if (len(self.set.resources[self.active_idx].data['data']) < 16):
-            self.set.resources[self.active_idx].add_data([self.steps.value(), self.length.value()])
-            self.update_resource_ui()
-            self.unsaved_changes = True
-        else:
-            QMessageBox(title='Pattern full', text='Click a sequence to remove it.')
+        self.set.resources[self.active_idx].add_data([self.steps.value(), self.length.value()])
+        self.update_resource_ui()
+        self.unsaved_changes = True
 
     @Slot()
     def on_clearSequences_clicked(self):
@@ -93,7 +90,8 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
             for button in self.sequence_editors[idx].step_buttons:
                 button.setChecked(False)
             self.sequence_editors[idx].show()
-            self.sequence_editors[idx].label.setText('%s/%s' % (sequence[0], sequence[1]))
+            seq_text_tag = self.set.resources[self.active_idx].get_name(idx)
+            self.sequence_editors[idx].label.setText(seq_text_tag)
             baked = self.set.resources[self.active_idx].expand_sequence(sequence)
             for i in range(0,64):
                 if baked[i % len(baked)] == 1:
@@ -104,4 +102,8 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
             self.sequence_editors[idx].length_entry.setValue(len(baked))
         for i in range(idx+1, 16):
             self.sequence_editors[i].hide()
+        if len(sequences) < 16:
+            self.addEuclidean.setEnabled(True)
+        else:
+            self.addEuclidean.setEnabled(False)
 
