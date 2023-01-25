@@ -1,6 +1,7 @@
 NEXT!!!
 
-FIX SYNC3 AND OSC3 UNDO FOR REMOVE WITH UNSORTED, NEEDS TO ADD TO THE CORRECT INDEX!
+Add an edit menu to hint at undo/redo options
+Why does undo not work for the first note that I remove from an osc3 scale but then works once I remove a chord???
 
 GATESEQ Editor:
 - Make pad to fill implicit

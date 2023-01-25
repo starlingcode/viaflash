@@ -68,7 +68,7 @@ class ChordButton(QWidget):
 
 class AddNoteCommand(QUndoCommand):
     
-    def __init__(self, chord_set, pitch1, pitch2, ui_callback):
+    def __init__(self, chord_set, note, ui_callback):
         super().__init__()
         #self.setText('Add %d/%d' % (numerator, denominator))
         self.chord_set = chord_set
@@ -137,7 +137,7 @@ class RemoveChordCommand(QUndoCommand):
 
 
     def undo(self):
-        self.idx = self.chord_set.add_chord(self.chord)
+        self.chord_set.add_chord(self.chord, self.idx)
         self.ui_callback()
 
 
@@ -322,7 +322,7 @@ class Osc3QuantizationEditor(ViaResourceEditor, Ui_osc3QuantizationEditor):
         return note_set
 
     def handle_drop(self, destination_idx):
-        reorder = ReorderScaleCommand(self.set.resources[self.active_idx], self.dragged_idx, destination_idx, self.update_resource_ui)
+        reorder = ReorderChordsCommand(self.set.resources[self.active_idx], self.dragged_idx, destination_idx, self.update_resource_ui)
         self.resource_undo_stack.push(reorder)
 
     def create_undo_stack(self):
@@ -333,8 +333,4 @@ class Osc3QuantizationEditor(ViaResourceEditor, Ui_osc3QuantizationEditor):
         self.redo_action.setShortcuts(QKeySequence.Redo)
         self.addAction(self.undo_action)
         self.addAction(self.redo_action)
-
-    def handle_drop(self, destination_idx):
-        reorder = ReorderChordsCommand(self.set.resources[self.active_idx], self.dragged_idx, destination_idx, self.update_resource_ui)
-        self.resource_undo_stack.push(reorder)
 

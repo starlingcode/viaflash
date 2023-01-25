@@ -1,5 +1,6 @@
 from PySide6.QtWidgets import QDialog, QInputDialog, QMessageBox, QFileDialog
 from PySide6.QtCore import Slot, Qt
+from PySide6.QtGui import QUndoStack, QKeySequence
 
 class ViaResourceEditor(QDialog):
     def __init__(self):

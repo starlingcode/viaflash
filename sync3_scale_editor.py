@@ -150,7 +150,7 @@ class RemoveRatioCommand(QUndoCommand):
 
 
     def undo(self):
-        self.idx = self.scale.add_data(self.ratio, self.idx)
+        self.scale.add_data(self.ratio, self.idx)
         self.ui_callback()
 
 
@@ -494,15 +494,6 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
         reduced_ratio[1] = int(ratio[1]/gcd)
         return reduced_ratio
 
-    def create_undo_stack(self):
-        self.resource_undo_stack = QUndoStack()
-        self.undo_action = self.resource_undo_stack.createUndoAction(self, "Undo")
-        self.undo_action.setShortcuts(QKeySequence.Undo)
-        self.redo_action = self.resource_undo_stack.createRedoAction(self, "Redo")
-        self.redo_action.setShortcuts(QKeySequence.Redo)
-        self.addAction(self.undo_action)
-        self.addAction(self.redo_action)
-
     def create_seed_ratio_grid(self):
         self.seed_ratio_buttons = []
         self.seedRatioHolder = QWidget()
@@ -524,6 +515,15 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
 
         self.seedRatioHolder.setLayout(self.seedRatioGrid)
         self.seedScrollArea.setWidget(self.seedRatioHolder)
+
+    def create_undo_stack(self):
+        self.resource_undo_stack = QUndoStack()
+        self.undo_action = self.resource_undo_stack.createUndoAction(self, "Undo")
+        self.undo_action.setShortcuts(QKeySequence.Undo)
+        self.redo_action = self.resource_undo_stack.createRedoAction(self, "Redo")
+        self.redo_action.setShortcuts(QKeySequence.Redo)
+        self.addAction(self.undo_action)
+        self.addAction(self.redo_action)
 
 
 

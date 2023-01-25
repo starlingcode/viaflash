@@ -1,11 +1,119 @@
 from PySide6.QtWidgets import QInputDialog, QMessageBox, QPushButton
 from PySide6.QtCore import Slot
+from PySide6.QtGui import QUndoCommand
 
 from ui_gateseq_pattern_editor import Ui_gateseqPatternEditor
 from viatools.gateseq_patterns import GateseqPatternSet
 from via_resource_editor import ViaResourceEditor
 
 from gateseq_sequence_edit import GateseqSequenceEdit
+
+
+class AddRecipeCommand(QUndoCommand):
+    
+    def __init__(self, pattern, recipe, ui_callback):
+        super().__init__()
+        # self.setText('Add %d/%d' % (numerator, denominator))
+        self.pattern = pattern
+        self.recipe = recipe
+        self.ui_callback = ui_callback
+        self.old_fill = None
+
+    def redo(self):
+        self.idx = self.pattern.add_data(self.recipe)
+        self.ui_callback()
+
+    def undo(self):
+        self.pattern.remove_data(self.idx)
+        self.ui_callback()
+
+
+class ClearRecipesCommand(QUndoCommand):
+
+    def __init__(self, pattern, ui_callback):
+        super().__init__()
+        # self.setText('Remove index %d' % (idx))
+        self.pattern = pattern
+        self.ui_callback = ui_callback
+
+
+    def redo(self):
+        self.old_order = self.pattern.clear_data()
+        self.ui_callback()
+
+
+    def undo(self):
+        self.pattern.reload_data(self.old_order)
+        self.ui_callback()
+
+
+class RemoveRecipeCommand(QUndoCommand):
+
+    def __init__(self, pattern, idx, ui_callback):
+        super().__init__()
+        # self.setText('Remove index %d' % (idx))
+        self.pattern = pattern
+        self.idx = idx
+        self.ui_callback = ui_callback
+
+
+    def redo(self):
+        self.ratio = self.pattern.remove_data(self.idx)
+        self.ui_callback()
+
+
+    def undo(self):
+        self.pattern.add_data(self.ratio, self.idx)
+        self.ui_callback()
+
+
+class UpdateStepCommand(QUndoCommand):
+
+    def __init__(self, pattern, seq_idx, step_idx, state, ui_callback):
+        super().__init__()
+        # self.setText('Remove index %d' % (idx))
+        self.pattern = pattern
+        self.seq_idx = seq_idx
+        self.step_idx = step_idx
+        self.state = state
+        self.ui_callback = ui_callback
+
+
+    def redo(self):
+        self.backup = self.pattern.get_recipe(self.seq_idx)
+        print(self.backup)
+        self.new_idx = self.pattern.update_step(self.seq_idx, self.step_idx, self.state)
+        print(self.new_idx)
+        self.ui_callback()
+
+
+    def undo(self):
+        print("OHKAY IM RELOADED")
+        self.pattern.reload_recipe(self.new_idx, self.backup)
+        self.ui_callback()
+
+
+class UpdateLengthCommand(QUndoCommand):
+
+    def __init__(self, pattern, idx, length, ui_callback):
+        super().__init__()
+        # self.setText('Remove index %d' % (idx))
+        self.pattern = pattern
+        self.idx = idx
+        self.length = length
+        self.ui_callback = ui_callback
+
+
+    def redo(self):
+        self.backup = self.pattern.get_recipe(self.idx)
+        self.new_idx = self.pattern.update_length(self.idx, self.length)
+        self.ui_callback()
+
+
+    def undo(self):
+        self.pattern.reload_recipe(self.new_idx, self.backup)
+        self.ui_callback()
+
 
 class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
     def __init__(self, resource_dir='./', remote_resources = {}, slug='original', style_text=""):
@@ -32,6 +140,8 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
         self.slot1.setChecked(True)
         self.switch_slot(0)
 
+        self.create_undo_stack()
+
 # Edit pattern recipe
 
     @Slot()
@@ -40,15 +150,13 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
 
     @Slot()
     def on_addEuclidean_clicked(self):
-        self.set.resources[self.active_idx].add_data([self.steps.value(), self.length.value()])
-        self.update_resource_ui()
-        self.unsaved_changes = True
+        add_recipe = AddRecipeCommand(self.set.resources[self.active_idx], [self.steps.value(), self.length.value()], self.update_resource_ui)
+        self.resource_undo_stack.push(add_recipe)
 
     @Slot()
     def on_clearSequences_clicked(self):
-        if QMessageBox.question(self, 'Clear Sequences', 'Clear all sequences?') == QMessageBox.Yes: 
-            self.set.resources[self.active_idx].data['data'] = []
-            self.update_resource_ui()
+        clear_recipes = ClearRecipesCommand(self.set.resources[self.active_idx], self.update_resource_ui)
+        self.resource_undo_stack.push(clear_recipes)
 
 # Pattern recipe dispaly helpers
 
@@ -67,25 +175,26 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
         self.update_resource_ui()
 
     def remove_button_pushed(self, idx):
-        self.set.resources[self.active_idx].remove_data(idx)
-        self.update_resource_ui()
+        remove_recipe = RemoveRecipeCommand(self.set.resources[self.active_idx], idx, self.update_resource_ui)
+        self.resource_undo_stack.push(remove_recipe)
 
     def step_button_pushed(self, seq_idx, step_idx):
         if self.sequence_editors[seq_idx].step_buttons[step_idx].isChecked():
-            self.set.resources[self.active_idx].update_step(seq_idx, step_idx, True)
+            update_step = UpdateStepCommand(self.set.resources[self.active_idx], seq_idx, step_idx, True, self.update_resource_ui)
+            self.resource_undo_stack.push(update_step)
         else:
-            self.set.resources[self.active_idx].update_step(seq_idx, step_idx, False)
-        self.update_resource_ui()
+            update_step = UpdateStepCommand(self.set.resources[self.active_idx], seq_idx, step_idx, False, self.update_resource_ui)
+            self.resource_undo_stack.push(update_step)
 
     def update_sequence_length(self, seq_idx):
         # Stopping an infinte loop ... ewwwwiiieeee!
         old_length = self.set.resources[self.active_idx].get_length(seq_idx)
         length = self.sequence_editors[seq_idx].length_entry.value()
         if old_length != length:
-            self.set.resources[self.active_idx].update_length(seq_idx, length)
-            self.update_resource_ui()
+            update_length = UpdateLengthCommand(self.set.resources[self.active_idx], seq_idx, length)
+            self.resource_undo_stack.push(update_length)
 
-    def update_resource_ui(self, do_length=True):
+    def update_resource_ui(self):
         self.resourceDescription.setText(self.set.resources[self.active_idx].data['description'])
         sequences = self.set.resources[self.active_idx].data['data']
         idx = -1
@@ -109,4 +218,13 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
             self.addEuclidean.setEnabled(True)
         else:
             self.addEuclidean.setEnabled(False)
+
+    def create_undo_stack(self):
+        self.resource_undo_stack = QUndoStack()
+        self.undo_action = self.resource_undo_stack.createUndoAction(self, "Undo")
+        self.undo_action.setShortcuts(QKeySequence.Undo)
+        self.redo_action = self.resource_undo_stack.createRedoAction(self, "Redo")
+        self.redo_action.setShortcuts(QKeySequence.Redo)
+        self.addAction(self.undo_action)
+        self.addAction(self.redo_action)
 
