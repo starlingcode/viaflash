@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QInputDialog, QMessageBox, QPushButton
 from PySide6.QtCore import Slot
-from PySide6.QtGui import QUndoCommand
+from PySide6.QtGui import QUndoCommand, QUndoStack, QKeySequence
 
 from ui_gateseq_pattern_editor import Ui_gateseqPatternEditor
 from viatools.gateseq_patterns import GateseqPatternSet
@@ -81,14 +81,11 @@ class UpdateStepCommand(QUndoCommand):
 
     def redo(self):
         self.backup = self.pattern.get_recipe(self.seq_idx)
-        print(self.backup)
         self.new_idx = self.pattern.update_step(self.seq_idx, self.step_idx, self.state)
         print(self.new_idx)
-        self.ui_callback()
 
 
     def undo(self):
-        print("OHKAY IM RELOADED")
         self.pattern.reload_recipe(self.new_idx, self.backup)
         self.ui_callback()
 
@@ -191,7 +188,7 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
         old_length = self.set.resources[self.active_idx].get_length(seq_idx)
         length = self.sequence_editors[seq_idx].length_entry.value()
         if old_length != length:
-            update_length = UpdateLengthCommand(self.set.resources[self.active_idx], seq_idx, length)
+            update_length = UpdateLengthCommand(self.set.resources[self.active_idx], seq_idx, length, self.update_resource_ui)
             self.resource_undo_stack.push(update_length)
 
     def update_resource_ui(self):
