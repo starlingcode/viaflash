@@ -121,7 +121,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # This will be used to run stuff in parallel with the main gui and event looop
         self.threadpool = QThreadPool()
 
-        self.repo_url = 'https://raw.githubusercontent.com/starlingcode/viafirmware/master'
+        self.repo_url = 'https://raw.githubusercontent.com/starlingcode/viafirmware/viaflash'
 
         # Initialize for flashing local firmware TODO this doesnt actually work
         self.firmwareSelect.insertItem(0, 'Flash local firmware:')
@@ -134,7 +134,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.remote_firmware_selection = {}
 
         # The hardware flashing helper
-        self.dfu = DfuUtil(self.app_path)
+        self.dfu = DfuUtil(self.app_path, self)
         # This will be used to store data from the connected hardware module
         self.stored_module_data = {}
         self.via = None
@@ -146,7 +146,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.get_remote()        
 
         # This basically like resets the UI?
-        self.reset_for_new_via()
+        self.update_ui_init()
  
         # This like sets up what we know about the different flavors of editors
         self.init_set_editor_data()
@@ -167,10 +167,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     
     @Slot()    
     def on_flashButton_clicked(self):
-        self.initiate_flash()
+        self.update_ui_flashing_started()
+        flash_worker = Worker(self.initiate_flash)
+        flash_worker.signals.finished.connect(self.reset_for_new_via)
+        self.threadpool.start(flash_worker)
     
-    # WCM TODO the root of all evil
-
     def launch_firmware_update(self):
         update_worker = Worker(self.update_firmware_selection)
         update_worker.signals.finished.connect(self.create_set_editor_object)
@@ -219,10 +220,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     # Stuff that basically just updates the main window widgets:
 
+    @Slot()
     def update_status_bar(self, message):
         self.statusBar.showMessage(message)
 
+    @Slot()
     def reset_for_new_via(self):
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
+        msg.setText("Flashing succeed, OK to disconnect")
+        msg.setWindowTitle("Flashing Succeeded")
+        msg.setStandardButtons(QMessageBox.Ok)
+        msg.exec()
+        self.update_ui_init()
+
+    def update_ui_init(self):
         self.faceplate_image = QPixmap(self.app_path + '/img/blank.png')
         self.faceplate.setPixmap(self.faceplate_image)
 
@@ -234,9 +246,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.firmwareSelectLabel.hide()
         self.firmwareSelect.hide()
         self.flashButton.hide()
+        self.flashButton.setEnabled(False)
         self.firmwareInfo.hide()
         self.loadDefaultButton.hide()
         self.reset_editor()
+
+        self.update_status_bar('Connect module in DFU mode or edit resources for VCV Rack')
 
     def reset_editor(self):
         self.edit1Label.hide()
@@ -253,6 +268,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.firmwareSelect.show()        
         self.editResources.hide()        
         self.editSoftware = True
+
+    def update_ui_flashing_started(self):
+        self.editResources.setEnabled(False)
+        self.flashButton.setEnabled(False)
 
     def update_ui_remote_firmware(self):
         self.update_status_bar('Remote firmware loaded')
@@ -274,6 +293,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.firmwareInfo.setText(self.remote_firmware_selection['description'])
         if not self.editSoftware:
             self.flashButton.show()
+            self.flashButton.setEnabled(False)
 
     def update_ui_new_editor(self):
         object_name = self.editor_data[self.token]['object1_name']
@@ -286,6 +306,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.openEdit1.setText('Edit ' + object_name.title() + ' Set') 
         self.edit1Label.setText("Select %s set:" % object_name)
         self.firmwareSelect.setEnabled(True)
+        self.flashButton.setEnabled(True)
+        self.update_status_bar('Remote %s sets loaded' % self.editor_data[self.token]['object1_name'])
 
     def update_ui_no_editor(self):
         self.edit1Select.hide()
@@ -296,6 +318,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.firmwareSelect.setEnabled(True) 
         self.update_status_bar("No editable resources")
         self.firmwareSelect.setEnabled(True)
+        self.flashButton.setEnabled(True)
 
     def update_ui_local_firmware_selected(self):
         self.firmwareInfo.hide()
@@ -352,8 +375,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.update_status_bar('No hardware detected -- Pushed DFU button?  Removed expander cable?')
 
     def read_option_bytes(self):
-        # WCM DEBUG
-        # import pdb; pdb.set_trace()
         self.get_stored_module_data()
         read_successful, ob_path = self.dfu.read_option_bytes()
         if read_successful:
@@ -466,15 +487,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 success = False
             #TODO Handle errors
             if success:
+                self.update_status_bar('Flashing firmware')
                 success = self.dfu.start_firmware_flash(path)
             if success:
+                self.update_status_bar('Flashing resource data')
                 self.flash_resources()
             if success:
                 ob_key = firmware_key
                 self.dfu.construct_optionbytes(ob_key, firmware_version)
-                success = self.dfu.flash_optionbytes()
-            if success:
-                self.reset_for_new_via()
+                success = self.dfu.flash_optionbytes()   
         else:
             return
             # Flash local
@@ -517,12 +538,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.editor_data['meta'] = {
             'object1_name': 'wavetable',
             'editor1_object': MetaWavetableEditor,
-            'resource1_address': '0x8020000'
+            'resource1_address': '0x80157C0'
         }       
         self.editor_data['sync'] = {
             'object1_name': 'wavetable',
             'editor1_object': SyncWavetableEditor,
-            'resource1_address': '0x8020000'
+            'resource1_address': '0x8020788'
         }       
 
     def init_set_editor(self):
@@ -545,7 +566,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def init_resource_sets(self):
         manifest_url = self.repo_url + '/%s/manifest.json' % self.token
         manifest_read = self.read_remote_manifest(manifest_url)
-        self.update_status_bar('Remote %s sets loaded' % self.editor_data[self.token]['object1_name'])
         firmware_bin_path = self.firmware_dir + '/binaries'
         if os.path.exists(firmware_bin_path) is False:
             os.mkdir(firmware_bin_path)

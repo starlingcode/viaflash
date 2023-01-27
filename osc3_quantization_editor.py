@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QInputDialog, QMessageBox, QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QLabel, QSizePolicy
 from PySide6.QtCore import Slot, Qt, QMimeData
-from PySide6.QtGui import QUndoCommand, QUndoStack, QKeySequence
+from PySide6.QtGui import QUndoCommand, QUndoStack, QKeySequence, QDrag
 
 from ui_osc3_quantization_editor import Ui_osc3QuantizationEditor
 from viatools.osc3_quantizations import Osc3QuantizationSet
@@ -55,8 +55,7 @@ class ChordButton(QWidget):
 
 
     def dropEvent(self, e):
-        if not self.parent_window.sorted_flag:
-            self.parent_window.handle_drop(self.idx)
+        self.parent_window.handle_drop(self.idx)
 
     def update_ratio(self, pitch1, pitch2, note_list):
         self.button.setText('Remove')
@@ -98,6 +97,7 @@ class RemoveNoteCommand(QUndoCommand):
         self.ui_callback()
 
     def undo(self):
+        print("Adding note back")
         self.chord_set.add_note(self.note)
         self.ui_callback()
 
@@ -165,21 +165,21 @@ class ReorderChordsCommand(QUndoCommand):
     def __init__(self, chord_set, idx_to_move, destination, ui_callback):
         super().__init__()
         # self.setText('Remove index %d' % (idx))
-        self.chord_set = scale
+        self.chord_set = chord_set
         self.idx_to_move = idx_to_move
         self.destination = destination
         self.ui_callback = ui_callback
 
 
     def redo(self):
-        self.chord_set.reorder_data(self.idx_to_move, self.destination)
+        self.chord_set.reorder_chords(self.idx_to_move, self.destination)
         self.redo_destination = self.idx_to_move
         self.redo_idx_to_move = self.destination
         self.ui_callback()
 
 
     def undo(self):
-        self.chord_set.reorder_data(self.redo_idx_to_move, self.redo_destination)
+        self.chord_set.reorder_chords(self.redo_idx_to_move, self.redo_destination)
         self.ui_callback()
 
 
@@ -188,6 +188,7 @@ class Osc3QuantizationEditor(ViaResourceEditor, Ui_osc3QuantizationEditor):
         super().__init__() 
         self.setupUi(self)
         self.setStyleSheet(style_text)
+        self.create_undo_stack()
 
         self.remote_resources = remote_resources
         # TODO check if new remote resource or set collides with existing local slug
@@ -209,8 +210,6 @@ class Osc3QuantizationEditor(ViaResourceEditor, Ui_osc3QuantizationEditor):
 
         self.slot1.setChecked(True)
         self.switch_slot(0)
-
-        self.create_undo_stack()
 
 # Edit scale recipe
 

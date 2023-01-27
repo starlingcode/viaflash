@@ -28,25 +28,6 @@ class AddRecipeCommand(QUndoCommand):
         self.ui_callback()
 
 
-class ClearRecipesCommand(QUndoCommand):
-
-    def __init__(self, pattern, ui_callback):
-        super().__init__()
-        # self.setText('Remove index %d' % (idx))
-        self.pattern = pattern
-        self.ui_callback = ui_callback
-
-
-    def redo(self):
-        self.old_order = self.pattern.clear_data()
-        self.ui_callback()
-
-
-    def undo(self):
-        self.pattern.reload_data(self.old_order)
-        self.ui_callback()
-
-
 class RemoveRecipeCommand(QUndoCommand):
 
     def __init__(self, pattern, idx, ui_callback):
@@ -64,6 +45,26 @@ class RemoveRecipeCommand(QUndoCommand):
 
     def undo(self):
         self.pattern.add_data(self.ratio, self.idx)
+        self.ui_callback()
+
+
+
+class ClearRecipesCommand(QUndoCommand):
+
+    def __init__(self, pattern, ui_callback):
+        super().__init__()
+        # self.setText('Remove index %d' % (idx))
+        self.pattern = pattern
+        self.ui_callback = ui_callback
+
+
+    def redo(self):
+        self.old_order = self.pattern.clear_data()
+        self.ui_callback()
+
+
+    def undo(self):
+        self.pattern.reload_data(self.old_order)
         self.ui_callback()
 
 

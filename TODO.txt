@@ -1,43 +1,39 @@
 NEXT!!!
 
-Add an edit menu to hint at undo/redo options
-Why does undo not work for the first note that I remove from an osc3 scale but then works once I remove a chord???
+- Mac, Windows, and Linux builds
+
+! Add an edit menu to hint at undo/redo options
+	- Why does undo not work for the first note that I remove from an osc3 scale but then works once I remove a chord???
+	- Doesnt work at all for gateseq. what gives!
 
 GATESEQ Editor:
 - Make pad to fill implicit
 - Adjustable steps per ruler line?
 - Enumerate sequence slots with a leftmost column even when empty?
 - Sorted unsorted (maybe do this when you are figuring out the sorting for osc3 and sync3 so there is a consistent drag and drop control scheme)?
-
+- Resource dirty state management
 
 OSC3 Editor:
 - Make pad to fill implicit
-(Big Project) Chord editor really sucks
-	- Redo in the paradigm of sync3 editor
+- Resource dirty state management
+
+SYNC3 Editor:
+- Filter open dialog for scala suffix on import to correct extension
+- Resource dirty state management
 
 General app things:
 (Easy!) Save for rack file should be title
 (Annoying Bug) Theres sometimes an exception when you close an editor and select a new module, trying to stop timer from another thread?
 (Not Strictly Necessary) Shorthand for Default resources? Should default be a metadata item?
-Indicate dirty state for resource:
-	- Gateseq Undo
-	- Osc3 Undo
-	- Table Editor Undo
-	- Implement state management in set editor class once all modules have undo stacks
 
 Table editor:
-! Fix table flashing for modules
-	- Somehow figure out how to regulate table size
+- Somehow figure out how to regulate table size
 (Annoying Bug) Why does the browser have those weird lines
 (Biggish Project) Meta drum envelope handling, add an accent feature here!
 (Reach) Scanner preview
 
-SYNC3 Editor:
-- Filter open dialog for scala suffix on import to correct extension
-
 Main window:
 - Local firmware
-(Reach) Poll for connected via
 
 Viafirmware Repo:
 - Add real descriptions to wavetables

@@ -1,16 +1,30 @@
-from PySide6.QtWidgets import QProgressDialog
+from PySide6.QtCore import QObject, Signal, QRunnable
 
 import subprocess
 import datetime
 import os
 
-class DfuUtil:
+class DFUUtilSignals(QObject):
+    showpb = Signal()
+    progress = Signal(object)
+    setrange = Signal(object, object)
+    setcaption = Signal(object)
+    hidepb = Signal()
+
+class DfuUtil(QRunnable):
     
-    def __init__(self, app_path):   
+    def __init__(self, app_path, main_window):   
         self.app_path = app_path
         #TODO figure out for deployment and x platform, check for file existence
         self.bin_path = app_path + '/vendor/dfu-util'
         self.ob_path = app_path + '/optionbytes.temp'
+        self.main_window = main_window
+        self.signals = DFUUtilSignals()
+        self.signals.showpb.connect(self.main_window.show_pb)
+        self.signals.progress.connect(self.main_window.progressBar.setValue)
+        self.signals.setrange.connect(self.main_window.progressBar.setRange)
+        self.signals.setcaption.connect(self.main_window.progressBarLabel.setText)
+        self.signals.hidepb.connect(self.main_window.hide_pb)
 
     def run_process_blocking(self, arguments):
         arguments = [self.bin_path] + arguments
@@ -66,17 +80,12 @@ class DfuUtil:
         else:
             return False
 
-    def monitor_flash_progress(self, dfu_process):
-        ud = QProgressDialog('', 'Cancel', 0, 100)
-        ud.setModal(True)
-        ud.setAutoReset(False)
-        ud.setAutoClose(False)
-        ud.setWindowTitle('Flash progress')
-        ud.setLabelText('Erasing...')
-        ud.setValue(0)
-        ud.show()
+    def monitor_flash_progress(self, dfu_process, caption='Flashing'):
         out_text = ''
         success = False
+        self.signals.showpb.emit()
+        self.signals.setcaption.emit("Erasing old data...")
+        self.signals.setrange.emit(0, 100)
         while True:
             output = dfu_process.stdout.read(1).decode('utf-8')
             if dfu_process.poll() is not None:
@@ -88,9 +97,9 @@ class DfuUtil:
                         progress = int(out_text[-4:-1])
                     except: # stray %
                         progress = 0
-                    ud.setValue(progress)
+                    self.signals.progress.emit(progress)
                     if progress == 100:
-                        ud.setLabelText('Flashing...')
+                        self.signals.setcaption.emit('Flashing new data...')
         if '100%' in out_text:
             return True
         else:
@@ -109,12 +118,12 @@ class DfuUtil:
         arguments = '--device 0483:df11 -a 0 -s 0x08000000 -D %s -R' % path
 #        return self.run_process_blocking_print(arguments.split())
         dfu_process = self.initiate_process(arguments.split())
-        return self.monitor_flash_progress(dfu_process)        
+        return self.monitor_flash_progress(dfu_process, 'Flashing firmware')        
 
     def start_resource_flash(self, address, path):
         arguments = '--device 0483:df11 -a 0 -s %s -D %s -R' % (address, path)
         dfu_process = self.initiate_process(arguments.split())
-        return self.monitor_flash_progress(dfu_process)        
+        return self.monitor_flash_progress(dfu_process, 'Flashing resources')        
 
     def construct_optionbytes(self, firmware_key, firmware_version):
         ob = bytearray(16)

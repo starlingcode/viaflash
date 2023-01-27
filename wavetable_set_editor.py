@@ -285,7 +285,7 @@ class MetaWavetableEditor(WavetableEditor, Ui_wavetableSetEditor):
             'Sequence': 8, 
             'Drum Envelope': 1
         }
-        self.size_limit_data = {'table_size': 9, 'memory_footprint': 160000}
+        self.size_limit_data = {'table_size': 9, 'memory_footprint': 170048}
         super().__init__(resource_dir, remote_resources, slug, style_text, table_file, slope_file) 
 
 
@@ -299,7 +299,7 @@ class SyncWavetableEditor(WavetableEditor, Ui_wavetableSetEditor):
             'Group 4': 4, 
             'Global': 4
         }
-        self.size_limit_data = {'table_size': 9, 'memory_footprint': 116000}
+        self.size_limit_data = {'table_size': 9, 'memory_footprint': 125048}
         super().__init__(resource_dir, remote_resources, slug, style_text, table_file, slope_file) 
 
 
