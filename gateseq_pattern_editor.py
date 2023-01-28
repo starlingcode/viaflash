@@ -118,6 +118,7 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
         super().__init__() 
         self.setupUi(self)
         self.setStyleSheet(style_text)
+        self.undo_stack_init()
 
         self.remote_resources = remote_resources
         # TODO check if new remote resource or set collides with existing local slug
@@ -135,10 +136,7 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
         self.selectResource.activated.connect(self.handle_select_resource)
         self.saveResource.clicked.connect(lambda state=True: self.handle_save_resource())
 
-        self.slot1.setChecked(True)
         self.switch_slot(0)
-
-        self.create_undo_stack()
 
 # Edit pattern recipe
 
@@ -217,12 +215,4 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
         else:
             self.addEuclidean.setEnabled(False)
 
-    def create_undo_stack(self):
-        self.resource_undo_stack = QUndoStack()
-        self.undo_action = self.resource_undo_stack.createUndoAction(self, "Undo")
-        self.undo_action.setShortcuts(QKeySequence.Undo)
-        self.redo_action = self.resource_undo_stack.createRedoAction(self, "Redo")
-        self.redo_action.setShortcuts(QKeySequence.Redo)
-        self.addAction(self.undo_action)
-        self.addAction(self.redo_action)
 

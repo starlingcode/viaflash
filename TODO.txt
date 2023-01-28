@@ -1,7 +1,7 @@
 NEXT!!!
 
 - Mac, Windows, and Linux builds
-
+- Documentation/tooltips?
 ! Add an edit menu to hint at undo/redo options
 	- Why does undo not work for the first note that I remove from an osc3 scale but then works once I remove a chord???
 	- Doesnt work at all for gateseq. what gives!

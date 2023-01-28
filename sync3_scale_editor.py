@@ -254,6 +254,7 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
         self.setupUi(self)
         self.setStyleSheet(style_text)
         self.style_text = style_text
+        self.undo_stack_init()
 
         self.fill_help = {}
         self.fill_help["expand"] = "The ratios in the grid will be spread evenly across the full knob/CV range."
@@ -284,12 +285,9 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
 
         self.unsorted_data = None
 
-        self.slot1.setChecked(True)
         self.switch_slot(0)
 
         self.update_resource_ui()
-
-        self.create_undo_stack()
 
             
 
@@ -515,15 +513,6 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
 
         self.seedRatioHolder.setLayout(self.seedRatioGrid)
         self.seedScrollArea.setWidget(self.seedRatioHolder)
-
-    def create_undo_stack(self):
-        self.resource_undo_stack = QUndoStack()
-        self.undo_action = self.resource_undo_stack.createUndoAction(self, "Undo")
-        self.undo_action.setShortcuts(QKeySequence.Undo)
-        self.redo_action = self.resource_undo_stack.createRedoAction(self, "Redo")
-        self.redo_action.setShortcuts(QKeySequence.Redo)
-        self.addAction(self.undo_action)
-        self.addAction(self.redo_action)
 
 
 

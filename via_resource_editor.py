@@ -51,7 +51,6 @@ class ViaResourceEditor(QDialog):
         self.on_selectResourceSet_activated()
 
     def handle_select_resource(self):
-        #TODO check for unsaved changes
         resource_title = self.selectResource.currentText()
         if resource_title in self.resource_titles:
             self.resource_slug = self.resource_titles[resource_title]
@@ -99,15 +98,21 @@ class ViaResourceEditor(QDialog):
              self.selectResource.insertItem(-1, resource_title)
 
     def switch_slot(self, slot_num):
-#        if self.unsaved_changes:
-#            if self.prompt_to_discard():
-#                self.unsaved_changes = False
-#            else:
-#                switch_slot(self.active_idx)
-#                return 
+        if self.dirty_resource:
+            if self.prompt_to_discard():
+                self.dirty_resource = False
+                self.resource_undo_stack.clear()
+                self.set.restore_resource(self.active_idx)
+            else:
+                # Throw him in the dungeon
+                eval('self.slot%d' % (self.active_idx+1)).setChecked(True)
+                self.update_resource_ui()
+                return 
         self.active_idx = slot_num
         self.resource_slug = self.set.data['slug_list'][slot_num]
         self.update_resource_selection(self.resource_slugs[self.resource_slug])
+        # Throw him in the dungeon
+        eval('self.slot%d' % (self.active_idx+1)).setChecked(True)
         self.update_resource_ui()
 
     def prompt_to_discard(self):
@@ -115,7 +120,6 @@ class ViaResourceEditor(QDialog):
             return True
         else:
             return False
-        # Ask user if they wish to save any unsaved changes
 
     # Make sure this does not collide with existing resource in a case insensitive fashion
     def get_resource_name(self, default=''):
@@ -154,3 +158,27 @@ class ViaResourceEditor(QDialog):
         if evt.key() == Qt.Key_Enter or evt.key() == Qt.Key_Return:
             return
         super().keyPressEvent(evt)
+
+    @Slot()
+    def handle_clean_changed(self):
+        if not self.resource_undo_stack.isClean():
+            self.saveResource.setEnabled(True)
+            self.dirty_resource = True
+        else:
+            self.saveResource.setEnabled(True)
+            self.dirty_resource = False
+
+    def create_undo_stack(self):
+        self.resource_undo_stack = QUndoStack()
+        self.undo_action = self.resource_undo_stack.createUndoAction(self, "Undo")
+        self.undo_action.setShortcuts(QKeySequence.Undo)
+        self.redo_action = self.resource_undo_stack.createRedoAction(self, "Redo")
+        self.redo_action.setShortcuts(QKeySequence.Redo)
+        self.resource_undo_stack.cleanChanged.connect(self.handle_clean_changed)
+        self.addAction(self.undo_action)
+        self.addAction(self.redo_action)
+
+    def undo_stack_init(self):
+        self.create_undo_stack()
+        self.saveResource.setEnabled(False)
+        self.dirty_resource = False
