@@ -218,6 +218,10 @@ class WavetableEditor(ViaResourceEditor):
         self.viz2.update_plot(self.table)
         self.viz3.update_plot(self.table, self.table_idx)
         self.viz4.update_plot(self.table, self.table_idx)
+        if self.set.is_clean():
+            self.saveResourceSet.setEnabled(False)
+        else:
+            self.saveResourceSet.setEnabled(True)
 
     def init_viz(self, table):
         self.viz1.init_viz('wireframe', table)

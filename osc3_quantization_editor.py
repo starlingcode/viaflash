@@ -188,7 +188,6 @@ class Osc3QuantizationEditor(ViaResourceEditor, Ui_osc3QuantizationEditor):
         super().__init__() 
         self.setupUi(self)
         self.setStyleSheet(style_text)
-        self.undo_stack_init()
 
         self.remote_resources = remote_resources
         # TODO check if new remote resource or set collides with existing local slug
@@ -312,6 +311,11 @@ class Osc3QuantizationEditor(ViaResourceEditor, Ui_osc3QuantizationEditor):
         self.osc2Note.setText(scale_names[self.osc2Pitch.value() % scale_size])
         self.osc3Note.setText(scale_names[self.osc3Pitch.value() % scale_size])
 
+        if self.set.is_clean():
+            self.saveResourceSet.setEnabled(False)
+        else:
+            self.saveResourceSet.setEnabled(True)
+
     def get_note_names(self):
         notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
         note_set = []
@@ -322,5 +326,12 @@ class Osc3QuantizationEditor(ViaResourceEditor, Ui_osc3QuantizationEditor):
     def handle_drop(self, destination_idx):
         reorder = ReorderChordsCommand(self.set.resources[self.active_idx], self.dragged_idx, destination_idx, self.update_resource_ui)
         self.resource_undo_stack.push(reorder)
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        self.undo_stack_init()
+
+    def clear_menu(self):
+        self.menu.clear()
 
 

@@ -4,9 +4,9 @@ import shutil
 import json
 import time
 
-from PySide6.QtWidgets import QMainWindow, QMessageBox, QProgressDialog, QStyleFactory
+from PySide6.QtWidgets import QMainWindow, QMessageBox, QProgressDialog, QStyleFactory, QMenuBar, QMenu
 from PySide6.QtCore import Slot, Signal, QSize, QRect, QRunnable, QThreadPool, QObject
-from PySide6.QtGui import QPixmap
+from PySide6.QtGui import QPixmap, QAction, QKeySequence
 
 from ui_mainwindow import Ui_MainWindow
 from dfu_util import DfuUtil
@@ -214,9 +214,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     @Slot()
     def get_slug_from_editor1(self):
+        self.editor1.clear_menu()
         selected_title = self.editor1.set.data['title']
         self.populate_edit1Select(self.remote_firmware_selection['token'], selected_title)
         self.resourceInfo.setText(self.titles_to_descriptions[selected_title])
+        del self.editor1
 
     # Stuff that basically just updates the main window widgets:
 

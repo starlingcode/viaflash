@@ -1,11 +1,12 @@
-from PySide6.QtWidgets import QDialog, QInputDialog, QMessageBox, QFileDialog
+from PySide6.QtWidgets import QDialog, QInputDialog, QMessageBox, QFileDialog, QMenuBar, QMenu, QWidget
 from PySide6.QtCore import Slot, Qt
-from PySide6.QtGui import QUndoStack, QKeySequence
+from PySide6.QtGui import QUndoStack, QKeySequence, QUndoCommand
+
 
 class ViaResourceEditor(QDialog):
     def __init__(self):
         super().__init__()        
-        self.unsaved_changes = False
+        self.dirty_resource = False
         self.active_idx = 0
 
         self.resource_slugs = {}
@@ -28,7 +29,13 @@ class ViaResourceEditor(QDialog):
 
     @Slot()
     def on_selectResourceSet_activated(self):
-        #TODO check for unsaved changes
+        if not self.set.is_clean():
+            if self.prompt_to_discard():
+                self.set.restore()
+            else:
+                self.selectResourceSet.setCurrentIndex(self.selectResourceSet.findText(self.resource_set_slugs[self.set_slug]))
+                self.update_resource_ui()
+                return 
         slug = self.resource_set_titles[self.selectResourceSet.currentText()]
         if slug in self.resource_set_slugs:
             self.set_slug = slug
@@ -39,8 +46,9 @@ class ViaResourceEditor(QDialog):
     @Slot() 
     def on_saveForRack_clicked(self):
         bin_write_dir = QFileDialog.getExistingDirectory(self, "Select save directory")
-        self.set.pack_binary(bin_write_dir + '/')
-        self.update_resource_ui()
+        if bin_write_dir != '':
+            self.set.pack_binary(bin_write_dir + '/')
+            self.update_resource_ui()
 
 
 # Load/save resource
@@ -168,7 +176,16 @@ class ViaResourceEditor(QDialog):
             self.saveResource.setEnabled(True)
             self.dirty_resource = False
 
+    def handle_set_clean_changed(self):
+        if not self.resource_set_undo_stack.isClean():
+            self.saveResourceSet.setEnabled(True)
+            self.dirty_resource_set = True
+        else:
+            self.saveResourceSet.setEnabled(True)
+            self.dirty_resource_set = False
+
     def create_undo_stack(self):
+
         self.resource_undo_stack = QUndoStack()
         self.undo_action = self.resource_undo_stack.createUndoAction(self, "Undo")
         self.undo_action.setShortcuts(QKeySequence.Undo)
@@ -178,7 +195,29 @@ class ViaResourceEditor(QDialog):
         self.addAction(self.undo_action)
         self.addAction(self.redo_action)
 
+        self.menu = QMenuBar(self)
+        self.edit_menu = self.menu.addMenu("Edit")
+        self.edit_menu.addAction(self.undo_action)
+        self.edit_menu.addAction(self.redo_action)
+
+        # self.set_undo_stack = QUndoStack()
+        # self.set_undo_action = self.set_undo_stack.createUndoAction(self, "Undo")
+        # self.set_undo_action.setShortcuts(QKeySequence.Undo)
+        # self.set_redo_action = self.set_undo_stack.createRedoAction(self, "Redo")
+        # self.set_redo_action.setShortcuts(QKeySequence.Redo)
+        # self.set_undo_stack.cleanChanged.connect(self.handle_set_clean_changed)
+        # self.addAction(self.set_undo_action)
+        # self.addAction(self.set_redo_action)
+
     def undo_stack_init(self):
         self.create_undo_stack()
         self.saveResource.setEnabled(False)
         self.dirty_resource = False
+
+    def propogate_undo_actions(self):
+        for widget in self.findChildren(QWidget):
+            widget.addAction(self.undo_action)
+            widget.addAction(self.redo_action)
+
+    def clear_menu(self):
+        return

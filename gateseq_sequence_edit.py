@@ -14,9 +14,9 @@ class GateseqStepButton(QPushButton):
 
 class GateseqSequenceEdit(QWidget):
 
-	def __init__(self):
+	def __init__(self, parent):
 
-		super().__init__()
+		super().__init__(parent)
 
 		self.label = QLabel()
 		self.label.setText("PLZ SHOW UP")

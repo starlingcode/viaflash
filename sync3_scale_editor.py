@@ -254,7 +254,6 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
         self.setupUi(self)
         self.setStyleSheet(style_text)
         self.style_text = style_text
-        self.undo_stack_init()
 
         self.fill_help = {}
         self.fill_help["expand"] = "The ratios in the grid will be spread evenly across the full knob/CV range."
@@ -466,6 +465,11 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
 
         self.update_preview()
 
+        if self.set.is_clean():
+            self.saveResourceSet.setEnabled(False)
+        else:
+            self.saveResourceSet.setEnabled(True)
+
     def update_preview(self):
         self.set.bake()
         numerator = self.set.resources[self.active_idx].baked['numerators'][self.preview_idx]
@@ -513,6 +517,13 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
 
         self.seedRatioHolder.setLayout(self.seedRatioGrid)
         self.seedScrollArea.setWidget(self.seedRatioHolder)
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        self.undo_stack_init()
+
+    def clear_menu(self):
+        self.menu.clear()
 
 
 

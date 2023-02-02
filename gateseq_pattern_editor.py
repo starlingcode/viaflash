@@ -83,7 +83,7 @@ class UpdateStepCommand(QUndoCommand):
     def redo(self):
         self.backup = self.pattern.get_recipe(self.seq_idx)
         self.new_idx = self.pattern.update_step(self.seq_idx, self.step_idx, self.state)
-        print(self.new_idx)
+        self.ui_callback()
 
 
     def undo(self):
@@ -118,7 +118,6 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
         super().__init__() 
         self.setupUi(self)
         self.setStyleSheet(style_text)
-        self.undo_stack_init()
 
         self.remote_resources = remote_resources
         # TODO check if new remote resource or set collides with existing local slug
@@ -159,7 +158,7 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
     def create_pattern_grid(self):
         self.sequence_editors = []
         for i in range(0, 16):
-            seq_edit = GateseqSequenceEdit()
+            seq_edit = GateseqSequenceEdit(self)
             seq_edit.remove.clicked.connect(lambda state=True, x=i: self.remove_button_pushed(x))
             for j in range(0, 64):
                 seq_edit.step_buttons[j].clicked.connect(lambda state=True, x=i, y=j : self.step_button_pushed(x, y))
@@ -214,5 +213,17 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
             self.addEuclidean.setEnabled(True)
         else:
             self.addEuclidean.setEnabled(False)
+
+        if self.set.is_clean():
+            self.saveResourceSet.setEnabled(False)
+        else:
+            self.saveResourceSet.setEnabled(True)
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        self.undo_stack_init()
+
+    def clear_menu(self):
+        self.menu.clear()
 
 
