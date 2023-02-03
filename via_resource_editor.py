@@ -221,3 +221,18 @@ class ViaResourceEditor(QDialog):
 
     def clear_menu(self):
         return
+
+    def reject(self):
+        if self.dirty_resource:
+            if self.prompt_to_discard():
+                super().reject()
+
+    def closeEvent(self, event):
+        if self.dirty_resource:
+            if self.prompt_to_discard():
+                return
+            else:
+                event.accept()
+                super().closeEvent()
+
+
