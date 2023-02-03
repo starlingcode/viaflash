@@ -223,12 +223,12 @@ class ViaResourceEditor(QDialog):
         return
 
     def reject(self):
-        if self.dirty_resource:
+        if self.dirty_resource or not self.set.is_clean():
             if self.prompt_to_discard():
                 super().reject()
 
     def closeEvent(self, event):
-        if self.dirty_resource:
+        if self.dirty_resource or not self.set.is_clean():
             if self.prompt_to_discard():
                 return
             else:
