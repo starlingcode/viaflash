@@ -18,7 +18,6 @@ SYNC3 Editor:
 !!! Filter open dialog for scala suffix on import to correct extension
 
 General app things:
-(Easy!) Save for rack file should be title
 (Annoying Bug) Theres sometimes an exception when you close an editor and select a new module, trying to stop timer from another thread?
 (Not Strictly Necessary) Shorthand for Default resources? Should default be a metadata item?
 
