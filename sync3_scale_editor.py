@@ -158,7 +158,7 @@ class ClearRatiosCommand(QUndoCommand):
 
     def __init__(self, scale, ui_callback):
         super().__init__()
-        # self.setText('Remove index %d' % (idx))
+        self.setText('Clear ratios from scale')
         self.scale = scale
         self.ui_callback = ui_callback
 
@@ -177,7 +177,7 @@ class ReorderScaleCommand(QUndoCommand):
     
     def __init__(self, scale, idx_to_move, destination, ui_callback):
         super().__init__()
-        # self.setText('Remove index %d' % (idx))
+        self.setText('Move ratio from index %d to %d' % (idx_to_move + 1, destination + 1))
         self.scale = scale
         self.idx_to_move = idx_to_move
         self.destination = destination
@@ -200,7 +200,7 @@ class UpdateSortedCommand(QUndoCommand):
     
     def __init__(self, scale, is_sorted, ui_callback):
         super().__init__()
-        # self.setText('Remove index %d' % (idx))
+        self.setText('Set sorted to %s' % (str(is_sorted)))
         self.scale = scale
         self.is_sorted = is_sorted
         self.ui_callback = ui_callback
@@ -231,7 +231,7 @@ class UpdateFillCommand(QUndoCommand):
     
     def __init__(self, scale, fill_method, ui_callback):
         super().__init__()
-        # self.setText('Remove index %d' % (idx))
+        self.setText('Set fill method to %s' % (str(fill_method)))
         self.scale = scale
         self.fill_method = fill_method
         self.ui_callback = ui_callback

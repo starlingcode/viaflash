@@ -69,7 +69,7 @@ class AddNoteCommand(QUndoCommand):
     
     def __init__(self, chord_set, note, ui_callback):
         super().__init__()
-        #self.setText('Add %d/%d' % (numerator, denominator))
+        self.setText('Add note to scale')
         self.chord_set = chord_set
         self.note = note
         self.ui_callback = ui_callback
@@ -87,7 +87,7 @@ class RemoveNoteCommand(QUndoCommand):
     
     def __init__(self, chord_set, note, ui_callback):
         super().__init__()
-        #self.setText('Add %d/%d' % (numerator, denominator))
+        self.setText('Remove note from scale')
         self.chord_set = chord_set
         self.note = note
         self.ui_callback = ui_callback
@@ -106,7 +106,7 @@ class AddChordCommand(QUndoCommand):
     
     def __init__(self, chord_set, chord, ui_callback):
         super().__init__()
-        #self.setText('Add %d/%d' % (numerator, denominator))
+        self.setText('Add chord %d/%d' % (chord[0], chord[1]))
         self.chord_set = chord_set
         self.chord = chord
         self.ui_callback = ui_callback
@@ -125,7 +125,7 @@ class RemoveChordCommand(QUndoCommand):
 
     def __init__(self, chord_set, idx, ui_callback):
         super().__init__()
-        #self.setText('Remove index %d' % (idx))
+        self.setText('Remove chord at index %d' % (idx))
         self.chord_set = chord_set
         self.idx = idx
         self.ui_callback = ui_callback
@@ -145,7 +145,7 @@ class ClearChordsCommand(QUndoCommand):
 
     def __init__(self, chord_set, ui_callback):
         super().__init__()
-        # self.setText('Remove index %d' % (idx))
+        self.setText('Clear chords')
         self.chord_set = scale
         self.ui_callback = ui_callback
 
@@ -164,7 +164,7 @@ class ReorderChordsCommand(QUndoCommand):
     
     def __init__(self, chord_set, idx_to_move, destination, ui_callback):
         super().__init__()
-        # self.setText('Remove index %d' % (idx))
+        self.setText('Move chord from index %d to %d' % (idx_to_move + 1, destination + 1))
         self.chord_set = chord_set
         self.idx_to_move = idx_to_move
         self.destination = destination

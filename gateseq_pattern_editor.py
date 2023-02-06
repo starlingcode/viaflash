@@ -13,7 +13,7 @@ class AddRecipeCommand(QUndoCommand):
     
     def __init__(self, pattern, recipe, ui_callback):
         super().__init__()
-        # self.setText('Add %d/%d' % (numerator, denominator))
+        self.setText('Add %d/%d' % (recipe[0], recipe[1]))
         self.pattern = pattern
         self.recipe = recipe
         self.ui_callback = ui_callback
@@ -32,7 +32,7 @@ class RemoveRecipeCommand(QUndoCommand):
 
     def __init__(self, pattern, idx, ui_callback):
         super().__init__()
-        # self.setText('Remove index %d' % (idx))
+        self.setText('Remove index %d' % (idx))
         self.pattern = pattern
         self.idx = idx
         self.ui_callback = ui_callback
@@ -53,7 +53,7 @@ class ClearRecipesCommand(QUndoCommand):
 
     def __init__(self, pattern, ui_callback):
         super().__init__()
-        # self.setText('Remove index %d' % (idx))
+        self.setText('Clear sequences')
         self.pattern = pattern
         self.ui_callback = ui_callback
 
@@ -72,7 +72,7 @@ class UpdateStepCommand(QUndoCommand):
 
     def __init__(self, pattern, seq_idx, step_idx, state, ui_callback):
         super().__init__()
-        # self.setText('Remove index %d' % (idx))
+        self.setText('Update sequence %d step %d' % (seq_idx, step_idx))
         self.pattern = pattern
         self.seq_idx = seq_idx
         self.step_idx = step_idx
@@ -81,13 +81,13 @@ class UpdateStepCommand(QUndoCommand):
 
 
     def redo(self):
-        self.backup = self.pattern.get_recipe(self.seq_idx)
+        self.backup = self.pattern.get_data()
         self.new_idx = self.pattern.update_step(self.seq_idx, self.step_idx, self.state)
         self.ui_callback()
 
 
     def undo(self):
-        self.pattern.reload_recipe(self.new_idx, self.backup)
+        self.pattern.reload_data(self.backup)
         self.ui_callback()
 
 
@@ -95,7 +95,7 @@ class UpdateLengthCommand(QUndoCommand):
 
     def __init__(self, pattern, idx, length, ui_callback):
         super().__init__()
-        # self.setText('Remove index %d' % (idx))
+        self.setText('Update sequence %d to length' % (idx, length))
         self.pattern = pattern
         self.idx = idx
         self.length = length
@@ -117,7 +117,7 @@ class ReorderPatternCommand(QUndoCommand):
     
     def __init__(self, pattern, idx_to_move, destination, ui_callback):
         super().__init__()
-        # self.setText('Remove index %d' % (idx))
+        self.setText('Move sequence %d to %d' % (idx_to_move + 1, destination + 1))
         self.pattern = pattern
         self.idx_to_move = idx_to_move
         self.destination = destination
@@ -140,7 +140,7 @@ class UpdateSortedCommand(QUndoCommand):
     
     def __init__(self, pattern, is_sorted, ui_callback):
         super().__init__()
-        # self.setText('Remove index %d' % (idx))
+        self.setText('Set sorted to %s' % (str(is_sorted)))
         self.pattern = pattern
         self.is_sorted = is_sorted
         self.ui_callback = ui_callback
