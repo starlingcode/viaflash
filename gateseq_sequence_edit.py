@@ -1,5 +1,6 @@
 from PySide6.QtWidgets import QPushButton, QLabel, QSpinBox, QWidget, QHBoxLayout, QSizePolicy, QFrame
-from PySide6.QtCore import QSize, Qt
+from PySide6.QtCore import QSize, Qt, QMimeData
+from PySide6.QtGui import QDrag
 
 class GateseqStepButton(QPushButton):
 
@@ -14,9 +15,13 @@ class GateseqStepButton(QPushButton):
 
 class GateseqSequenceEdit(QWidget):
 
-	def __init__(self, parent):
+	def __init__(self, parent, ruler_size=4):
 
 		super().__init__(parent)
+
+		self.parent_window = parent
+
+		self.setAcceptDrops(True)
 
 		self.label = QLabel()
 		self.label.setText("PLZ SHOW UP")
@@ -32,14 +37,15 @@ class GateseqSequenceEdit(QWidget):
 		button_size = QSize(10, 10)
 
 		self.step_buttons = []
+		self.step_dividers = []
 
 		for i in range(0, 64):
-			if i % 4 == 0 and i != 0:
-				line = QFrame()
-				line.setObjectName(u"line")
-				line.setFrameShape(QFrame.VLine)
-				line.setFrameShadow(QFrame.Sunken)
-				self.layout.addWidget(line)
+			line = QFrame()
+			line.setObjectName(u"line")
+			line.setFrameShape(QFrame.VLine)
+			line.setFrameShadow(QFrame.Sunken)
+			self.step_dividers.append(line)
+			self.layout.addWidget(line)
 
 			new_button = GateseqStepButton()
 			self.step_buttons.append(new_button)
@@ -57,7 +63,46 @@ class GateseqSequenceEdit(QWidget):
 
 		sp_retain = self.sizePolicy();
 		sp_retain.setRetainSizeWhenHidden(True);
-		self.setSizePolicy(sp_retain);
+		self.setSizePolicy(sp_retain)
+		self.reset_ruler(ruler_size)
+
+		self.idx = 0
+
+	def reset_ruler(self, size):
+		for divider in self.step_dividers:
+			divider.hide()
+		for i in range(1, 64):
+			if i % size == 0:
+				self.step_dividers[i].show()
+
+	def mouseMoveEvent(self, e):
+		if e.buttons() != Qt.RightButton:
+			return
+
+		mimeData = QMimeData()
+
+		drag = QDrag(self)
+		drag.setMimeData(mimeData)
+		drag.setHotSpot(e.pos() - self.rect().topLeft())
+
+		self.parent_window.dragged_idx = self.idx
+
+		dropAction = drag.exec()
+
+
+	def mousePressEvent(self, e):
+		if e.button() == Qt.LeftButton:
+			QPushButton.mousePressEvent(self, e)
+
+
+	def dragEnterEvent(self, e):
+		e.accept()
+
+
+	def dropEvent(self, e):
+		if not self.parent_window.sorted_flag:
+			self.parent_window.handle_drop(self.idx)
+
 
 
 

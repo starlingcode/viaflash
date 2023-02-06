@@ -113,6 +113,60 @@ class UpdateLengthCommand(QUndoCommand):
         self.ui_callback()
 
 
+class ReorderPatternCommand(QUndoCommand):
+    
+    def __init__(self, pattern, idx_to_move, destination, ui_callback):
+        super().__init__()
+        # self.setText('Remove index %d' % (idx))
+        self.pattern = pattern
+        self.idx_to_move = idx_to_move
+        self.destination = destination
+        self.ui_callback = ui_callback
+
+
+    def redo(self):
+        self.pattern.reorder_data(self.idx_to_move, self.destination)
+        self.redo_destination = self.idx_to_move
+        self.redo_idx_to_move = self.destination
+        self.ui_callback()
+
+
+    def undo(self):
+        self.pattern.reorder_data(self.redo_idx_to_move, self.redo_destination)
+        self.ui_callback()
+
+
+class UpdateSortedCommand(QUndoCommand):
+    
+    def __init__(self, pattern, is_sorted, ui_callback):
+        super().__init__()
+        # self.setText('Remove index %d' % (idx))
+        self.pattern = pattern
+        self.is_sorted = is_sorted
+        self.ui_callback = ui_callback
+
+
+    def redo(self):
+        if self.is_sorted:
+            self.old_order = self.pattern.update_sorted(True)
+            self.ui_callback()
+        else:
+            self.old_order = self.pattern.update_sorted(False)
+            if self.old_order:
+                self.pattern.reload_data(self.old_order)
+            self.ui_callback()
+
+
+    def undo(self):
+        if not self.is_sorted:
+            self.old_order = self.pattern.update_sorted(True)
+            self.ui_callback()
+        else:
+            self.pattern.update_sorted(False)
+            self.pattern.reload_data(self.old_order)
+            self.ui_callback()
+
+
 class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
     def __init__(self, resource_dir='./', remote_resources = {}, slug='original', style_text=""):
         super().__init__() 
@@ -137,6 +191,8 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
 
         self.switch_slot(0)
 
+        self.unsorted_data = None
+
 # Edit pattern recipe
 
     @Slot()
@@ -152,6 +208,29 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
     def on_clearSequences_clicked(self):
         clear_recipes = ClearRecipesCommand(self.set.resources[self.active_idx], self.update_resource_ui)
         self.resource_undo_stack.push(clear_recipes)
+
+    @Slot()
+    def on_rulerSize_valueChanged(self):
+        for editor in self.sequence_editors: 
+            editor.reset_ruler(self.rulerSize.value())
+
+    @Slot()
+    def on_sorted_clicked(self):
+        self.unsorted_data = self.set.resources[self.active_idx].get_data()
+        sorted_command = UpdateSortedCommand(self.set.resources[self.active_idx], True, self.update_resource_ui)
+        self.resource_undo_stack.push(sorted_command)
+        #self.sortedHelp.setText(self.sorted_help)
+        self.sorted_flag = True
+
+
+    @Slot()
+    def on_unsorted_clicked(self):
+        if self.unsorted_data:
+            self.set.resources[self.active_idx].reload_data(self.unsorted_data)
+        sorted_command = UpdateSortedCommand(self.set.resources[self.active_idx], False, self.update_resource_ui)
+        self.resource_undo_stack.push(sorted_command)
+        #self.sortedHelp.setText(self.unsorted_help)
+        self.sorted_flag = False
 
 # Pattern recipe dispaly helpers
 
@@ -189,8 +268,26 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
             update_length = UpdateLengthCommand(self.set.resources[self.active_idx], seq_idx, length, self.update_resource_ui)
             self.resource_undo_stack.push(update_length)
 
+    def handle_drop(self, destination_idx):
+        reorder = ReorderPatternCommand(self.set.resources[self.active_idx], self.dragged_idx, destination_idx, self.update_resource_ui)
+        self.resource_undo_stack.push(reorder)
+
     def update_resource_ui(self):
         self.resourceDescription.setText(self.set.resources[self.active_idx].data['description'])
+
+        self.sorted.setChecked(True)
+        if 'sorted' in self.set.resources[self.active_idx].data:
+            if self.set.resources[self.active_idx].data['sorted'] is False:
+                self.unsorted.setChecked(True)
+                #self.sortedHelp.setText(self.unsorted_help)
+                self.sorted_flag = False
+            else:
+                #self.sortedHelp.setText(self.sorted_help)
+                self.sorted_flag = True
+        else:
+            #self.sortedHelp.setText(self.sorted_help)
+            self.sorted_flag = True
+
         sequences = self.set.resources[self.active_idx].data['data']
         idx = -1
         for idx, sequence in enumerate(sequences):
@@ -207,6 +304,7 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
             for i in range(len(baked), 64):
                 self.sequence_editors[idx].step_buttons[i].setEnabled(False)
             self.sequence_editors[idx].length_entry.setValue(len(baked))
+            self.sequence_editors[idx].idx = idx
         for i in range(idx+1, 16):
             self.sequence_editors[i].hide()
         if len(sequences) < 16:

@@ -1,18 +1,10 @@
 NEXT!!!
 
-!!! Add an edit menu to hint at undo/redo options
-	- Why does undo not work for the first note that I remove from an osc3 scale but then works once I remove a chord???
-	- Doesnt work at all for gateseq. what gives!
+- Why does undo not work for the first note that I remove from an osc3 scale but then works once I remove a chord???
+- Doesnt work at all for gateseq. what gives!
 
 GATESEQ Editor:
-!!! Make pad to fill implicit and allow for a list of less than 16 sequences
-!!! Adjustable steps per ruler line?
 !!! Enumerate sequence slots with a leftmost column even when empty?
-!!! Sorted unsorted (maybe do this when you are figuring out the sorting for osc3 and sync3 so there is a consistent drag and drop control scheme)?
-
-OSC3 Editor:
-!!! 
-!!! Make pad to fill implicit and allow for a list of less than 16 chords
 
 SYNC3 Editor:
 !!! Filter open dialog for scala suffix on import to correct extension

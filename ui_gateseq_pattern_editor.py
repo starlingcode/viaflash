@@ -18,7 +18,7 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 from PySide6.QtWidgets import (QAbstractButton, QApplication, QButtonGroup, QComboBox,
     QDialog, QDialogButtonBox, QFrame, QHBoxLayout,
     QLabel, QLayout, QPushButton, QSizePolicy,
-    QSpacerItem, QSpinBox, QVBoxLayout, QWidget)
+    QSpinBox, QVBoxLayout, QWidget)
 
 from resourcesetbuttons import (Slot1Button, Slot2Button, Slot3Button, Slot4Button)
 
@@ -286,14 +286,53 @@ class Ui_gateseqPatternEditor(object):
 
         self.addEuclideanControls.addLayout(self.verticalLayout_2)
 
-        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.addEuclideanControls.addItem(self.horizontalSpacer)
-
         self.clearSequences = QPushButton(self.layoutWidget)
         self.clearSequences.setObjectName(u"clearSequences")
 
         self.addEuclideanControls.addWidget(self.clearSequences)
+
+        self.line_3 = QFrame(self.layoutWidget)
+        self.line_3.setObjectName(u"line_3")
+        self.line_3.setFrameShape(QFrame.VLine)
+        self.line_3.setFrameShadow(QFrame.Sunken)
+
+        self.addEuclideanControls.addWidget(self.line_3)
+
+        self.sorted = QPushButton(self.layoutWidget)
+        self.buttonGroup_2 = QButtonGroup(gateseqPatternEditor)
+        self.buttonGroup_2.setObjectName(u"buttonGroup_2")
+        self.buttonGroup_2.addButton(self.sorted)
+        self.sorted.setObjectName(u"sorted")
+        self.sorted.setCheckable(True)
+
+        self.addEuclideanControls.addWidget(self.sorted)
+
+        self.unsorted = QPushButton(self.layoutWidget)
+        self.buttonGroup_2.addButton(self.unsorted)
+        self.unsorted.setObjectName(u"unsorted")
+        self.unsorted.setCheckable(True)
+
+        self.addEuclideanControls.addWidget(self.unsorted)
+
+        self.line_4 = QFrame(self.layoutWidget)
+        self.line_4.setObjectName(u"line_4")
+        self.line_4.setFrameShape(QFrame.VLine)
+        self.line_4.setFrameShadow(QFrame.Sunken)
+
+        self.addEuclideanControls.addWidget(self.line_4)
+
+        self.label_3 = QLabel(self.layoutWidget)
+        self.label_3.setObjectName(u"label_3")
+
+        self.addEuclideanControls.addWidget(self.label_3)
+
+        self.rulerSize = QSpinBox(self.layoutWidget)
+        self.rulerSize.setObjectName(u"rulerSize")
+        self.rulerSize.setMinimum(2)
+        self.rulerSize.setMaximum(16)
+        self.rulerSize.setValue(4)
+
+        self.addEuclideanControls.addWidget(self.rulerSize)
 
 
         self.verticalLayout_9.addLayout(self.addEuclideanControls)
@@ -343,5 +382,8 @@ class Ui_gateseqPatternEditor(object):
         self.label_7.setText(QCoreApplication.translate("gateseqPatternEditor", u"Steps:", None))
         self.label_2.setText(QCoreApplication.translate("gateseqPatternEditor", u"Length:", None))
         self.clearSequences.setText(QCoreApplication.translate("gateseqPatternEditor", u"Clear All", None))
+        self.sorted.setText(QCoreApplication.translate("gateseqPatternEditor", u"Sorted", None))
+        self.unsorted.setText(QCoreApplication.translate("gateseqPatternEditor", u"Unsorted", None))
+        self.label_3.setText(QCoreApplication.translate("gateseqPatternEditor", u"Ruler size:", None))
     # retranslateUi
 
