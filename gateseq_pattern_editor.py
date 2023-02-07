@@ -32,7 +32,7 @@ class RemoveRecipeCommand(QUndoCommand):
 
     def __init__(self, pattern, idx, ui_callback):
         super().__init__()
-        self.setText('Remove index %d' % (idx))
+        self.setText('Remove index %d' % (idx + 1))
         self.pattern = pattern
         self.idx = idx
         self.ui_callback = ui_callback
@@ -72,7 +72,7 @@ class UpdateStepCommand(QUndoCommand):
 
     def __init__(self, pattern, seq_idx, step_idx, state, ui_callback):
         super().__init__()
-        self.setText('Update sequence %d step %d' % (seq_idx, step_idx))
+        self.setText('Update sequence %d step %d' % (seq_idx + 1, step_idx + 1))
         self.pattern = pattern
         self.seq_idx = seq_idx
         self.step_idx = step_idx
@@ -95,7 +95,7 @@ class UpdateLengthCommand(QUndoCommand):
 
     def __init__(self, pattern, idx, length, ui_callback):
         super().__init__()
-        self.setText('Update sequence %d to length' % (idx, length))
+        self.setText('Update sequence %d to length' % (idx + 1, length))
         self.pattern = pattern
         self.idx = idx
         self.length = length
