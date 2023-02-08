@@ -287,7 +287,8 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
         self.switch_slot(0)
 
         self.update_resource_ui()
-
+        
+        self.setFocusPolicy(Qt.ClickFocus)
             
 
 # Edit scale recipe

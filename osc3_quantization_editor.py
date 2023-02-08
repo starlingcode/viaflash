@@ -209,6 +209,8 @@ class Osc3QuantizationEditor(ViaResourceEditor, Ui_osc3QuantizationEditor):
 
         self.switch_slot(0)
 
+        self.setFocusPolicy(Qt.ClickFocus)
+
 # Edit scale recipe
 
     @Slot()

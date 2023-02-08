@@ -151,6 +151,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # This like sets up what we know about the different flavors of editors
         self.init_set_editor_data()
 
+        self.editor1 = None
+
     def __del__(self):
         return
 
@@ -204,6 +206,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     @Slot()
     def create_set_editor_object(self):
+        if self.editor1:
+            del self.editor1
         if self.token in self.editor_data:
             if self.editor_data[self.token]['object1_name'] != 'wavetable':
                 self.editor1 = self.editor_data[self.token]['editor1_object'](self.firmware_dir, self.remote_resources, self.set_slug, self.style_text)
@@ -214,11 +218,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     @Slot()
     def get_slug_from_editor1(self):
+        # Getting slug from editor 1
         self.editor1.clear_menu()
         selected_title = self.editor1.set.data['title']
         self.populate_edit1Select(self.remote_firmware_selection['token'], selected_title)
         self.resourceInfo.setText(self.titles_to_descriptions[selected_title])
-        del self.editor1
 
     # Stuff that basically just updates the main window widgets:
 

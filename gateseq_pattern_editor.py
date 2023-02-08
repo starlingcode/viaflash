@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QInputDialog, QMessageBox, QPushButton
-from PySide6.QtCore import Slot
+from PySide6.QtCore import Slot, Qt
 from PySide6.QtGui import QUndoCommand, QUndoStack, QKeySequence
 
 from ui_gateseq_pattern_editor import Ui_gateseqPatternEditor
@@ -193,6 +193,8 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
 
         self.unsorted_data = None
 
+        self.setFocusPolicy(Qt.ClickFocus)
+
 # Edit pattern recipe
 
     @Slot()
@@ -322,6 +324,7 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
         self.undo_stack_init()
 
     def clear_menu(self):
-        self.menu.clear()
+        self.undo_action.setVisible(False)
+        self.redo_action.setVisible(False)
 
 

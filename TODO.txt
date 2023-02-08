@@ -1,7 +1,6 @@
 NEXT!!!
 
-- Why does undo not work for the first note that I remove from an osc3 scale but then works once I remove a chord???
-- Doesnt work at all for gateseq. what gives!
+!!! Dealing with the menu on window close is awkwarddd
 
 GATESEQ Editor:
 !!! Enumerate sequence slots with a leftmost column even when empty?

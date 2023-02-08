@@ -199,15 +199,8 @@ class ViaResourceEditor(QDialog):
         self.edit_menu = self.menu.addMenu("Edit")
         self.edit_menu.addAction(self.undo_action)
         self.edit_menu.addAction(self.redo_action)
-
-        # self.set_undo_stack = QUndoStack()
-        # self.set_undo_action = self.set_undo_stack.createUndoAction(self, "Undo")
-        # self.set_undo_action.setShortcuts(QKeySequence.Undo)
-        # self.set_redo_action = self.set_undo_stack.createRedoAction(self, "Redo")
-        # self.set_redo_action.setShortcuts(QKeySequence.Redo)
-        # self.set_undo_stack.cleanChanged.connect(self.handle_set_clean_changed)
-        # self.addAction(self.set_undo_action)
-        # self.addAction(self.set_redo_action)
+        # self.undo_action.setVisible(False)
+        # self.redo_action.setVisible(False)
 
     def undo_stack_init(self):
         self.create_undo_stack()
@@ -224,8 +217,9 @@ class ViaResourceEditor(QDialog):
 
     def reject(self):
         if self.dirty_resource or not self.set.is_clean():
-            if self.prompt_to_discard():
-                super().reject()
+            if not self.prompt_to_discard():
+                return
+        super().reject()
 
     def closeEvent(self, event):
         if self.dirty_resource or not self.set.is_clean():
