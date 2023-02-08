@@ -14,12 +14,17 @@ from resourcesetbuttons import (Slot1Button, Slot2Button, Slot3Button, Slot4Butt
 import json
 
 class WavetableBrowser(QDialog, Ui_wavetableBrowser):
-    def __init__(self, table_file, slope_file, slug, max_table_size):
+    def __init__(self, table_file, slope_file, slug, max_table_size, mem_footprint):
         super().__init__()
         self.setupUi(self)
         self.init_table_dict(table_file, slope_file)
         self.table_file = table_file
         self.slope_file = slope_file
+        # TODO do we need these random extra long tables?
+        if mem_footprint < max_table_size:
+            self.table_slider_max = mem_footprint
+        else:
+            self.table_slider_max = 33
         self.max_table_size = max_table_size
         self.selected_tags = []
         self.init_size_select()
@@ -30,8 +35,6 @@ class WavetableBrowser(QDialog, Ui_wavetableBrowser):
         self.init_viz(self.table)
         self.tableIdxLabel.setText("1")
         self.tableList.setCurrentItem(self.tableList.findItems(slug, Qt.MatchExactly)[0])
-        # self.tableList.horizontalScrollBar.setEnabled(False)
-        self.tableSizeWarning.setText('(the first %d will be used)' % max_table_size)
 
     @Slot() 
     def updateTableSize(self, value_tuple):
@@ -108,11 +111,12 @@ class WavetableBrowser(QDialog, Ui_wavetableBrowser):
                     self.table_dict[table]['tags'].append(tag)
 
     def init_size_select(self):
-        self.tableSize.setRange(1, 33)
-        self.tableSize.setValue([1, 33])
+        self.tableSize.setRange(1, self.table_slider_max)
+        self.tableSize.setValue([1, self.table_slider_max])
         self.min_size = int(1)
-        self.max_size = int(33)
+        self.max_size = int(self.table_slider_max)
         self.tableSize.valueChanged.connect(self.updateTableSize)
+        self.tableSizeWarning.setText('(the first %d will be used)' % self.max_table_size)
 
     def init_tag_list(self):
         for tag in self.tag_set:
@@ -152,7 +156,6 @@ class WavetableEditor(ViaResourceEditor):
 
         self.remote_resources = remote_resources
         # TODO check if new remote resource or set collides with existing local slug
-        self.size_limit_data = {'table_size': 9}
         self.set = WavetableSet(resource_dir, slug, table_file, slope_file)
         self.set_slug = slug
         self.slope_file = slope_file
@@ -242,7 +245,8 @@ class WavetableEditor(ViaResourceEditor):
 
 
     def launch_browser(self):
-        self.browser = WavetableBrowser(self.table_file, self.slope_file, self.set.resources[self.active_idx].slug, self.size_limit_data['table_size'])
+        ok_table_length = self.get_allowable_table_size()
+        self.browser = WavetableBrowser(self.table_file, self.slope_file, self.set.resources[self.active_idx].slug, self.size_limit_data['table_size'], ok_table_length)
         self.browser.swapTable.clicked.connect(self.swap_table)
         self.browser.close.clicked.connect(self.close_browser)
         self.browser.setStyleSheet(self.style_text)
@@ -257,7 +261,6 @@ class WavetableEditor(ViaResourceEditor):
     
     def close_browser(self):
         self.browser.accept()
-
  
     def update_resource_selection(self, slug):
         self.tableName.setText(slug)
@@ -268,6 +271,14 @@ class WavetableEditor(ViaResourceEditor):
         
     def update_resources(self):
         self.resource_slugs, self.resource_titles = self.set.get_available_resources()
+
+    def get_allowable_table_size(self):
+        size_left = self.size_limit_data['memory_footprint'] - self.set.get_memory_footprint()
+        ok_table_length = size_left/514
+        if ok_table_length > self.size_limit_data['table_size']:
+            ok_table_length = self.size_limit_data['table_size']
+        return ok_table_length
+
 
 
 class ScannerWavetableEditor(WavetableEditor, Ui_wavetableSetEditor):

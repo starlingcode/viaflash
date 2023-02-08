@@ -2,22 +2,6 @@ NEXT!!!
 
 !!! Dealing with the menu on window close is awkwarddd
 
-GATESEQ Editor:
-!!! Enumerate sequence slots with a leftmost column even when empty?
-
-SYNC3 Editor:
-!!! Filter open dialog for scala suffix on import to correct extension
-
-General app things:
-(Annoying Bug) Theres sometimes an exception when you close an editor and select a new module, trying to stop timer from another thread?
-(Not Strictly Necessary) Shorthand for Default resources? Should default be a metadata item?
-
-Table editor:
-!!! Somehow figure out how to regulate table size
-(Annoying Bug) Why does the browser have those weird lines
-(Biggish Project) Meta drum envelope handling, add an accent feature here!
-(Reach) Scanner preview
-
 Main window:
 - Local firmware
 
@@ -28,5 +12,16 @@ Viafirmware Repo:
 - Mac, Windows, and Linux builds
 - Documentation/tooltips?
 
+---------
 
+SYNC3 Editor:
+!!! Filter open dialog for scala suffix on import to correct extension
 
+General app things:
+(Annoying Bug) Theres sometimes an exception when you close an editor and select a new module, trying to stop timer from another thread?
+(Not Strictly Necessary) Shorthand for Default resources? Should default be a metadata item?
+
+Table editor:
+(Annoying Bug) Why does the browser have those weird lines
+(Biggish Project) Meta drum envelope handling, add an accent feature here!
+(Reach) Scanner preview
