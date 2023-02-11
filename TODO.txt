@@ -1,25 +1,25 @@
 NEXT!!!
 
-!!! Dealing with the menu on window close is awkwarddd
+App:
+No borders around radio buttons
+- Mac, Windows, and Linux builds
+- Documentation/tooltips?
+(Annoying Bug) Theres sometimes an exception when you close an editor and select a new module, trying to stop timer from another thread?
+(Not Strictly Necessary) Shorthand for Default resources? Should default be a metadata item?
+
+SYNC3 Editor:
+!!! Filter open dialog for scala suffix on import to correct extension
+!!! Sync3 restore unsorted order is all fucked up, it doesn't take into account adding or removing ratios in the sorted state
+ - Really, to fix this we need to do the same thing to GATESEQ, we need to have the "sort" operation act on top of an unsorted list and do all add/remove/reorder operations to that unsorted list at the level of the data structure.
+- Sync3 ratio widget needs remove button
 
 Main window:
 - Local firmware
+!!! Dealing with the menu on window close is awkwarddd
 
 Viafirmware Repo:
 - Add real descriptions to wavetables
 - Add real titles to wavetables
-
-- Mac, Windows, and Linux builds
-- Documentation/tooltips?
-
----------
-
-SYNC3 Editor:
-!!! Filter open dialog for scala suffix on import to correct extension
-
-General app things:
-(Annoying Bug) Theres sometimes an exception when you close an editor and select a new module, trying to stop timer from another thread?
-(Not Strictly Necessary) Shorthand for Default resources? Should default be a metadata item?
 
 Table editor:
 (Annoying Bug) Why does the browser have those weird lines

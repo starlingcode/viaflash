@@ -121,7 +121,7 @@ class AddRatioCommand(QUndoCommand):
 
     def redo(self):
         self.idx = self.scale.add_data([self.numerator, self.denominator])
-        can_fill = self.set.resources[self.active_idx].check_fill_ok()
+        can_fill = self.scale.check_fill_ok()
         if not can_fill and self.get_fill() != "expand":
             self.old_fill = self.set_fill('expand')
         self.ui_callback()
@@ -388,7 +388,8 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
 
 # Seed ratio dispaly helpers
 
-    def add_seed_ratio(self, ratio): 
+    def add_seed_ratio(self, ratio):
+        print("add seed ratio called")
         if not self.check_data(ratio):
             reduced = self.reduce_ratio(ratio)
             warning_string = 'Ratio %d/%d exists in set as %d/%d, add duplicate?' % (ratio[0], ratio[1], reduced[0], reduced[1])

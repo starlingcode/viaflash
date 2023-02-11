@@ -273,8 +273,8 @@ class WavetableEditor(ViaResourceEditor):
         self.resource_slugs, self.resource_titles = self.set.get_available_resources()
 
     def get_allowable_table_size(self):
-        size_left = self.size_limit_data['memory_footprint'] - self.set.get_memory_footprint()
-        ok_table_length = size_left/514
+        size_left = self.size_limit_data['memory_footprint'] - self.set.get_memory_footprint() + self.set.resources[self.active_idx].get_memory_footprint()
+        ok_table_length = size_left/(514*2) # 514 samples per waveform in table, 2 bytes per sample
         if ok_table_length > self.size_limit_data['table_size']:
             ok_table_length = self.size_limit_data['table_size']
         return ok_table_length
