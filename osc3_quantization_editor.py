@@ -146,7 +146,7 @@ class ClearChordsCommand(QUndoCommand):
     def __init__(self, chord_set, ui_callback):
         super().__init__()
         self.setText('Clear chords')
-        self.chord_set = scale
+        self.chord_set = chord_set
         self.ui_callback = ui_callback
 
 
