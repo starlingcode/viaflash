@@ -2,6 +2,8 @@ from PySide6.QtWidgets import QPushButton, QLabel, QSpinBox, QWidget, QHBoxLayou
 from PySide6.QtCore import QSize, Qt, QMimeData
 from PySide6.QtGui import QDrag
 
+from dragremovebuttons import DragButton, RemoveButton
+
 class GateseqStepButton(QPushButton):
 
     def __init__(self):
@@ -21,20 +23,17 @@ class GateseqSequenceEdit(QWidget):
 
         self.parent_window = parent
 
-        self.setAcceptDrops(True)
-
+        self.drag_button = DragButton(parent)
         self.label = QLabel()
         self.label.setText("PLZ SHOW UP")
         self.label.setAlignment(Qt.AlignCenter)
         self.length_entry = QSpinBox()
-        self.remove = QPushButton()
-        self.remove.setText("Remove")
+        self.remove = RemoveButton()
         self.layout = QHBoxLayout()
 
-        self.layout.addWidget(self.label)
+        self.layout.addWidget(self.drag_button)
 
-        button_policy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        button_size = QSize(10, 10)
+        self.layout.addWidget(self.label)
 
         self.step_buttons = []
         self.step_dividers = []
@@ -75,34 +74,7 @@ class GateseqSequenceEdit(QWidget):
             if i % size == 0:
                 self.step_dividers[i].show()
 
-    def mouseMoveEvent(self, e):
-        if e.buttons() != Qt.RightButton:
-            return
-
-        mimeData = QMimeData()
-
-        drag = QDrag(self)
-        drag.setMimeData(mimeData)
-        drag.setHotSpot(e.pos() - self.rect().topLeft())
-
-        self.parent_window.dragged_idx = self.idx
-
-        dropAction = drag.exec()
-
-
-    def mousePressEvent(self, e):
-        if e.button() == Qt.LeftButton:
-            QPushButton.mousePressEvent(self, e)
-
-
-    def dragEnterEvent(self, e):
-        e.accept()
-
-
-    def dropEvent(self, e):
-        if not self.parent_window.sorted_flag:
-            self.parent_window.handle_drop(self.idx)
-
-
-
+    def set_idx(self, idx):
+        self.idx = idx
+        self.drag_button.set_idx(idx)
 

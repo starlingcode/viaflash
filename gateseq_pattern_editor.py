@@ -306,7 +306,7 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
             for i in range(len(baked), 64):
                 self.sequence_editors[idx].step_buttons[i].setEnabled(False)
             self.sequence_editors[idx].length_entry.setValue(len(baked))
-            self.sequence_editors[idx].idx = idx
+            self.sequence_editors[idx].set_idx(idx)
         for i in range(idx+1, 16):
             self.sequence_editors[i].hide()
         if len(sequences) < 16:

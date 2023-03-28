@@ -1,6 +1,6 @@
-from PySide6.QtWidgets import QDialog, QPushButton, QSpacerItem, QSizePolicy, QMessageBox, QLabel, QFileDialog, QWidget, QVBoxLayout, QHBoxLayout, QLayout
-from PySide6.QtCore import Slot, QRect, Qt, QMimeData, QSize
-from PySide6.QtGui import QDrag, QUndoStack, QUndoCommand, QKeySequence
+from PySide6.QtWidgets import QDialog, QSizePolicy, QMessageBox, QLabel, QFileDialog, QWidget, QVBoxLayout, QHBoxLayout
+from PySide6.QtCore import Slot, Qt
+from PySide6.QtGui import QUndoCommand
 
 from ui_sync3_scale_editor import Ui_sync3ScaleEditor
 from ui_sync3_ratio_add import Ui_sync3RatioAdd
@@ -36,45 +36,11 @@ class Sync3RatioAdd(QDialog, Ui_sync3RatioAdd):
     def on_addRatio_clicked(self):
         self.parent_window.add_seed_ratio([self.numerator.value(), self.denominator.value()])    
 
-class RatioDragButton(DragButton):
-
-    def __init__(self, parent_window):
-        super().__init__()
-        self.setAcceptDrops(True)
-        self.parent_window = parent_window
-        self.idx = 0
-
-    def set_idx(self, idx):
-        self.idx = idx
-
-    def mouseMoveEvent(self, e):
-        mimeData = QMimeData()
-
-        drag = QDrag(self)
-        drag.setMimeData(mimeData)
-        drag.setHotSpot(e.pos() - self.rect().topLeft())
-
-        self.parent_window.dragged_idx = self.idx
-
-        dropAction = drag.exec()
-
-    def dragEnterEvent(self, e):
-        e.accept()
-
-    def dropEvent(self, e):
-        if not self.parent_window.sorted_flag:
-            self.parent_window.handle_drop(self.idx)
-        else:
-            msgBox = QMessageBox()
-            msgBox.setText("Reordering not supported in sorted mode")
-            msgBox.exec()
-
-
 class RatioRow(QWidget):
 
     def __init__(self, parent_window):
         super().__init__()
-        self.drag = RatioDragButton(parent_window)
+        self.drag = DragButton(parent_window)
         self.ratio = QLabel()
         self.ratio.setAlignment(Qt.AlignHCenter)
         self.decimal = QLabel()
