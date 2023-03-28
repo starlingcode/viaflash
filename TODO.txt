@@ -30,7 +30,6 @@ No borders around radio buttons
 SYNC3 Editor:
 !!! Sync3 restore unsorted order is all fucked up, it doesn't take into account adding or removing ratios in the sorted state
  - Really, to fix this we need to do the same thing to GATESEQ, we need to have the "sort" operation act on top of an unsorted list and do all add/remove/reorder operations to that unsorted list at the level of the data structure.
-- Sync3 ratio widget needs remove button
 
 Main window:
 - Local firmware

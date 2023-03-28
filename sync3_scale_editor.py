@@ -3,20 +3,12 @@ from PySide6.QtCore import Slot, QRect, Qt, QMimeData, QSize
 from PySide6.QtGui import QDrag, QUndoStack, QUndoCommand, QKeySequence
 
 from ui_sync3_scale_editor import Ui_sync3ScaleEditor
-from ui_sync3_ratio import Ui_sync3Ratio
 from ui_sync3_ratio_add import Ui_sync3RatioAdd
 from viatools.sync3_scales import Sync3ScaleSet
 from via_resource_editor import ViaResourceEditor
+from dragremovebuttons import DragButton, RemoveButton
 
 import numpy as np
-
-
-class Sync3Ratio(QDialog, Ui_sync3Ratio):
-
-    def __init__(self, numerator, denominator):
-        super().__init__()
-        self.setupUi(self)
-        self.ratioDisplay.update(numerator, denominator)
 
 
 class Sync3RatioAdd(QDialog, Ui_sync3RatioAdd):
@@ -44,36 +36,18 @@ class Sync3RatioAdd(QDialog, Ui_sync3RatioAdd):
     def on_addRatio_clicked(self):
         self.parent_window.add_seed_ratio([self.numerator.value(), self.denominator.value()])    
 
-
-class RatioButton(QWidget):
+class RatioDragButton(DragButton):
 
     def __init__(self, parent_window):
         super().__init__()
         self.setAcceptDrops(True)
-        self.button = QPushButton()
-        self.decimal = QLabel()
-        self.decimal.setAlignment(Qt.AlignHCenter)
-        self.semitones = QLabel()
-        self.semitones.setAlignment(Qt.AlignHCenter)
-        self.layout = QHBoxLayout(self)
-        policy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
-        self.button.setSizePolicy(policy)
-        self.decimal.setSizePolicy(policy)
-        self.semitones.setSizePolicy(policy)
-        self.layout.addWidget(self.button)
-        self.layout.addWidget(self.decimal)
-        self.layout.addWidget(self.semitones)
-        self.idx = 0
         self.parent_window = parent_window
-        self.layout.setContentsMargins(0, 0, 0, 0)
-        self.setSizePolicy(policy)
-        # self.layout.setSpacing(0)
+        self.idx = 0
 
+    def set_idx(self, idx):
+        self.idx = idx
 
     def mouseMoveEvent(self, e):
-        if e.buttons() != Qt.RightButton:
-            return
-
         mimeData = QMimeData()
 
         drag = QDrag(self)
@@ -84,23 +58,51 @@ class RatioButton(QWidget):
 
         dropAction = drag.exec()
 
-
-    def mousePressEvent(self, e):
-        if e.button() == Qt.LeftButton:
-            QPushButton.mousePressEvent(self, e)
-
-
     def dragEnterEvent(self, e):
         e.accept()
 
-
     def dropEvent(self, e):
-
         if not self.parent_window.sorted_flag:
             self.parent_window.handle_drop(self.idx)
+        else:
+            msgBox = QMessageBox()
+            msgBox.setText("Reordering not supported in sorted mode")
+            msgBox.exec()
+
+
+class RatioRow(QWidget):
+
+    def __init__(self, parent_window):
+        super().__init__()
+        self.drag = RatioDragButton(parent_window)
+        self.ratio = QLabel()
+        self.ratio.setAlignment(Qt.AlignHCenter)
+        self.decimal = QLabel()
+        self.decimal.setAlignment(Qt.AlignHCenter)
+        self.semitones = QLabel()
+        self.semitones.setAlignment(Qt.AlignHCenter)
+        self.remove = RemoveButton()
+        self.layout = QHBoxLayout(self)
+        policy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
+        self.ratio.setSizePolicy(policy)
+        self.decimal.setSizePolicy(policy)
+        self.semitones.setSizePolicy(policy)
+        self.layout.addWidget(self.drag)
+        self.layout.addWidget(self.ratio)
+        self.layout.addWidget(self.decimal)
+        self.layout.addWidget(self.semitones)
+        self.layout.addWidget(self.remove)
+        self.idx = 0
+        self.parent_window = parent_window
+        self.layout.setContentsMargins(0, 0, 0, 0)
+        self.setSizePolicy(policy)
+
+    def set_idx(self, idx):
+        self.idx = idx
+        self.drag.set_idx(idx)
 
     def update_ratio(self, numerator, denominator):
-        self.button.setText('%s/%s' % (numerator, denominator))
+        self.ratio.setText('%s/%s' % (numerator, denominator))
         self.decimal.setText('%.4f' % (numerator/denominator))
         self.semitones.setText('%.4f' % (np.log2(numerator/denominator) * 12))
 
@@ -406,21 +408,14 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
         self.resource_undo_stack.push(reorder)
 
 
-    def seed_button_pushed(self, idx):
-        ratio = self.set.resources[self.active_idx].data['seed_ratios'][idx]
-        self.ratio_dialog = Sync3Ratio(ratio[0], ratio[1])
-        self.ratio_dialog.removeRatio.clicked.connect(self.remove_ratio)
-        self.ratio_dialog.close.clicked.connect(self.ratio_dialog.accept)
-        self.ratio_dialog.setWindowTitle('%d/%d' % (ratio[0], ratio[1]))
-        self.ratio_dialog.setStyleSheet(self.style_text)
+    def remove_button_pushed(self, idx):
         self.active_ratio_idx = idx
-        self.ratio_dialog.exec()
+        self.remove_ratio()
 
 
     def remove_ratio(self):
         remove_ratio = RemoveRatioCommand(self.set.resources[self.active_idx], self.active_ratio_idx, self.update_resource_ui)
         self.resource_undo_stack.push(remove_ratio)
-        self.ratio_dialog.accept()
 
 
 # Kinda like the data view
@@ -506,11 +501,11 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
         num_tables = 32
         for row in range(0, num_tables):
             idx = row
-            new_button = RatioButton(self)
-            new_button.button.clicked.connect(lambda state=True, x=idx: self.seed_button_pushed(x))
-            new_button.idx = idx
-            self.seed_ratio_buttons.append(new_button)
-            self.seedRatioGrid.addWidget(new_button, row)
+            new_row = RatioRow(self)
+            new_row.remove.clicked.connect(lambda state=True, x=idx: self.remove_button_pushed(x))
+            new_row.set_idx(idx)
+            self.seed_ratio_buttons.append(new_row)
+            self.seedRatioGrid.addWidget(new_row, row)
 
         self.seedRatioGrid.insertStretch(-1)
 

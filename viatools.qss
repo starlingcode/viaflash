@@ -82,6 +82,16 @@ Slot8Button {
     background-position: center; 
 }
 
+DragButton {
+    background-image: url(ui_resources/dragarrows.png);
+    background-position: center; 
+}
+
+RemoveButton {
+    background-image: url(ui_resources/removebutton.png);
+    background-position: center; 
+}
+
 GateseqStepButton:checked {
     background-color: #cccccc;
 }
