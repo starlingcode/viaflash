@@ -13,6 +13,8 @@ class ViaResourceEditor(QDialog):
         self.resource_set_slugs = {}
         self.resource_titles = {}
         self.resource_set_titles = {}
+
+        self.sorted_flag = False
         
         # Base class must initialize self.set as ViaResourceSet derived class
 

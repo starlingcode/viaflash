@@ -6,62 +6,39 @@ from ui_osc3_quantization_editor import Ui_osc3QuantizationEditor
 from viatools.osc3_quantizations import Osc3QuantizationSet
 from via_resource_editor import ViaResourceEditor
 
+from dragremovebuttons import DragButton, RemoveButton
+
 class ChordButton(QWidget):
 
     def __init__(self, parent_window):
         super().__init__()
-        self.setAcceptDrops(True)
-        self.button = QPushButton()
+        self.drag = DragButton(parent_window)
+        self.remove = RemoveButton()
         self.degrees = QLabel()
         self.degrees.setAlignment(Qt.AlignHCenter)
         self.notes = QLabel()
         self.notes.setAlignment(Qt.AlignHCenter)
         self.layout = QHBoxLayout(self)
         policy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
-        self.button.setSizePolicy(policy)
         self.degrees.setSizePolicy(policy)
         self.notes.setSizePolicy(policy)
-        self.layout.addWidget(self.button)
+        self.layout.addWidget(self.drag)
         self.layout.addWidget(self.degrees)
         self.layout.addWidget(self.notes)
+        self.layout.addWidget(self.remove)
         self.idx = 0
         self.parent_window = parent_window
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.setSizePolicy(policy)
 
-
-    def mouseMoveEvent(self, e):
-        if e.buttons() != Qt.RightButton:
-            return
-
-        mimeData = QMimeData()
-
-        drag = QDrag(self)
-        drag.setMimeData(mimeData)
-        drag.setHotSpot(e.pos() - self.rect().topLeft())
-
-        self.parent_window.dragged_idx = self.idx
-
-        dropAction = drag.exec()
-
-
-    def mousePressEvent(self, e):
-        if e.button() == Qt.LeftButton:
-            QPushButton.mousePressEvent(self, e)
-
-
-    def dragEnterEvent(self, e):
-        e.accept()
-
-
-    def dropEvent(self, e):
-        self.parent_window.handle_drop(self.idx)
-
     def update_ratio(self, pitch1, pitch2, note_list):
-        self.button.setText('Remove')
         self.degrees.setText('%d, %d' % (int(pitch1), int(pitch2)))
         scale_size = len(note_list)
         self.notes.setText('%s, C, %s' % (note_list[int(pitch1) % scale_size], note_list[int(pitch2) % scale_size]))
+
+    def set_idx(self, idx):
+        self.idx = idx
+        self.drag.set_idx(idx)
 
 # Data controller functions
 
@@ -190,7 +167,6 @@ class Osc3QuantizationEditor(ViaResourceEditor, Ui_osc3QuantizationEditor):
         self.setStyleSheet(style_text)
 
         self.remote_resources = remote_resources
-        # TODO check if new remote resource or set collides with existing local slug
 
         self.set = Osc3QuantizationSet(resource_dir, slug)
         self.set_slug = slug
@@ -266,8 +242,8 @@ class Osc3QuantizationEditor(ViaResourceEditor, Ui_osc3QuantizationEditor):
         for row in range(0, num_tables):
             idx = row
             new_button = ChordButton(self)
-            new_button.button.clicked.connect(lambda state=True, x=idx: self.chord_button_pushed(x))
-            new_button.idx = idx
+            new_button.remove.clicked.connect(lambda state=True, x=idx: self.chord_button_pushed(x))
+            new_button.set_idx(idx)
             self.chord_buttons.append(new_button)
             self.chordGrid.addWidget(new_button, row)
 
