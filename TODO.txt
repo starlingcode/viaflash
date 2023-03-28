@@ -1,5 +1,25 @@
 NEXT!!!
 
+! Oh my god the structure of this is a fucking mess
+
+- Drag needs a ui explanation, would be good to have a drag button and a remove button that's just an x
+- Vertical margins between widgets in resource editor subsection
+- Empty scale
+- Fix vcvrack save 
+- Resource editor close event fucked up
+- Fix Combo box population after new scale set saved
+- Margin of button misses hit test for mouse for gateseq buttons
+- Remove drum envemlope from comb
+- Minimax slider is missing labels in hubuntu
+- browser gets screwey with a list index out of range
+- Wavetable browser preset name is goofy
+- Sync layout changes with the text wrapping for the sorting 
+- Change the button diabled paradigm
+
+
+OSC3:
+- I don't know where the chord data for unquanitized comes from exactly, is it just mode 2
+
 App:
 No borders around radio buttons
 - Mac, Windows, and Linux builds
@@ -8,7 +28,6 @@ No borders around radio buttons
 (Not Strictly Necessary) Shorthand for Default resources? Should default be a metadata item?
 
 SYNC3 Editor:
-!!! Filter open dialog for scala suffix on import to correct extension
 !!! Sync3 restore unsorted order is all fucked up, it doesn't take into account adding or removing ratios in the sorted state
  - Really, to fix this we need to do the same thing to GATESEQ, we need to have the "sort" operation act on top of an unsorted list and do all add/remove/reorder operations to that unsorted list at the level of the data structure.
 - Sync3 ratio widget needs remove button

@@ -323,7 +323,7 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
 
     @Slot()
     def on_addFromScala_clicked(self):
-        scala_path = QFileDialog.getOpenFileName(self, 'Import Scala File')[0]
+        scala_path = QFileDialog.getOpenFileName(self, 'Import Scala File', filter="Scala Files (*.scl)")[0]
         with open(scala_path) as scala_file:
             scala_ratios = []
             for line in scala_file.readlines():
