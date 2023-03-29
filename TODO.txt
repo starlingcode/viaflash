@@ -1,17 +1,10 @@
 NEXT!!!
 
-! Oh my god the structure of this is a fucking mess
-
-OSC3:
-- I don't know where the chord data for unquanitized comes from exactly, is it just mode 2
-
 App:
 - Resource editor close event fucked up (somehow I guess, great notetaking here will)
 - Vertical margins between widgets in resource editor subsection (check all apps for ui form improvement)
 - Fix vcvrack save 
 - Fix Combo box population after new scale set saved (probably all resources)
-- Change the button diabled paradigm
-- No borders around radio buttons
 - Mac, Windows, and Linux builds
 - Documentation/tooltips?
 (Annoying Bug) Theres sometimes an exception when you close an editor and select a new module, trying to stop timer from another thread?
