@@ -2,7 +2,7 @@ from PySide6.QtWidgets import QInputDialog, QMessageBox, QPushButton
 from PySide6.QtCore import Slot, Qt
 from PySide6.QtGui import QUndoCommand, QUndoStack, QKeySequence
 
-from ui_gateseq_pattern_editor import Ui_gateseqPatternEditor
+from ui_resources.ui_gateseq_pattern_editor import Ui_gateseqPatternEditor
 from viatools.gateseq_patterns import GateseqPatternSet
 from via_resource_editor import ViaResourceEditor
 

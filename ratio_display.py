@@ -7,7 +7,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 from matplotlib import pyplot as plt
 
-from ui_ratio_display import Ui_ratioDisplay
+from ui_resources.ui_ratio_display import Ui_ratioDisplay
 
 class Sync3RatioXY(FigureCanvasQTAgg):
     def __init__(self, numerator, denominator):

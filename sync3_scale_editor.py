@@ -2,8 +2,8 @@ from PySide6.QtWidgets import QDialog, QSizePolicy, QMessageBox, QLabel, QFileDi
 from PySide6.QtCore import Slot, Qt
 from PySide6.QtGui import QUndoCommand
 
-from ui_sync3_scale_editor import Ui_sync3ScaleEditor
-from ui_sync3_ratio_add import Ui_sync3RatioAdd
+from ui_resources.ui_sync3_scale_editor import Ui_sync3ScaleEditor
+from ui_resources.ui_sync3_ratio_add import Ui_sync3RatioAdd
 from viatools.sync3_scales import Sync3ScaleSet
 from via_resource_editor import ViaResourceEditor
 from dragremovebuttons import DragButton, RemoveButton

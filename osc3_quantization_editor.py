@@ -2,7 +2,7 @@ from PySide6.QtWidgets import QInputDialog, QMessageBox, QWidget, QHBoxLayout, Q
 from PySide6.QtCore import Slot, Qt, QMimeData
 from PySide6.QtGui import QUndoCommand, QUndoStack, QKeySequence, QDrag
 
-from ui_osc3_quantization_editor import Ui_osc3QuantizationEditor
+from ui_resources.ui_osc3_quantization_editor import Ui_osc3QuantizationEditor
 from viatools.osc3_quantizations import Osc3QuantizationSet
 from via_resource_editor import ViaResourceEditor
 

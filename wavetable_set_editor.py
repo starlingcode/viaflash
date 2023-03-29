@@ -3,8 +3,8 @@ from PySide6.QtCore import Slot, Qt
 
 from superqt import QLabeledRangeSlider
 
-from ui_wavetable_set_editor import Ui_wavetableSetEditor
-from ui_wavetable_browser import Ui_wavetableBrowser
+from ui_resources.ui_wavetable_set_editor import Ui_wavetableSetEditor
+from ui_resources.ui_wavetable_browser import Ui_wavetableBrowser
 from viatools.wavetables import Wavetable, WavetableSet
 from via_resource_editor import ViaResourceEditor
 

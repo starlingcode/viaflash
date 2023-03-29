@@ -8,7 +8,7 @@ from PySide6.QtWidgets import QMainWindow, QMessageBox, QProgressDialog, QStyleF
 from PySide6.QtCore import Slot, Signal, QSize, QRect, QRunnable, QThreadPool, QObject
 from PySide6.QtGui import QPixmap, QAction, QKeySequence
 
-from ui_mainwindow import Ui_MainWindow
+from ui_resources.ui_mainwindow import Ui_MainWindow
 from dfu_util import DfuUtil
 from via_module import ViaModule
 from sync3_scale_editor import Sync3ScaleEditor
@@ -113,7 +113,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # This is necessary to make the thing look somewhat like the qt designer template
         # self.setStyle(QStyleFactory.create("Fusion"))
         # Read in the stylesheet, set it to things, store it to set to other windows we spawn
-        with open(self.app_path + '/viatools.qss') as stylesheet:
+        with open(self.app_path + '/ui_resources/viaflash.qss') as stylesheet:
             self.style_text = stylesheet.read()
             self.setStyleSheet(self.style_text)
         self.statusBar.setStyleSheet(self.style_text)
