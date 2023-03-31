@@ -49,8 +49,11 @@ class ViaResourceEditor(QDialog):
     def on_saveForRack_clicked(self):
         bin_write_dir = QFileDialog.getExistingDirectory(self, "Select save directory")
         if bin_write_dir != '':
-            self.set.pack_binary(bin_write_dir + '/', self.set.data['title'])
+            filename = self.set.pack_binary(bin_write_dir + '/', self.set.data['title'])
             self.update_resource_ui()
+            QMessageBox.information(self, "File saved successfully", "File saved to: " + filename)
+        else:
+            QMessageBox.warning(self, "No file saved!", "File not saved, no valid directory selected")
 
 
 # Load/save resource
@@ -227,8 +230,8 @@ class ViaResourceEditor(QDialog):
         if self.dirty_resource or not self.set.is_clean():
             if self.prompt_to_discard():
                 return
-            else:
-                event.accept()
-                super().closeEvent()
+        self.done(QDialog.Accepted)
+        super().closeEvent(event)
+
 
 

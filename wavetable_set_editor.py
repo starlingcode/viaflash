@@ -24,7 +24,7 @@ class WavetableBrowser(QDialog, Ui_wavetableBrowser):
         if mem_footprint < max_table_size:
             self.table_slider_max = mem_footprint
         else:
-            self.table_slider_max = 33
+            self.table_slider_max = 9
         self.max_table_size = max_table_size
         self.selected_tags = []
         self.init_size_select()
@@ -71,6 +71,7 @@ class WavetableBrowser(QDialog, Ui_wavetableBrowser):
         self.orButton.setChecked(True)
         for tag in self.tag_set:
             self.selected_tags.append(tag)
+        self.update_filter()
 
     @Slot()
     def on_orButton_clicked(self):
@@ -87,6 +88,7 @@ class WavetableBrowser(QDialog, Ui_wavetableBrowser):
         self.viz2.update_plot(self.table)
         self.viz3.update_plot(self.table, self.table_idx)
         self.viz4.update_plot(self.table, self.table_idx)
+        self.tableDescription.setText(self.table.data['description'])
 
     def init_viz(self, table):
         self.viz1.init_viz('wireframe', table)
@@ -293,12 +295,11 @@ class ScannerWavetableEditor(WavetableEditor, Ui_wavetableSetEditor):
 
 class MetaWavetableEditor(WavetableEditor, Ui_wavetableSetEditor):
     def __init__(self, resource_dir='./', remote_resources = {}, slug='original', style_text="", table_file='./tables.json', slope_file='./slopes.json'):
-        self.table_modes = ['Audio', 'Envelope', 'Sequence', 'Drum Envelope']
+        self.table_modes = ['Audio', 'Envelope', 'Sequence']
         self.table_mode_sizes = {
             'Audio': 8, 
             'Envelope': 8, 
-            'Sequence': 8, 
-            'Drum Envelope': 1
+            'Sequence': 8 
         }
         self.size_limit_data = {'table_size': 9, 'memory_footprint': 170048}
         super().__init__(resource_dir, remote_resources, slug, style_text, table_file, slope_file) 

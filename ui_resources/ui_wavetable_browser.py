@@ -27,12 +27,12 @@ class Ui_wavetableBrowser(object):
     def setupUi(self, wavetableBrowser):
         if not wavetableBrowser.objectName():
             wavetableBrowser.setObjectName(u"wavetableBrowser")
-        wavetableBrowser.resize(970, 616)
+        wavetableBrowser.resize(970, 680)
         wavetableBrowser.setMinimumSize(QSize(0, 0))
         wavetableBrowser.setMaximumSize(QSize(10000, 10000))
         self.layoutWidget = QWidget(wavetableBrowser)
         self.layoutWidget.setObjectName(u"layoutWidget")
-        self.layoutWidget.setGeometry(QRect(160, 10, 191, 601))
+        self.layoutWidget.setGeometry(QRect(160, 10, 191, 661))
         self.verticalLayout = QVBoxLayout(self.layoutWidget)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
@@ -63,7 +63,7 @@ class Ui_wavetableBrowser(object):
 
         self.layoutWidgetNO = QWidget(wavetableBrowser)
         self.layoutWidgetNO.setObjectName(u"layoutWidgetNO")
-        self.layoutWidgetNO.setGeometry(QRect(350, 10, 611, 600))
+        self.layoutWidgetNO.setGeometry(QRect(350, 10, 611, 661))
         self.tableViz_2 = QVBoxLayout(self.layoutWidgetNO)
         self.tableViz_2.setObjectName(u"tableViz_2")
         self.tableViz_2.setContentsMargins(0, 0, 0, 0)
@@ -156,9 +156,18 @@ class Ui_wavetableBrowser(object):
 
         self.tableViz_2.addLayout(self.bottomViz)
 
+        self.tableDescription = QLabel(self.layoutWidgetNO)
+        self.tableDescription.setObjectName(u"tableDescription")
+        font = QFont()
+        font.setPointSize(11)
+        self.tableDescription.setFont(font)
+        self.tableDescription.setAlignment(Qt.AlignCenter)
+
+        self.tableViz_2.addWidget(self.tableDescription)
+
         self.layoutWidget_2 = QWidget(wavetableBrowser)
         self.layoutWidget_2.setObjectName(u"layoutWidget_2")
-        self.layoutWidget_2.setGeometry(QRect(10, 10, 141, 601))
+        self.layoutWidget_2.setGeometry(QRect(10, 10, 141, 661))
         self.verticalLayout_3 = QVBoxLayout(self.layoutWidget_2)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
@@ -236,6 +245,7 @@ class Ui_wavetableBrowser(object):
         self.close.setText(QCoreApplication.translate("wavetableBrowser", u"Cancel", None))
         self.label_4.setText(QCoreApplication.translate("wavetableBrowser", u"Table Index:", None))
         self.tableIdxLabel.setText(QCoreApplication.translate("wavetableBrowser", u"0", None))
+        self.tableDescription.setText(QCoreApplication.translate("wavetableBrowser", u"TextLabel", None))
         self.label_8.setText(QCoreApplication.translate("wavetableBrowser", u"Filter by Tag:", None))
         self.label.setText(QCoreApplication.translate("wavetableBrowser", u"Tag combine mode:", None))
         self.orButton.setText(QCoreApplication.translate("wavetableBrowser", u"Or", None))

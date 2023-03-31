@@ -1,17 +1,14 @@
 NEXT!!!
 
 App:
-- Resource editor close event fucked up (somehow I guess, great notetaking here will)
+- Check menus and undo stacks when switching between resource sets
 - Vertical margins between widgets in resource editor subsection (check all apps for ui form improvement)
-- Fix vcvrack save 
-- Fix Combo box population after new scale set saved (probably all resources)
 - Mac, Windows, and Linux builds
 - Documentation/tooltips?
 (Annoying Bug) Theres sometimes an exception when you close an editor and select a new module, trying to stop timer from another thread?
 (Not Strictly Necessary) Shorthand for Default resources? Should default be a metadata item?
 
 SYNC3 Editor:
-- Empty scale (whatever the hell this means)
 - Sync layout changes with the text wrapping for the sorting 
 !!! Sync3 restore unsorted order is all fucked up, it doesn't take into account adding or removing ratios in the sorted state
  - Really, to fix this we need to do the same thing to GATESEQ, we need to have the "sort" operation act on top of an unsorted list and do all add/remove/reorder operations to that unsorted list at the level of the data structure.
@@ -25,10 +22,7 @@ Viafirmware Repo:
 - Add real titles to wavetables
 
 Table editor:
-- Remove drum envemlope from comb
 - Minimax slider is missing labels in hubuntu
-- browser gets screwey with a list index out of range
-- Wavetable browser preset name is goofy
 (Annoying Bug) Why does the browser have those weird lines
 (Biggish Project) Meta drum envelope handling, add an accent feature here!
 (Reach) Scanner preview
