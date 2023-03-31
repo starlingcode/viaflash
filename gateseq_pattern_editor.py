@@ -290,7 +290,7 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
             #self.sortedHelp.setText(self.sorted_help)
             self.sorted_flag = True
 
-        sequences = self.set.resources[self.active_idx].data['data']
+        sequences = self.set.resources[self.active_idx].data['sorted_patterns']
         idx = -1
         for idx, sequence in enumerate(sequences):
             for button in self.sequence_editors[idx].step_buttons:

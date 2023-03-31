@@ -403,7 +403,7 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
             self.sortedHelp.setText(self.sorted_help)
             self.sorted_flag = True
 
-        seed_ratios = self.set.resources[self.active_idx].data['seed_ratios']
+        seed_ratios = self.set.resources[self.active_idx].data['sorted_ratios']
         idx = -1
         for idx, ratio in enumerate(seed_ratios):
             self.seed_ratio_buttons[idx].show()
