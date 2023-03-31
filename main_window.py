@@ -214,6 +214,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             else: 
                 self.editor1 = self.editor_data[self.token]['editor1_object'](self.firmware_dir, self.remote_resources, self.set_slug, self.style_text, self.app_path + '/wavetables/tables.json', self.app_path + '/wavetables/slopes.json')
             self.editor1.finished.connect(self.get_slug_from_editor1)
+            self.editor1.setModal(True)
         self.update_ui_new_editor()
 
     @Slot()
