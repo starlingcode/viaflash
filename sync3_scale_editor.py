@@ -90,8 +90,8 @@ class AddRatioCommand(QUndoCommand):
     def redo(self):
         self.idx = self.scale.add_data([self.numerator, self.denominator])
         can_fill = self.scale.check_fill_ok()
-        if not can_fill and self.get_fill() != "expand":
-            self.old_fill = self.set_fill('expand')
+        if not can_fill and self.scale.get_fill() != "expand":
+            self.old_fill = self.scale.set_fill('expand')
         self.ui_callback()
 
 
@@ -176,22 +176,19 @@ class UpdateSortedCommand(QUndoCommand):
 
     def redo(self):
         if self.is_sorted:
-            self.old_order = self.scale.update_sorted(True)
+            self.scale.update_sorted(True)
             self.ui_callback()
         else:
-            self.old_order = self.scale.update_sorted(False)
-            if self.old_order:
-                self.scale.reload_data(self.old_order)
+            self.scale.update_sorted(False)
             self.ui_callback()
 
 
     def undo(self):
         if not self.is_sorted:
-            self.old_order = self.scale.update_sorted(True)
+            self.scale.update_sorted(True)
             self.ui_callback()
         else:
             self.scale.update_sorted(False)
-            self.scale.reload_data(self.old_order)
             self.ui_callback()
 
 
@@ -405,6 +402,7 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
 
         seed_ratios = self.set.resources[self.active_idx].data['sorted_ratios']
         idx = -1
+        print(seed_ratios)
         for idx, ratio in enumerate(seed_ratios):
             self.seed_ratio_buttons[idx].show()
             self.seed_ratio_buttons[idx].update_ratio(ratio[0], ratio[1])
