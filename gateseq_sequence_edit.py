@@ -66,6 +66,7 @@ class GateseqSequenceEdit(QWidget):
         self.reset_ruler(ruler_size)
 
         self.idx = 0
+        self.unsorted_idx = 0
 
     def reset_ruler(self, size):
         for divider in self.step_dividers:

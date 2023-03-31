@@ -256,10 +256,10 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
 
     def step_button_pushed(self, seq_idx, step_idx):
         if self.sequence_editors[seq_idx].step_buttons[step_idx].isChecked():
-            update_step = UpdateStepCommand(self.set.resources[self.active_idx], seq_idx, step_idx, True, self.update_resource_ui)
+            update_step = UpdateStepCommand(self.set.resources[self.active_idx], self.sequence_editors[seq_idx].unsorted_idx, step_idx, True, self.update_resource_ui)
             self.resource_undo_stack.push(update_step)
         else:
-            update_step = UpdateStepCommand(self.set.resources[self.active_idx], seq_idx, step_idx, False, self.update_resource_ui)
+            update_step = UpdateStepCommand(self.set.resources[self.active_idx], self.sequence_editors[seq_idx].unsorted_idx, step_idx, False, self.update_resource_ui)
             self.resource_undo_stack.push(update_step)
 
     def update_sequence_length(self, seq_idx):
@@ -267,7 +267,7 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
         old_length = self.set.resources[self.active_idx].get_length(seq_idx)
         length = self.sequence_editors[seq_idx].length_entry.value()
         if old_length != length:
-            update_length = UpdateLengthCommand(self.set.resources[self.active_idx], seq_idx, length, self.update_resource_ui)
+            update_length = UpdateLengthCommand(self.set.resources[self.active_idx], self.sequence_editors[seq_idx].unsorted_idx, length, self.update_resource_ui)
             self.resource_undo_stack.push(update_length)
 
     def handle_drop(self, destination_idx):
@@ -307,6 +307,7 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
                 self.sequence_editors[idx].step_buttons[i].setEnabled(False)
             self.sequence_editors[idx].length_entry.setValue(len(baked))
             self.sequence_editors[idx].set_idx(idx)
+            self.sequence_editors[idx].unsorted_idx = self.set.resources[self.active_idx].data['unsorted_indices'][idx]
         for i in range(idx+1, 16):
             self.sequence_editors[i].hide()
         if len(sequences) < 16:
