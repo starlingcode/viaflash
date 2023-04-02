@@ -197,6 +197,8 @@ class WavetableEditor(ViaResourceEditor):
         
         self.update_slot_buttons()
 
+        self.initToolTips()
+
 
 # Edit wavetable recipe
 
@@ -239,6 +241,7 @@ class WavetableEditor(ViaResourceEditor):
         for slot in self.slot_list:
             if slot in self.slot_lists_per_mode[mode]:
                 slot.show()
+                slot.setToolTip("Select the table for " + mode + " mode " + str(self.slot_lists_per_mode[mode].index(slot) + 1))
             else:
                 slot.hide()
         active_slot = self.slot_lists_per_mode[mode][0]
@@ -280,6 +283,12 @@ class WavetableEditor(ViaResourceEditor):
         if ok_table_length > self.size_limit_data['table_size']:
             ok_table_length = self.size_limit_data['table_size']
         return ok_table_length
+    
+    def initToolTips(self):
+        super().initToolTips()
+        self.openBrowser.setToolTip("Open a browser to choose a new table for this slot")
+        self.tableIdx.setToolTip("Select a particular waveform from the table to display")
+        self.tableMode.setToolTip("Select a group of tables to edit")
 
 
 
@@ -317,5 +326,7 @@ class SyncWavetableEditor(WavetableEditor, Ui_wavetableSetEditor):
         }
         self.size_limit_data = {'table_size': 9, 'memory_footprint': 125048}
         super().__init__(resource_dir, remote_resources, slug, style_text, table_file, slope_file) 
+
+
 
 
