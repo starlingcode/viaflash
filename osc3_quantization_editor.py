@@ -319,7 +319,7 @@ class Osc3QuantizationEditor(ViaResourceEditor, Ui_osc3QuantizationEditor):
         super().initToolTips()
         self.selectResource.setToolTip("Select an available quantization for this mode and open it in the editor")
         self.saveResource.setToolTip("Save the edited quantization")
-        self.addChord.setToolTip("Add the chord specified by the Oscillator 2 and 3 Pitch selectors")
+        self.addChord.setToolTip("Add the chord specified by the Oscillator 2 and 3 Pitch selectors, disabled with a full set of 16 chords")
         self.osc2Pitch.setToolTip("Set the pitch offset in scale degrees from the root for oscillator 2 for this chord")
         self.osc3Pitch.setToolTip("Set the pitch offset in scale degrees from the root for oscillator 3 for this chord")
         self.clearAll.setToolTip("Clear all chords except for a default of (0, 0)")
