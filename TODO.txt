@@ -1,6 +1,5 @@
 NEXT!!!
 
-!!! Fix osc3 clear all
 !!! Fix gateseq remove
 
 GATESEQ Editor:

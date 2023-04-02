@@ -127,7 +127,7 @@ class ClearChordsCommand(QUndoCommand):
 
 
     def redo(self):
-        self.old_order = self.chord_set.clear_data()
+        self.old_order = self.chord_set.clear_chords()
         self.ui_callback()
 
 
