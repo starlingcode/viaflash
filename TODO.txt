@@ -1,7 +1,5 @@
 NEXT!!!
 
-!!! Fix gateseq remove
-
 GATESEQ Editor:
 - How to handle ordering changes when editing sequences in sorted mode? Currently it restores to the pre-edited order, actually I think this is right
 
