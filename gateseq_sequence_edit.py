@@ -28,6 +28,7 @@ class GateseqSequenceEdit(QWidget):
         self.label.setText("PLZ SHOW UP")
         self.label.setAlignment(Qt.AlignCenter)
         self.length_entry = QSpinBox()
+        self.length_entry.setToolTip("Edit the length of this sequence")
         self.remove = RemoveButton()
         self.layout = QHBoxLayout()
 

@@ -186,6 +186,10 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
 
         for slot_num in range(0, 8):
             eval('self.slot%d' % (slot_num+1)).clicked.connect(lambda state=True, x=slot_num: self.switch_slot(x))
+            if (slot_num < 4):
+                eval('self.slot%d' % (slot_num+1)).setToolTip("Edit Sequencer I sequence " + str(slot_num + 1))
+            else:
+                eval('self.slot%d' % (slot_num+1)).setToolTip("Edit Sequencer II sequence " + str(slot_num - 3))
         self.selectResource.activated.connect(self.handle_select_resource)
         self.saveResource.clicked.connect(lambda state=True: self.handle_save_resource())
 
@@ -194,6 +198,8 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
         self.unsorted_data = None
 
         self.setFocusPolicy(Qt.ClickFocus)
+
+        self.initToolTips()
 
 # Edit pattern recipe
 
@@ -221,7 +227,6 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
         self.unsorted_data = self.set.resources[self.active_idx].get_data()
         sorted_command = UpdateSortedCommand(self.set.resources[self.active_idx], True, self.update_resource_ui)
         self.resource_undo_stack.push(sorted_command)
-        #self.sortedHelp.setText(self.sorted_help)
         self.sorted_flag = True
 
 
@@ -231,7 +236,6 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
             self.set.resources[self.active_idx].reload_data(self.unsorted_data)
         sorted_command = UpdateSortedCommand(self.set.resources[self.active_idx], False, self.update_resource_ui)
         self.resource_undo_stack.push(sorted_command)
-        #self.sortedHelp.setText(self.unsorted_help)
         self.sorted_flag = False
 
 # Pattern recipe dispaly helpers
@@ -281,13 +285,10 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
         if 'sorted' in self.set.resources[self.active_idx].data:
             if self.set.resources[self.active_idx].data['sorted'] is False:
                 self.unsorted.setChecked(True)
-                #self.sortedHelp.setText(self.unsorted_help)
                 self.sorted_flag = False
             else:
-                #self.sortedHelp.setText(self.sorted_help)
                 self.sorted_flag = True
         else:
-            #self.sortedHelp.setText(self.sorted_help)
             self.sorted_flag = True
 
         sequences = self.set.resources[self.active_idx].data['sorted_patterns']
@@ -303,8 +304,10 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
                 if baked[i % len(baked)] == 1:
                     self.sequence_editors[idx].step_buttons[i].setChecked(True)
                 self.sequence_editors[idx].step_buttons[i].setEnabled(True)
+                self.sequence_editors[idx].step_buttons[i].setToolTip("Toggle value for this step")
             for i in range(len(baked), 64):
                 self.sequence_editors[idx].step_buttons[i].setEnabled(False)
+                self.sequence_editors[idx].step_buttons[i].setToolTip("Button disabled because outside of sequence length")
             self.sequence_editors[idx].length_entry.setValue(len(baked))
             self.sequence_editors[idx].set_idx(idx)
             self.sequence_editors[idx].unsorted_idx = self.set.resources[self.active_idx].data['unsorted_indices'][idx]
@@ -328,4 +331,14 @@ class GateseqPatternEditor(ViaResourceEditor, Ui_gateseqPatternEditor):
         self.undo_action.setVisible(False)
         self.redo_action.setVisible(False)
 
-
+    def initToolTips(self):
+        super().initToolTips()
+        self.selectResource.setToolTip("Select an available pattern for this mode and open it in the editor")
+        self.saveResource.setToolTip("Save the edited pattern")
+        self.sorted.setToolTip("The list of sequences below will be automatically sorted and loaded according to density (hits per step)")
+        self.unsorted.setToolTip("The list of sequences below can be freely reordered using the on the button on the far left of each row")
+        self.rulerSize.setToolTip("Set the amount of steps per ruler tick in the sequence display below")
+        self.length.setToolTip("Length of the euclidean sequence to add")
+        self.steps.setToolTip("Number of hits in the euclidean sequence to add, restricted to between zero and the Length value")
+        self.addEuclidean.setToolTip("Add a new euclidean sequence according to the steps and length parameters, disabled when pattern is full (16 seqeunces)")
+        self.clearSequences.setToolTip("Remove all sequences from the list except for a default sequence that hits on every step")

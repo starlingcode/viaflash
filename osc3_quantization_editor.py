@@ -179,12 +179,15 @@ class Osc3QuantizationEditor(ViaResourceEditor, Ui_osc3QuantizationEditor):
 
         for slot_num in range(0, 3):
             eval('self.slot%d' % (slot_num+1)).clicked.connect(lambda state=True, x=slot_num: self.switch_slot(x))
+            eval('self.slot%d' % (slot_num+1)).setToolTip("Edit quanitzation mode " + str(slot_num + 2))
         self.selectResource.activated.connect(self.handle_select_resource)
         self.saveResource.clicked.connect(lambda state=True: self.handle_save_resource())
 
         self.switch_slot(0)
 
         self.setFocusPolicy(Qt.ClickFocus)
+
+        self.initToolTips()
 
 # Edit scale recipe
 
@@ -222,6 +225,7 @@ class Osc3QuantizationEditor(ViaResourceEditor, Ui_osc3QuantizationEditor):
         for idx, button in enumerate(self.note_buttons):
             button.clicked.connect(lambda state=True, x=idx: self.note_button_pushed(x))
             button.setAutoExclusive(False)
+            button.setToolTip("Add this note to the quantization (assuming a root of C)")
 
     def note_button_pushed(self, idx):
         if self.note_buttons[idx].isChecked():
@@ -310,5 +314,16 @@ class Osc3QuantizationEditor(ViaResourceEditor, Ui_osc3QuantizationEditor):
 
     def clear_menu(self):
         self.menu.clear()
+
+    def initToolTips(self):
+        super().initToolTips()
+        self.selectResource.setToolTip("Select an available quantization for this mode and open it in the editor")
+        self.saveResource.setToolTip("Save the edited quantization")
+        self.addChord.setToolTip("Add the chord specified by the Oscillator 2 and 3 Pitch selectors")
+        self.osc2Pitch.setToolTip("Set the pitch offset in scale degrees from the root for oscillator 2 for this chord")
+        self.osc3Pitch.setToolTip("Set the pitch offset in scale degrees from the root for oscillator 3 for this chord")
+        self.clearAll.setToolTip("Clear all chords except for a default of (0, 0)")
+
+
 
 
