@@ -74,7 +74,6 @@ class RemoveNoteCommand(QUndoCommand):
         self.ui_callback()
 
     def undo(self):
-        print("Adding note back")
         self.chord_set.add_note(self.note)
         self.ui_callback()
 

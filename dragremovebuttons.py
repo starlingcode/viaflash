@@ -16,6 +16,7 @@ class DragButton(DragReorderButton):
         self.setAcceptDrops(True)
         self.parent_window = args[0] # parent_window
         self.idx = 0
+        self.setToolTip("Click and drag to another row's reorder button to move the resource in the list")
 
     def set_idx(self, idx):
         self.idx = idx
@@ -45,4 +46,5 @@ class DragButton(DragReorderButton):
 class RemoveButton(DragReorderButton):
     def __init__(self, *args, **kwargs):
         super(RemoveButton, self).__init__(*args, **kwargs)
+        self.setToolTip("Click to remove resource")
 

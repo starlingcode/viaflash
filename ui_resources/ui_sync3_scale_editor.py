@@ -29,12 +29,12 @@ class Ui_sync3ScaleEditor(object):
     def setupUi(self, sync3ScaleEditor):
         if not sync3ScaleEditor.objectName():
             sync3ScaleEditor.setObjectName(u"sync3ScaleEditor")
-        sync3ScaleEditor.resize(630, 760)
+        sync3ScaleEditor.resize(640, 760)
         sync3ScaleEditor.setMinimumSize(QSize(0, 760))
         sync3ScaleEditor.setMaximumSize(QSize(10000, 760))
         self.layoutWidget = QWidget(sync3ScaleEditor)
         self.layoutWidget.setObjectName(u"layoutWidget")
-        self.layoutWidget.setGeometry(QRect(10, 10, 611, 741))
+        self.layoutWidget.setGeometry(QRect(10, 10, 619, 741))
         self.verticalLayout_8 = QVBoxLayout(self.layoutWidget)
         self.verticalLayout_8.setObjectName(u"verticalLayout_8")
         self.verticalLayout_8.setContentsMargins(0, 0, 0, 0)
@@ -295,7 +295,7 @@ class Ui_sync3ScaleEditor(object):
         self.seedScrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 282, 303))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 284, 314))
         self.seedScrollArea.setWidget(self.scrollAreaWidgetContents)
 
         self.seedEditor.addWidget(self.seedScrollArea)
@@ -320,16 +320,6 @@ class Ui_sync3ScaleEditor(object):
 
 
         self.seedEditor.addLayout(self.horizontalLayout_3)
-
-        self.sortedHelp = QLabel(self.layoutWidget)
-        self.sortedHelp.setObjectName(u"sortedHelp")
-        sizePolicy1.setHeightForWidth(self.sortedHelp.sizePolicy().hasHeightForWidth())
-        self.sortedHelp.setSizePolicy(sizePolicy1)
-        self.sortedHelp.setFont(font)
-        self.sortedHelp.setAlignment(Qt.AlignCenter)
-        self.sortedHelp.setWordWrap(True)
-
-        self.seedEditor.addWidget(self.sortedHelp)
 
 
         self.scaleEditor.addLayout(self.seedEditor)
@@ -452,16 +442,6 @@ class Ui_sync3ScaleEditor(object):
 
         self.tilingAndPreview.addLayout(self.fillButtonLayout)
 
-        self.fillHelp = QLabel(self.layoutWidget)
-        self.fillHelp.setObjectName(u"fillHelp")
-        sizePolicy1.setHeightForWidth(self.fillHelp.sizePolicy().hasHeightForWidth())
-        self.fillHelp.setSizePolicy(sizePolicy1)
-        self.fillHelp.setFont(font)
-        self.fillHelp.setAlignment(Qt.AlignCenter)
-        self.fillHelp.setWordWrap(True)
-
-        self.tilingAndPreview.addWidget(self.fillHelp)
-
 
         self.scaleEditor.addLayout(self.tilingAndPreview)
 
@@ -510,12 +490,10 @@ class Ui_sync3ScaleEditor(object):
         self.label.setText(QCoreApplication.translate("sync3ScaleEditor", u"Semitone", None))
         self.sorted.setText(QCoreApplication.translate("sync3ScaleEditor", u"Sorted", None))
         self.unsorted.setText(QCoreApplication.translate("sync3ScaleEditor", u"Unsorted", None))
-        self.sortedHelp.setText(QCoreApplication.translate("sync3ScaleEditor", u"Fill Labe", None))
         self.previewLabel.setText(QCoreApplication.translate("sync3ScaleEditor", u"Preview", None))
         self.cvLabel.setText(QCoreApplication.translate("sync3ScaleEditor", u"CV: 0V", None))
         self.fillOctave.setText(QCoreApplication.translate("sync3ScaleEditor", u"Fill Octave", None))
         self.fillTritave.setText(QCoreApplication.translate("sync3ScaleEditor", u"Fill Tritave", None))
         self.fillExpand.setText(QCoreApplication.translate("sync3ScaleEditor", u"Fill Expand", None))
-        self.fillHelp.setText(QCoreApplication.translate("sync3ScaleEditor", u"Fill Labe", None))
     # retranslateUi
 

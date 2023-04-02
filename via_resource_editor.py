@@ -15,7 +15,7 @@ class ViaResourceEditor(QDialog):
         self.resource_set_titles = {}
 
         self.sorted_flag = False
-        
+
         # Base class must initialize self.set as ViaResourceSet derived class
 
     @Slot()
@@ -233,5 +233,9 @@ class ViaResourceEditor(QDialog):
         self.done(QDialog.Accepted)
         super().closeEvent(event)
 
+    def initToolTips(self):
+        self.selectResourceSet.setToolTip("Select an available resource set to edit.")
+        self.saveResourceSet.setToolTip("Save the set of resource objects, requires saving any changes to the resource being edited.")
+        self.saveForRack.setToolTip("Select a directory to save the current set of the editor to a file that can be loaded by VCV Rack. The file will be named according to the currently selected resource set title.")
 
 

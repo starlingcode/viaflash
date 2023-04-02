@@ -1,6 +1,7 @@
 NEXT!!!
 
-!!! Gateseq editor is incredibly wonkified
+GATESEQ Editor:
+- How to handle ordering changes when editing sequences in sorted mode? Currently it restores to the pre-edited order, actually I think this is right
 
 App:
 - Check menus and undo stacks when switching between resource sets

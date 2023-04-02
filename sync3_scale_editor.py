@@ -221,12 +221,12 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
         self.style_text = style_text
 
         self.fill_help = {}
-        self.fill_help["expand"] = "The ratios in the grid will be spread evenly across the full knob/CV range."
-        self.fill_help["octave"] = "The ratios in the grid will be spread across the control range by transposing by the total range in octaves"
-        self.fill_help["tritave"] = "The ratios in the grid will be spread across the control range by transposing by the total range in tritaves. Works great with ratios using odd numbers."
+        self.fill_help["expand"] = "The seed ratios (in the list to the left) will be spread evenly across the full knob/CV range."
+        self.fill_help["octave"] = "The seed ratios (in the list to the left) will be spread across the control range by transposing by the total range in octaves"
+        self.fill_help["tritave"] = "The seed ratios (in the list to the left) will be spread across the control range by transposing by the total range in tritaves. Works great with ratios using odd numbers."
         
-        self.sorted_help = "The ratios in the grid are being automatically sorted and loaded in ascending order."
-        self.unsorted_help = "Right click a ratio and drag it to the desired grid position to reorder."
+        self.sorted_help = "The list of seed ratios above will be automatically sorted and loaded in ascending order"
+        self.unsorted_help = "The list of seed ratios above can be freely reordered using the on the button on the far left of each row"
 
         self.remote_resources = remote_resources
 
@@ -244,6 +244,7 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
 
         for slot_num in range(0, 8):
             eval('self.slot%d' % (slot_num+1)).clicked.connect(lambda state=True, x=slot_num: self.switch_slot(x))
+            eval('self.slot%d' % (slot_num+1)).setToolTip("Edit scale " + str(slot_num + 1))
         self.selectResource.activated.connect(self.handle_select_resource)
         self.saveResource.clicked.connect(lambda state=True: self.handle_save_resource())
 
@@ -254,6 +255,8 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
         self.update_resource_ui()
         
         self.setFocusPolicy(Qt.ClickFocus)
+
+        self.initToolTips()
             
 
 # Edit scale recipe
@@ -263,7 +266,6 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
         self.unsorted_data = self.set.resources[self.active_idx].get_data()
         sorted_command = UpdateSortedCommand(self.set.resources[self.active_idx], True, self.update_resource_ui)
         self.resource_undo_stack.push(sorted_command)
-        self.sortedHelp.setText(self.sorted_help)
         self.sorted_flag = True
 
 
@@ -273,7 +275,6 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
             self.set.resources[self.active_idx].reload_data(self.unsorted_data)
         sorted_command = UpdateSortedCommand(self.set.resources[self.active_idx], False, self.update_resource_ui)
         self.resource_undo_stack.push(sorted_command)
-        self.sortedHelp.setText(self.unsorted_help)
         self.sorted_flag = False
 
 
@@ -334,7 +335,7 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
 
 
     def update_preview_idx(self):
-        self.preview_idx = int((self.cvSlider.value() + 50) * .15) + self.knob.value()
+        self.preview_idx = min(31, (int((self.cvSlider.value() + 50) * .15) + self.knob.value() + 1))
 
 
     @Slot()
@@ -354,7 +355,6 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
 # Seed ratio dispaly helpers
 
     def add_seed_ratio(self, ratio):
-        print("add seed ratio called")
         if not self.check_data(ratio):
             reduced = self.reduce_ratio(ratio)
             warning_string = 'Ratio %d/%d exists in set as %d/%d, add duplicate?' % (ratio[0], ratio[1], reduced[0], reduced[1])
@@ -391,18 +391,14 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
         if 'sorted' in self.set.resources[self.active_idx].data:
             if self.set.resources[self.active_idx].data['sorted'] is False:
                 self.unsorted.setChecked(True)
-                self.sortedHelp.setText(self.unsorted_help)
                 self.sorted_flag = False
             else:
-                self.sortedHelp.setText(self.sorted_help)
                 self.sorted_flag = True
         else:
-            self.sortedHelp.setText(self.sorted_help)
             self.sorted_flag = True
 
         seed_ratios = self.set.resources[self.active_idx].data['sorted_ratios']
         idx = -1
-        print(seed_ratios)
         for idx, ratio in enumerate(seed_ratios):
             self.seed_ratio_buttons[idx].show()
             self.seed_ratio_buttons[idx].update_ratio(ratio[0], ratio[1])
@@ -422,7 +418,6 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
             self.fillOctave.setChecked(True)
         else:
             self.fillTritave.setChecked(True)
-        self.fillHelp.setText(self.fill_help[fill_mode])
 
         self.update_preview()
 
@@ -486,6 +481,20 @@ class Sync3ScaleEditor(ViaResourceEditor, Ui_sync3ScaleEditor):
     def clear_menu(self):
         self.menu.clear()
 
+    def initToolTips(self):
+        super().initToolTips()
+        self.selectResource.setToolTip("Select an available scale for this mode and open it in the editor")
+        self.saveResource.setToolTip("Save the edited scale")
+        self.addSeedRatio.setToolTip("Add new ratio to scale set")
+        self.addFromScala.setToolTip("Import ratios from .scl file created in Scala")
+        self.clearSeedRatios.setToolTip("Clear all ratios from the list except for a default of 1/1")
+        self.sorted.setToolTip(self.sorted_help)
+        self.unsorted.setToolTip(self.unsorted_help)
+        self.fillExpand.setToolTip(self.fill_help['expand'])
+        self.fillOctave.setToolTip(self.fill_help['octave'])
+        self.fillTritave.setToolTip(self.fill_help['tritave'])
+        self.knob.setToolTip("Preview the selected ratio for a given knob position and CV value")
+        self.cvSlider.setToolTip("Preview the selected ratio for a given knob position and CV value")
 
 
 
