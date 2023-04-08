@@ -353,6 +353,13 @@ class Ui_osc3QuantizationEditor(object):
 
         self.verticalLayout_3.addLayout(self.verticalLayout)
 
+        self.line_3 = QFrame(self.layoutWidget)
+        self.line_3.setObjectName(u"line_3")
+        self.line_3.setFrameShape(QFrame.HLine)
+        self.line_3.setFrameShadow(QFrame.Sunken)
+
+        self.verticalLayout_3.addWidget(self.line_3)
+
         self.editChordsLabel = QLabel(self.layoutWidget)
         self.editChordsLabel.setObjectName(u"editChordsLabel")
         self.editChordsLabel.setAlignment(Qt.AlignCenter)
@@ -466,7 +473,7 @@ class Ui_osc3QuantizationEditor(object):
         self.chordScrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 499, 192))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 499, 177))
         self.chordScrollArea.setWidget(self.scrollAreaWidgetContents)
 
         self.seedEditor.addWidget(self.chordScrollArea)

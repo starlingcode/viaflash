@@ -744,6 +744,13 @@
      </layout>
     </item>
     <item>
+     <widget class="Line" name="line_3">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item>
      <widget class="QLabel" name="editChordsLabel">
       <property name="text">
        <string>Add and edit chords as offsets in scale:</string>
@@ -930,7 +937,7 @@
            <x>0</x>
            <y>0</y>
            <width>499</width>
-           <height>192</height>
+           <height>177</height>
           </rect>
          </property>
         </widget>

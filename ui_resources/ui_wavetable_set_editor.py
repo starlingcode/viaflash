@@ -129,6 +129,13 @@ class Ui_wavetableSetEditor(object):
 
         self.verticalLayout.addLayout(self.slotGroup1)
 
+        self.line_3 = QFrame(self.layoutWidget)
+        self.line_3.setObjectName(u"line_3")
+        self.line_3.setFrameShape(QFrame.HLine)
+        self.line_3.setFrameShadow(QFrame.Sunken)
+
+        self.verticalLayout.addWidget(self.line_3)
+
         self.resourceSaveLoad = QHBoxLayout()
         self.resourceSaveLoad.setObjectName(u"resourceSaveLoad")
         self.tableName = QLabel(self.layoutWidget)

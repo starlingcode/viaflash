@@ -1,20 +1,10 @@
 NEXT!!!
 
-GATESEQ Editor:
-- How to handle ordering changes when editing sequences in sorted mode? Currently it restores to the pre-edited order, actually I think this is right
-
 App:
-- Check menus and undo stacks when switching between resource sets
-- Vertical margins between widgets in resource editor subsection (check all apps for ui form improvement)
 - Mac, Windows, and Linux builds
-- Documentation/tooltips?
-
-SYNC3 Editor:
-- Sync layout changes with the text wrapping for the sorting 
 
 Main window:
 - Local firmware
-!!! Dealing with the menu on window close is awkwarddd
 
 Viafirmware Repo:
 - Add real descriptions to wavetables
